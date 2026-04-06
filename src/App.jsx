@@ -66,6 +66,8 @@ const EMPTY_INBODY = {
   bmr: '',
 }
 
+const COACH_STORAGE_KEY = 'jamie-coach-v1'
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('workout')
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
@@ -73,6 +75,10 @@ export default function App() {
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
   const [playerOpen, setPlayerOpen] = useState(true)
   const [newGoal, setNewGoal] = useState('')
+  const [coachOpen, setCoachOpen] = useState(false)
+  const [coachDraft, setCoachDraft] = useState('')
+  const [coachSending, setCoachSending] = useState(false)
+  const [coachMessages, setCoachMessages] = useState(() => loadStoredCoachMessages())
   const [saving, setSaving] = useState({
     workout: false,
     deficit: false,
@@ -158,6 +164,23 @@ export default function App() {
     return () => window.clearTimeout(timeoutId)
   }, [toast])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    try {
+      if (coachMessages.length) {
+        window.localStorage.setItem(
+          COACH_STORAGE_KEY,
+          JSON.stringify(coachMessages.slice(-8)),
+        )
+      } else {
+        window.localStorage.removeItem(COACH_STORAGE_KEY)
+      }
+    } catch (error) {
+      console.warn('Could not store coach history.', error)
+    }
+  }, [coachMessages])
+
   if (!isFirebaseConfigured || session.status === 'needs-config') {
     return <ConfigurationState envKeys={firebaseEnvKeys} />
   }
@@ -181,6 +204,7 @@ export default function App() {
   const inbodyDue = isInBodyDue(dashboard.inbodyScans, todayKey)
 
   const workoutComplete = Boolean(todayWorkoutEntry?.completed)
+  const trackingLoggedToday = hasTrackingContent(todayTrackingEntry)
   const helloLine = pickMotivationLine(
     HELLO_LINES,
     completedWorkouts.length + currentWeek,
@@ -189,6 +213,7 @@ export default function App() {
     KUROMI_LINES,
     hydrationWins + (todayDay || 1),
   )
+  const currentGoal = dashboard.goals[0]?.text ?? ''
 
   async function handleWorkoutComplete() {
     if (!todayDay) return
@@ -343,6 +368,92 @@ export default function App() {
     }
   }
 
+  async function handleSendCoachMessage() {
+    const prompt = coachDraft.trim()
+    if (!prompt) return
+
+    const nextMessages = [
+      ...coachMessages,
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ].slice(-8)
+
+    setCoachMessages(nextMessages)
+    setCoachDraft('')
+    setCoachSending(true)
+
+    try {
+      const response = await fetch('/api/coach', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: nextMessages,
+          context: {
+            day: todayDay,
+            workoutName: todayWorkout?.name ?? '',
+            phaseName: currentPhaseName,
+            coachTitle: helloLine,
+            coachBody: kuromiLine,
+            nextStep: buildNextStep({
+              trackingLoggedToday,
+              workout: todayWorkout,
+              workoutComplete,
+            }),
+            workoutComplete,
+            trackingLoggedToday,
+            measurementsDue,
+            inbodyDue,
+            goal: currentGoal,
+            workoutStreak: completedWorkouts.length,
+            hydrationStreak: hydrationWins,
+          },
+        }),
+      })
+
+      const payload = await response.json().catch(() => ({}))
+
+      if (!response.ok || !payload?.reply) {
+        throw new Error(payload?.error || 'Coach is not ready yet.')
+      }
+
+      setCoachMessages((current) =>
+        [
+          ...current,
+          {
+            role: 'assistant',
+            content: payload.reply,
+          },
+        ].slice(-10),
+      )
+    } catch {
+      setCoachMessages((current) =>
+        [
+          ...current,
+          {
+            role: 'assistant',
+            content: buildCoachFallbackReply({
+              helloLine,
+              inbodyDue,
+              kuromiLine,
+              measurementsDue,
+              prompt,
+              trackingLoggedToday,
+              workout: todayWorkout,
+              workoutComplete,
+            }),
+          },
+        ].slice(-10),
+      )
+      setToast('Coach answered in backup mode.')
+    } finally {
+      setCoachSending(false)
+    }
+  }
+
   return (
     <div className="relative flex min-h-screen justify-center">
       <div className="app-shell">
@@ -385,8 +496,15 @@ export default function App() {
 
         {activeTab === 'goals' && (
           <MotivationView
+            coachDraft={coachDraft}
+            coachMessages={coachMessages}
+            coachOpen={coachOpen}
+            coachSending={coachSending}
             onChangeTracking={setTrackingDraft}
+            onCoachDraftChange={setCoachDraft}
+            onCoachOpenChange={setCoachOpen}
             onSaveMindset={handleSaveMindset}
+            onSendCoachMessage={handleSendCoachMessage}
             saving={saving.goal}
             settings={dashboard.settings}
             supportSaving={saving}
@@ -502,8 +620,7 @@ function WorkoutView({
               {workout.name}
             </h2>
             <p className="mt-3 text-[14px] leading-7 text-white/72">
-              {formatLongDate(todayKey)}. Press play, move with control, and let the workout
-              fit your body today.
+              {formatLongDate(todayKey)}. Press play and make the session fit your body.
             </p>
           </div>
           <span className="ghost-chip">{workoutComplete ? 'Submitted' : 'Ready'}</span>
@@ -537,9 +654,9 @@ function WorkoutView({
 
       <section className="surface">
         <SectionHeader
-          copy="Keep today safe, clear, and strong. The point is not matching the woman on screen. The point is finishing your version well."
+          copy="Move well. Finish your version."
           kicker="Your cues"
-          title="What to watch for today"
+          title="Today's cues"
         />
 
         <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
@@ -561,10 +678,11 @@ function WorkoutView({
             modificationCue={modificationCue}
             overloadCue={overloadSummary}
             setupCue={setupCue}
+            detailsLabel="More cues"
             title={
               workout.type === 'rest'
-                ? 'Keep recovery useful, not complicated'
-                : 'Keep the workout honest and on your side'
+                ? 'Keep recovery simple'
+                : 'Need help with today?'
             }
           />
         </div>
@@ -599,9 +717,9 @@ function TrackingView({
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="This is just the closeout. Record the workout, calories, and water so today feels complete."
+          copy="Log today and move on."
           kicker="Your closeout"
-          title="Check in and move on"
+          title="Tonight"
         />
 
         <div className="mt-5 grid grid-cols-3 gap-2">
@@ -629,7 +747,7 @@ function TrackingView({
 
       <TrackingCard
         accent="from-[#ff8fc8]/16 via-[#8bdcff]/10 to-[#c6b3ff]/10"
-        description="Nothing extra here. Just the things that tell you the day is closed."
+        description="Workout, calories, and water. That's it."
         icon={<Sparkles className="text-gold-300" size={18} />}
         title="Your check-in"
       >
@@ -638,12 +756,12 @@ function TrackingView({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-mint-200">
-                  Workout submitted
+                  Workout done
                 </div>
                 <p className="mt-2 text-[13px] leading-6 text-white/70">
                   {workout?.type === 'rest'
-                    ? 'Use this once your recovery work is done.'
-                    : 'Use this once your burn is done and you want the day recorded.'}
+                    ? 'Tap this when your recovery work is done.'
+                    : 'Tap this when you finish today.'}
                 </p>
               </div>
               <CheckCircle2 className="text-mint-200" size={18} />
@@ -661,8 +779,8 @@ function TrackingView({
                 : saving.workout
                   ? 'Saving...'
                   : workout?.type === 'rest'
-                    ? 'Yes, I did today’s recovery'
-                    : 'Yes, I showed up for today'}
+                    ? 'I did today’s recovery'
+                    : 'I finished today’s workout'}
             </button>
           </div>
 
@@ -673,7 +791,7 @@ function TrackingView({
                   Calories
                 </div>
                 <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  Log the real number. Honesty tonight makes tomorrow easier.
+                  Log the real number. That's enough.
                 </p>
               </div>
               <Flame className="text-blush-200" size={18} />
@@ -704,7 +822,7 @@ function TrackingView({
                   Water
                 </div>
                 <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  This is just a simple yes or no. No drama, just a check-in.
+                  Just a yes or no.
                 </p>
               </div>
               <Droplets className="text-sky-200" size={18} />
@@ -741,9 +859,9 @@ function TrackingView({
 
       <TrackingCard
         accent="from-[#8ef0c2]/14 via-[#ffe08a]/10 to-[#ff9dcc]/10"
-        description="Measurements and scan data live here too, so all of your tracking stays in one place."
+        description="Tape and scan live here too."
         icon={<BarChart2 className="text-mint-200" size={18} />}
-        title="Body tracking"
+        title="Measurements"
       >
         <div className="grid gap-4">
           <div className="grid grid-cols-2 gap-2">
@@ -782,7 +900,7 @@ function TrackingView({
             <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[13px] leading-6 text-white/64">
               {measurementsDue && 'Your measurements are due again. '}
               {inbodyDue && 'Your scan data is due again. '}
-              Add what you have so the story stays current.
+              Add what you have.
             </div>
           )}
 
@@ -793,7 +911,7 @@ function TrackingView({
                   Measurements
                 </div>
                 <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  Keep the tape honest and simple. This is here to help you notice shape changes clearly.
+                  Keep the tape honest and simple.
                 </p>
               </div>
               <span className="ghost-chip">{measurementsDue ? 'Due now' : 'Current'}</span>
@@ -849,7 +967,7 @@ function TrackingView({
                   InBody scan
                 </div>
                 <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  This is just information. Let it support you, not scare you.
+                  Let this inform you, not scare you.
                 </p>
               </div>
               <span className="ghost-chip">{inbodyDue ? 'Due now' : 'Current'}</span>
@@ -893,8 +1011,15 @@ function TrackingView({
 }
 
 function MotivationView({
+  coachDraft,
+  coachMessages,
+  coachOpen,
+  coachSending,
   onChangeTracking,
+  onCoachDraftChange,
+  onCoachOpenChange,
   onSaveMindset,
+  onSendCoachMessage,
   settings,
   supportSaving,
   helloLine,
@@ -908,9 +1033,9 @@ function MotivationView({
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="This tab is here for the part of the process that needs softness, honesty, and a steadier voice."
-          kicker="For your head and heart"
-          title="What you need to hear today"
+          copy="A steadier voice for the hard part."
+          kicker="Support"
+          title="What you need today"
         />
 
         <div className="mt-5 grid gap-3">
@@ -927,9 +1052,9 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="Use this when your brain starts spiraling, bargaining, or acting like one weird day means everything is broken."
-          kicker="A steadier perspective"
-          title="Come here before you start making up stories"
+          copy="Use this before your brain turns one weird day into a whole story."
+          kicker="Perspective"
+          title="When your brain spirals"
         />
 
         <div className="mt-5 flex justify-start">
@@ -938,24 +1063,14 @@ function MotivationView({
             onClick={() => setShowPerspective((current) => !current)}
             type="button"
           >
-            {showPerspective ? 'Close this' : 'Open this'}
+            {showPerspective ? 'Hide' : 'Read this'}
           </button>
         </div>
 
         {showPerspective && (
           <div className="no-scrollbar mt-5 grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1">
             {PERSPECTIVE_CARDS.map((card) => (
-              <article
-                className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.14),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5"
-                key={card.title}
-              >
-                <div className="micro-label">{card.category}</div>
-                <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
-                <p className="mt-3 text-[14px] leading-7 text-white/74">{card.body}</p>
-                <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[13px] leading-6 text-white/82">
-                  <span className="font-bold text-gold-300">Coach note:</span> {card.takeaway}
-                </div>
-              </article>
+              <PerspectiveCard card={card} key={card.title} />
             ))}
           </div>
         )}
@@ -963,9 +1078,9 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="If you need to leave yourself a thought tonight, do it here instead of keeping it rattling around in your head."
-          kicker="A note to yourself"
-          title="Leave Jamie something kind and true"
+          copy="Leave yourself something honest before the day ends."
+          kicker="Mindset note"
+          title="Leave yourself a note"
         />
 
         <div className="mt-5 rounded-[24px] border border-plum-300/12 bg-plum-300/[0.08] p-4">
@@ -1005,8 +1120,26 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="We are keeping reminders simple here. Add the calendar once and let it quietly carry the rhythm for you."
-          kicker="Quiet support"
+          copy="A quick place to talk it out when you need a voice back."
+          kicker="Coach"
+          title="Talk to coach"
+        />
+
+        <CoachSupportCard
+          draft={coachDraft}
+          isOpen={coachOpen}
+          messages={coachMessages}
+          onDraftChange={onCoachDraftChange}
+          onOpenChange={onCoachOpenChange}
+          onSend={onSendCoachMessage}
+          sending={coachSending}
+        />
+      </section>
+
+      <section className="surface">
+        <SectionHeader
+          copy="Add the reminders once and let Calendar carry the rhythm."
+          kicker="Reminders"
           title="Keep the reminders easy"
         />
 
@@ -1031,9 +1164,9 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="Write one line and let it land. This wall is just for Jamie's words, dated and held in place."
-          kicker="Chalkboard wall"
-          title="Sketch today's promise"
+          copy="Write one line and let it land."
+          kicker="Your wall"
+          title="Today's promise"
         />
 
         <div className="mt-5 rounded-[28px] border border-[#d7f0d8]/10 bg-[linear-gradient(180deg,rgba(25,45,38,0.98),rgba(18,34,30,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.03),0_22px_44px_rgba(0,0,0,0.28)]">
@@ -1057,10 +1190,10 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
           </div>
           <div className="mt-4 flex items-center justify-between gap-3">
             <div className="text-[12px] leading-6 text-[#d5e8d9]/48">
-              Etched as {wallName}. Total promises: {goals.length}.
+              Saved as {wallName}. Total promises: {goals.length}.
             </div>
             <button className="primary-button w-auto px-4" onClick={onAddGoal} type="button">
-              {saving.goal ? 'Sketching...' : 'Sketch it'}
+              {saving.goal ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
@@ -1068,9 +1201,9 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
 
       <section className="surface">
         <SectionHeader
-          copy="Every line stays dated so Jamie can see what she asked of herself and when she chose it."
-          kicker="Your chalkboard"
-          title={jamiePosts.length ? 'What is on the board' : 'The board is ready'}
+          copy="Each line stays dated so you can see what mattered and when."
+          kicker="Recent promises"
+          title={jamiePosts.length ? 'On the board' : 'The board is ready'}
         />
 
         <div className="mt-5 space-y-4">
@@ -1116,47 +1249,133 @@ function SectionHeader({ copy, kicker, title }) {
 }
 
 function CalendarSupportCard({ calendarUrl }) {
-  const calendarSchemeUrl = toCalendarSchemeUrl(calendarUrl)
+  const [showHelp, setShowHelp] = useState(false)
 
   return (
     <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          <CalendarIcon className="text-gold-300" size={16} />
+          <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+            Add reminders
+          </div>
+        </div>
+        <p className="mt-3 text-[14px] leading-7 text-white/74">
+          Download one calendar file for the 7:00 AM workout reminder, the nightly closeout,
+          and the progress check-ins.
+        </p>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <a
+          className="primary-button inline-flex w-auto items-center justify-center px-4"
+          download="Jamie_90_Day_Burn_Reminders.ics"
+          href={calendarUrl}
+        >
+          Download reminders
+        </a>
+        <button
+          className="secondary-button inline-flex w-auto items-center justify-center px-4"
+          onClick={() => setShowHelp((current) => !current)}
+          type="button"
+        >
+          {showHelp ? 'Hide steps' : 'How to add it'}
+        </button>
+      </div>
+
+      {showHelp ? (
+        <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[12px] leading-6 text-white/72">
+          <div>iPhone: tap the downloaded file, then choose Calendar.</div>
+          <div>Mac: open the file in Calendar, or use File → Import.</div>
+          <div>Once it is imported, Calendar handles the reminders for you.</div>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+function CoachSupportCard({
+  draft,
+  isOpen,
+  messages,
+  onDraftChange,
+  onOpenChange,
+  onSend,
+  sending,
+}) {
+  const visibleMessages = messages.slice(-4)
+
+  return (
+    <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
+        <div>
           <div className="flex items-center gap-2">
-            <CalendarIcon className="text-gold-300" size={16} />
+            <Brain className="text-plum-300" size={16} />
             <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-              Calendar support
+              First version
             </div>
           </div>
           <p className="mt-3 text-[14px] leading-7 text-white/74">
-            This is the reminder system now. Add the full 90-day plan to Jamie&apos;s
-            calendar once and let it meet her there each day.
-          </p>
-          <p className="mt-3 text-[12px] leading-6 text-white/46">
-            This includes a 7:00 AM workout check-in, nightly closeout reminders,
-            weekly reset notes, and progress check-ins. If your phone downloads the
-            file first, tap it once from Downloads to add it to Calendar.
+            Ask for one clear next step, a reset, or help getting unstuck.
           </p>
         </div>
-        <div className="flex shrink-0 flex-col gap-2">
-          <a
-            className="primary-button inline-flex w-auto items-center justify-center px-4"
-            href={calendarSchemeUrl}
-          >
-            Open in Calendar
-          </a>
-          <a
-            className="secondary-button inline-flex w-auto items-center justify-center px-4"
-            download="Jamie_90_Day_Burn_Reminders.ics"
-            href={calendarUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            Download file
-          </a>
-        </div>
+        <button className="ghost-chip" onClick={() => onOpenChange(!isOpen)} type="button">
+          {isOpen ? 'Hide' : 'Open'}
+        </button>
       </div>
+
+      {isOpen ? (
+        <div className="mt-4 grid gap-3">
+          {visibleMessages.length ? (
+            <div className="grid gap-2">
+              {visibleMessages.map((message, index) => (
+                <div
+                  className={clsx(
+                    'rounded-[18px] border px-4 py-3 text-[13px] leading-6',
+                    message.role === 'assistant'
+                      ? 'border-plum-300/12 bg-plum-300/[0.08] text-white/82'
+                      : 'border-white/8 bg-white/[0.04] text-white/74',
+                  )}
+                  key={`${message.role}-${index}-${message.content.slice(0, 12)}`}
+                >
+                  {message.content}
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="grid gap-3">
+            <textarea
+              className="field-shell min-h-[96px] resize-none"
+              onChange={(event) => onDraftChange(event.target.value)}
+              placeholder="I need help getting moving today."
+              value={draft}
+            />
+            <button className="primary-button" disabled={sending} onClick={onSend} type="button">
+              {sending ? 'Thinking...' : 'Ask coach'}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
+  )
+}
+
+function PerspectiveCard({ card }) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <article className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.14),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5">
+      <div className="micro-label">{card.category}</div>
+      <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
+      <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[13px] leading-6 text-white/82">
+        <span className="font-bold text-gold-300">Coach note:</span> {card.takeaway}
+      </div>
+      {expanded ? <p className="mt-4 text-[14px] leading-7 text-white/74">{card.body}</p> : null}
+      <button className="ghost-chip mt-4" onClick={() => setExpanded((current) => !current)} type="button">
+        {expanded ? 'Hide' : 'Why this matters'}
+      </button>
+    </article>
   )
 }
 
@@ -1301,9 +1520,9 @@ function LoadingState() {
     <div className="flex min-h-screen items-center justify-center px-5">
       <div className="surface w-full max-w-sm text-center">
         <div className="mx-auto flex h-14 w-14 animate-spin items-center justify-center rounded-full border-4 border-white/8 border-t-blush-400" />
-        <h1 className="mt-5 text-2xl font-extrabold text-white">Building Jamie&apos;s dashboard...</h1>
+        <h1 className="mt-5 text-2xl font-extrabold text-white">Opening Jamie&apos;s app...</h1>
         <p className="mt-3 text-[14px] leading-7 text-white/62">
-          Pulling in your workouts, check-ins, goals, and progress data.
+          Pulling in your workout, check-ins, and wall.
         </p>
       </div>
     </div>
@@ -1450,12 +1669,7 @@ function getSetupCue(workout, week) {
     : 'Room set, weights ready, first round only. Bigger patterns can lead, but only if the rep still looks like you meant it.'
 }
 
-function buildWorkoutPlayerSubtitle({
-  currentVideoState,
-  trackingLoggedToday,
-  workout,
-  workoutComplete,
-}) {
+function buildWorkoutPlayerSubtitle({ currentVideoState, workout, workoutComplete }) {
   if (!workout) {
     return 'Your workout will show up here when the program day is live.'
   }
@@ -1467,9 +1681,7 @@ function buildWorkoutPlayerSubtitle({
   }
 
   if (workoutComplete) {
-    return trackingLoggedToday
-      ? 'Your burn is already done. Reopen it only if you want to review the flow.'
-      : 'Your burn is already done. Tonight just needs a clean closeout.'
+    return 'Your burn is already done. Reopen it only if you want a refresher.'
   }
 
   if (currentVideoState?.opened) {
@@ -1486,17 +1698,6 @@ function indexById(entries) {
   }, {})
 }
 
-function toCalendarSchemeUrl(url) {
-  if (!url) return '#'
-  if (url.startsWith('https://')) {
-    return url.replace('https://', 'webcal://')
-  }
-  if (url.startsWith('http://')) {
-    return url.replace('http://', 'webcal://')
-  }
-  return url
-}
-
 function valueToInput(value) {
   return value === 0 || Number.isFinite(value) ? String(value) : ''
 }
@@ -1511,4 +1712,85 @@ function formatGoalDate(goal) {
 
 function formatMetricValue(value, unit) {
   return value === null || typeof value === 'undefined' ? '—' : `${value}${unit ? ` ${unit}` : ''}`
+}
+
+function hasTrackingContent(entry) {
+  if (!entry) return false
+
+  return (
+    Number.isFinite(entry.caloricDeficit) ||
+    typeof entry.hydrationTargetMet === 'boolean' ||
+    Boolean(String(entry.mindsetTitle || '').trim()) ||
+    Boolean(String(entry.mindsetLog || '').trim())
+  )
+}
+
+function loadStoredCoachMessages() {
+  if (typeof window === 'undefined') return []
+
+  try {
+    const raw = window.localStorage.getItem(COACH_STORAGE_KEY)
+    if (!raw) return []
+
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+
+    return parsed
+      .map((entry) => ({
+        role: entry?.role === 'assistant' ? 'assistant' : 'user',
+        content: String(entry?.content || '').trim(),
+      }))
+      .filter((entry) => entry.content)
+      .slice(-8)
+  } catch (error) {
+    console.warn('Could not read stored coach history.', error)
+    return []
+  }
+}
+
+function buildNextStep({ trackingLoggedToday, workout, workoutComplete }) {
+  if (workoutComplete) {
+    return trackingLoggedToday
+      ? 'Close the app and let today count.'
+      : 'Log calories and water so today feels closed.'
+  }
+
+  if (workout?.type === 'rest') {
+    return 'Take the easiest recovery block you can honestly do.'
+  }
+
+  return 'Open the video and take the first round only.'
+}
+
+function buildCoachFallbackReply({
+  helloLine,
+  inbodyDue,
+  kuromiLine,
+  measurementsDue,
+  prompt,
+  trackingLoggedToday,
+  workout,
+  workoutComplete,
+}) {
+  const text = String(prompt || '').toLowerCase()
+
+  if (text.includes('stuck') || text.includes('motivat') || text.includes('start')) {
+    return workoutComplete
+      ? 'You already did the hard part today. Close the loop gently and let that be enough.'
+      : `Start smaller than your brain wants. ${workout?.type === 'rest' ? 'Do ten calm minutes.' : 'Press play and give yourself one round.'}`
+  }
+
+  if (text.includes('scale') || text.includes('weight') || text.includes('body')) {
+    return 'One data point is not your whole story. Stay with the trend, not the panic.'
+  }
+
+  if (measurementsDue || inbodyDue) {
+    return 'If you have the numbers, log them. If you do not, keep moving and come back when you do.'
+  }
+
+  if (trackingLoggedToday) {
+    return kuromiLine
+  }
+
+  return helloLine
 }

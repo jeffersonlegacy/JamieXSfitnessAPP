@@ -7,8 +7,8 @@ export default function WorkoutCoachPanel({
   overloadCue,
   details,
   defaultOpen = false,
-  title = 'A little help for today',
-  detailsLabel = 'More support',
+  title = 'Need help with today?',
+  detailsLabel = 'More cues',
 }) {
   const [showDetails, setShowDetails] = useState(defaultOpen)
 
@@ -18,7 +18,7 @@ export default function WorkoutCoachPanel({
         <div>
           <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/48">
             <Sparkles size={14} className="text-blush-200" />
-            Jamie-first coaching
+            Quick help
           </div>
           <h3 className="mt-3 text-[1.35rem] font-extrabold leading-[1.02] tracking-[-0.03em]">
             {title}

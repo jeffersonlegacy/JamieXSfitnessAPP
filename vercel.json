@@ -1,4 +1,23 @@
 {
+  "headers": [
+    {
+      "source": "/Jamie_90_Day_Burn_Reminders.ics",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/calendar; charset=utf-8"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"Jamie_90_Day_Burn_Reminders.ics\""
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",

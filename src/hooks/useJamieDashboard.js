@@ -2,12 +2,10 @@ import { startTransition, useEffect, useState } from 'react'
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   onSnapshot,
   orderBy,
   query,
-  limit,
   serverTimestamp,
   setDoc,
 } from 'firebase/firestore'
@@ -55,26 +53,16 @@ export function useJamieDashboard(user) {
   const [measurements, setMeasurements] = useState([])
   const [inbodyScans, setInbodyScans] = useState([])
   const [goals, setGoals] = useState([])
-  const [wallPosts, setWallPosts] = useState([])
-  const [wallComments, setWallComments] = useState([])
   const [settings, setSettings] = useState(null)
-  const [reminders, setReminders] = useState([])
   const [videoState, setVideoState] = useState([])
-  const [coachMemory, setCoachMemory] = useState([])
-  const [coachThreads, setCoachThreads] = useState([])
   const [ready, setReady] = useState({
     workouts: false,
     tracking: false,
     measurements: false,
     inbodyScans: false,
     goals: false,
-    wallPosts: false,
-    wallComments: false,
     settings: false,
-    reminders: false,
     videoState: false,
-    coachMemory: false,
-    coachThreads: false,
   })
   const [metadata, setMetadata] = useState({
     workouts: { fromCache: false, hasPendingWrites: false },
@@ -82,13 +70,8 @@ export function useJamieDashboard(user) {
     measurements: { fromCache: false, hasPendingWrites: false },
     inbodyScans: { fromCache: false, hasPendingWrites: false },
     goals: { fromCache: false, hasPendingWrites: false },
-    wallPosts: { fromCache: false, hasPendingWrites: false },
-    wallComments: { fromCache: false, hasPendingWrites: false },
     settings: { fromCache: false, hasPendingWrites: false },
-    reminders: { fromCache: false, hasPendingWrites: false },
     videoState: { fromCache: false, hasPendingWrites: false },
-    coachMemory: { fromCache: false, hasPendingWrites: false },
-    coachThreads: { fromCache: false, hasPendingWrites: false },
   })
   const [error, setError] = useState(null)
 
@@ -207,32 +190,6 @@ export function useJamieDashboard(user) {
         (snapshotError) => handleSnapshotError('goals', snapshotError),
       ),
       onSnapshot(
-        query(collection(db, 'motivation_wall'), orderBy('createdAt', 'desc'), limit(60)),
-        (snapshot) => {
-          startTransition(() => {
-            setWallPosts(mapCollectionOrdered(snapshot))
-          })
-          updateMetadata('wallPosts', snapshot)
-          markReady('wallPosts')
-        },
-        (snapshotError) => handleSnapshotError('wallPosts', snapshotError),
-      ),
-      onSnapshot(
-        query(
-          collection(db, 'motivation_wall_comments'),
-          orderBy('createdAt', 'asc'),
-          limit(240),
-        ),
-        (snapshot) => {
-          startTransition(() => {
-            setWallComments(mapCollectionOrdered(snapshot))
-          })
-          updateMetadata('wallComments', snapshot)
-          markReady('wallComments')
-        },
-        (snapshotError) => handleSnapshotError('wallComments', snapshotError),
-      ),
-      onSnapshot(
         doc(db, ...userPath, 'settings', 'main'),
         (snapshot) => {
           startTransition(() => {
@@ -244,17 +201,6 @@ export function useJamieDashboard(user) {
         (snapshotError) => handleSnapshotError('settings', snapshotError),
       ),
       onSnapshot(
-        collection(db, ...userPath, 'reminders'),
-        (snapshot) => {
-          startTransition(() => {
-            setReminders(mapCollection(snapshot))
-          })
-          updateMetadata('reminders', snapshot)
-          markReady('reminders')
-        },
-        (snapshotError) => handleSnapshotError('reminders', snapshotError),
-      ),
-      onSnapshot(
         collection(db, ...userPath, 'video_state'),
         (snapshot) => {
           startTransition(() => {
@@ -264,36 +210,6 @@ export function useJamieDashboard(user) {
           markReady('videoState')
         },
         (snapshotError) => handleSnapshotError('videoState', snapshotError),
-      ),
-      onSnapshot(
-        query(
-          collection(db, ...userPath, 'coach_memory'),
-          orderBy('updatedAt', 'desc'),
-          limit(12),
-        ),
-        (snapshot) => {
-          startTransition(() => {
-            setCoachMemory(mapCollectionOrdered(snapshot))
-          })
-          updateMetadata('coachMemory', snapshot)
-          markReady('coachMemory')
-        },
-        (snapshotError) => handleSnapshotError('coachMemory', snapshotError),
-      ),
-      onSnapshot(
-        query(
-          collection(db, ...userPath, 'coach_threads'),
-          orderBy('createdAt', 'desc'),
-          limit(50),
-        ),
-        (snapshot) => {
-          startTransition(() => {
-            setCoachThreads(mapCollectionOrdered(snapshot))
-          })
-          updateMetadata('coachThreads', snapshot)
-          markReady('coachThreads')
-        },
-        (snapshotError) => handleSnapshotError('coachThreads', snapshotError),
       ),
     ]
 
@@ -371,27 +287,6 @@ export function useJamieDashboard(user) {
     })
   }
 
-  async function addWallPost(payload) {
-    if (!user || !db || !payload?.text?.trim()) return
-    await addDoc(collection(db, 'motivation_wall'), {
-      authorName: payload.authorName?.trim?.() || USER_NAME,
-      authorUid: user.uid,
-      text: payload.text.trim(),
-      createdAt: serverTimestamp(),
-    })
-  }
-
-  async function addWallComment(payload) {
-    if (!user || !db || !payload?.text?.trim() || !payload?.postId) return
-    await addDoc(collection(db, 'motivation_wall_comments'), {
-      authorName: payload.authorName?.trim?.() || USER_NAME,
-      authorUid: user.uid,
-      postId: String(payload.postId),
-      text: payload.text.trim(),
-      createdAt: serverTimestamp(),
-    })
-  }
-
   async function saveSettings(payload) {
     if (!user || !db) return
     await setDoc(
@@ -400,18 +295,6 @@ export function useJamieDashboard(user) {
         ...(payload || {}),
         displayName: payload?.displayName?.trim?.() || USER_NAME,
         programStart: payload?.programStart || PROGRAM_START,
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true },
-    )
-  }
-
-  async function saveReminderPreference(reminderId, payload) {
-    if (!user || !db || !reminderId) return
-    await setDoc(
-      doc(db, 'users', user.uid, 'reminders', String(reminderId)),
-      {
-        ...(payload || {}),
         updatedAt: serverTimestamp(),
       },
       { merge: true },
@@ -430,72 +313,19 @@ export function useJamieDashboard(user) {
     )
   }
 
-  async function saveCoachMemorySummary(memoryId, payload) {
-    if (!user || !db || !memoryId) return
-    await setDoc(
-      doc(db, 'users', user.uid, 'coach_memory', String(memoryId)),
-      {
-        ...(payload || {}),
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true },
-    )
-  }
-
-  async function addCoachThreadMessage(payload) {
-    if (!user || !db || !payload?.message?.trim()) return
-    await addDoc(collection(db, 'users', user.uid, 'coach_threads'), {
-      threadId: payload.threadId || 'main',
-      role: payload.role || 'assistant',
-      message: payload.message.trim(),
-      contextKey: payload.contextKey || null,
-      createdAt: serverTimestamp(),
-    })
-  }
-
-  async function saveNotificationToken(tokenId, payload) {
-    if (!user || !db || !tokenId) return
-    await setDoc(
-      doc(db, 'users', user.uid, 'notification_tokens', String(tokenId)),
-      {
-        ...(payload || {}),
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true },
-    )
-  }
-
-  async function removeNotificationToken(tokenId) {
-    if (!user || !db || !tokenId) return
-    await deleteDoc(
-      doc(db, 'users', user.uid, 'notification_tokens', String(tokenId)),
-    )
-  }
-
-  const remindersById = indexById(reminders)
   const videoStateById = indexById(videoState)
-  const coachMemoryById = indexById(coachMemory)
-  const coachThreadsById = indexById(coachThreads)
 
   return {
     loading,
     error,
     settings,
-    reminders,
-    remindersById,
     videoState,
     videoStateById,
-    coachMemory,
-    coachMemoryById,
-    coachThreads,
-    coachThreadsById,
     workouts,
     tracking,
     measurements,
     inbodyScans,
     goals,
-    wallPosts,
-    wallComments,
     sync: {
       fromCache: Object.values(metadata).some((entry) => entry.fromCache),
       hasPendingWrites: Object.values(metadata).some(
@@ -509,15 +339,8 @@ export function useJamieDashboard(user) {
       saveMeasurement,
       saveInBodyScan,
       addGoal,
-      addWallPost,
-      addWallComment,
       saveSettings,
-      saveReminderPreference,
       saveVideoState,
-      saveCoachMemorySummary,
-      addCoachThreadMessage,
-      saveNotificationToken,
-      removeNotificationToken,
     },
   }
 }
