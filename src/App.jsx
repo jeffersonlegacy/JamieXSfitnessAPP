@@ -317,12 +317,7 @@ export default function App() {
     setSaving((current) => ({ ...current, goal: true }))
     try {
       const trimmed = newGoal.trim()
-      const authorName = dashboard.settings?.displayName || USER_NAME
       await dashboard.actions.addGoal(trimmed)
-      await dashboard.actions.addWallPost({
-        authorName,
-        text: trimmed,
-      })
       setNewGoal('')
       setToast('Your words are on the wall now.')
     } catch (error) {
@@ -404,14 +399,12 @@ export default function App() {
 
         {activeTab === 'data' && (
           <ProgressWallView
-            currentUserUid={session.user?.uid}
             goals={dashboard.goals}
             newGoal={newGoal}
             onAddGoal={handleAddGoal}
             onChangeGoal={setNewGoal}
             saving={saving}
             settings={dashboard.settings}
-            wallPosts={dashboard.wallPosts}
           />
         )}
       </div>
@@ -1030,20 +1023,9 @@ function MotivationView({
   )
 }
 
-function ProgressWallView({
-  currentUserUid,
-  goals,
-  newGoal,
-  onAddGoal,
-  onChangeGoal,
-  saving,
-  settings,
-  wallPosts,
-}) {
+function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, settings }) {
   const wallName = settings?.displayName || USER_NAME
-  const jamiePosts = currentUserUid
-    ? wallPosts.filter((post) => post.authorUid === currentUserUid)
-    : wallPosts
+  const jamiePosts = goals
 
   return (
     <div className="grid gap-4">
