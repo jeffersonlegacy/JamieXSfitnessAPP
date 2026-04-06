@@ -42,6 +42,61 @@ function sanitizeReply(text) {
     .slice(0, 280)
 }
 
+function extractReplyText(response) {
+  const direct = sanitizeReply(response?.text)
+  if (direct) return direct
+
+  const parts = response?.candidates?.[0]?.content?.parts || []
+  return sanitizeReply(
+    parts
+      .map((part) => part?.text || '')
+      .filter(Boolean)
+      .join(' '),
+  )
+}
+
+function isThinReply(reply) {
+  const wordCount = String(reply || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length
+
+  if (!wordCount) return true
+  if (wordCount < 4) return true
+
+  return /^(hey|hi|hello)\s+jamie[.!]*$/i.test(String(reply || '').trim())
+}
+
+function buildFallbackReply(context, latestUserMessage) {
+  const prompt = String(latestUserMessage || '').toLowerCase()
+
+  if (prompt.includes('stuck') || prompt.includes('motivat') || prompt.includes('start')) {
+    if (context?.workoutComplete) {
+      return 'You already did the hard part today. Close out the basics gently and let that count.'
+    }
+
+    if (context?.workoutName) {
+      return 'Make the next step tiny: open the workout, do the first round only, and let momentum show up after you start.'
+    }
+
+    return 'Make the next step tiny. Start with five honest minutes instead of waiting to feel fully ready.'
+  }
+
+  if (prompt.includes('scale') || prompt.includes('weight') || prompt.includes('body')) {
+    return 'One number is not the whole story. Stay with the trend and the habits that are already moving for you.'
+  }
+
+  if (context?.measurementsDue || context?.inbodyDue) {
+    return 'If you have the numbers, log them. If you do not, keep going and come back when you do.'
+  }
+
+  if (context?.nextStep) {
+    return `Keep it simple: ${context.nextStep}`
+  }
+
+  return 'Be kind, be honest, and take the next clear step instead of trying to solve everything at once.'
+}
+
 function buildConversation(messages) {
   return messages.map((entry) => ({
     role: entry.role,
@@ -82,6 +137,9 @@ export default async function handler(req, res) {
     const conversation = messages.length
       ? buildConversation(messages)
       : [{ role: 'user', parts: [{ text: String(body.message).trim() }] }]
+    const latestUserMessage =
+      messages.filter((entry) => entry.role === 'user').at(-1)?.text ||
+      String(body?.message || '').trim()
 
     const prompt = buildCoachInstruction(context)
     const ai = getGeminiClient()
@@ -98,19 +156,16 @@ export default async function handler(req, res) {
       },
     })
 
-    const reply = sanitizeReply(
-      response?.text || response?.candidates?.[0]?.content?.parts?.[0]?.text,
-    )
+    const reply = extractReplyText(response)
 
-    if (!reply) {
-      json(res, 502, { error: 'Coach reply was empty.' })
-      return
-    }
+    const finalReply = isThinReply(reply)
+      ? buildFallbackReply(context, latestUserMessage)
+      : reply
 
     json(res, 200, {
       success: true,
       model,
-      reply,
+      reply: finalReply,
       usage: response?.usageMetadata || null,
     })
   } catch (error) {

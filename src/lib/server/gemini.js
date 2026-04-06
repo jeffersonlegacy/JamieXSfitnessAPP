@@ -55,6 +55,9 @@ export function buildCoachInstruction(context = {}) {
     'Keep replies short: one to three sentences, ideally under 60 words.',
   )
   parts.push(
+    'Do not answer with only a greeting. Always give Jamie one concrete next step.',
+  )
+  parts.push(
     'Do not sound clinical, corporate, or generic. Do not mention policies or hidden reasoning.',
   )
   parts.push(
