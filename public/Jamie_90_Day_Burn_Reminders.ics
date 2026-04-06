@@ -1,0 +1,115 @@
+BEGIN:VCALENDAR
+PRODID:-//OpenAI//Jamie Burn Reminders//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Jamie 90-Day Burn
+X-WR-TIMEZONE:America/Los_Angeles
+BEGIN:VTIMEZONE
+TZID:America/Los_Angeles
+X-LIC-LOCATION:America/Los_Angeles
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+TZNAME:PDT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+TZNAME:PST
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:jamie-burn-workout-checkin-2026@jamieburn
+DTSTAMP:20260406T220000Z
+DTSTART;TZID=America/Los_Angeles:20260402T070000
+DTEND;TZID=America/Los_Angeles:20260402T071500
+RRULE:FREQ=DAILY;COUNT=90
+SUMMARY:Jamie check in and start today's burn
+DESCRIPTION:Jamie\, open the app\, see today's workout\, and let the first step be enough.\\n\\nUse the app link here: https://jamie-x-sfitness-app-six.vercel.app/\\n\\nIf the trainer on video moves faster or heavier\, you do not need to match that. Clean and controlled wins.
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Open Jamie's app and check today's burn.
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-2026@jamieburn
+DTSTAMP:20260406T220000Z
+DTSTART;TZID=America/Los_Angeles:20260402T193000
+DTEND;TZID=America/Los_Angeles:20260402T194500
+RRULE:FREQ=DAILY;COUNT=90
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Jamie\, take two calm minutes to log the day. Record the workout\, calories or deficit\, hydration\, and a quick mindset note so the day feels complete and easy to trust.\\n\\nOpen the app: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Close the loop in Jamie's app tonight.
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-2026@jamieburn
+DTSTAMP:20260406T220000Z
+DTSTART;TZID=America/Los_Angeles:20260405T183000
+DTEND;TZID=America/Los_Angeles:20260405T185000
+RRULE:FREQ=WEEKLY;COUNT=13;BYDAY=SU
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app and look at the week with a steady head. Check what got done\, what needs a lighter touch next week\, and what one promise matters most now.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Take a weekly reset look in Jamie's app.
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-measurements-2026@jamieburn
+DTSTAMP:20260406T220000Z
+DTSTART;TZID=America/Los_Angeles:20260402T201500
+DTEND;TZID=America/Los_Angeles:20260402T203500
+RRULE:FREQ=DAILY;INTERVAL=14;COUNT=7
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tonight is a tape-measure night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. Stay consistent with how you measure rather than chasing a perfect number.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Measurement check-in tonight.
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-inbody-2026@jamieburn
+DTSTAMP:20260406T220000Z
+DTSTART;TZID=America/Los_Angeles:20260402T204500
+DTEND;TZID=America/Los_Angeles:20260402T210500
+RRULE:FREQ=MONTHLY;COUNT=3
+SUMMARY:Jamie body-proof scan reminder
+DESCRIPTION:If you have a fresh InBody or body-composition reading\, log it tonight. This is not for judgment. It is for clearer proof and steadier decisions.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Log your body-proof scan if you have one.
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-finish-line-proof-2026@jamieburn
+DTSTAMP:20260406T220000Z
+DTSTART;TZID=America/Los_Angeles:20260630T200000
+DTEND;TZID=America/Los_Angeles:20260630T203000
+SUMMARY:Jamie final 90-day proof check
+DESCRIPTION:Take the final look with kindness and honesty. Log any last workout details\, closeout notes\, measurements\, and scan data that help you see the full story of these 90 days.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Final 90-day proof check tonight.
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+END:VCALENDAR

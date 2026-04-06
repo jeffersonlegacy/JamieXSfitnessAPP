@@ -1522,6 +1522,7 @@ function GoalsView({
             push={push}
             sending={supportSaving.pushTest}
           />
+          <CalendarSupportCard calendarUrl="/Jamie_90_Day_Burn_Reminders.ics" />
           <ReminderRow
             copy="A simple prompt to open your plan and get the room set up."
             enabled={reminderDraft.dailyEnabled}
@@ -2148,6 +2149,38 @@ function PushSupportCard({
             {push.loading ? 'Connecting...' : 'Turn on'}
           </button>
         )}
+      </div>
+    </div>
+  )
+}
+
+function CalendarSupportCard({ calendarUrl }) {
+  return (
+    <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="text-gold-300" size={16} />
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+              Calendar support
+            </div>
+          </div>
+          <p className="mt-3 text-[14px] leading-7 text-white/74">
+            If push feels messy, add the full 90-day reminder plan to Jamie&apos;s
+            calendar once and let it meet her there each day.
+          </p>
+          <p className="mt-3 text-[12px] leading-6 text-white/46">
+            This includes a 7:00 AM workout check-in, nightly closeout reminders,
+            weekly reset notes, and progress check-ins. If your phone downloads the
+            file first, just tap it once to add it to Calendar.
+          </p>
+        </div>
+        <a
+          className="primary-button inline-flex w-auto shrink-0 items-center justify-center px-4"
+          href={calendarUrl}
+        >
+          Add to Calendar
+        </a>
       </div>
     </div>
   )
