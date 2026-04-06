@@ -55,6 +55,8 @@ export function useJamieDashboard(user) {
   const [measurements, setMeasurements] = useState([])
   const [inbodyScans, setInbodyScans] = useState([])
   const [goals, setGoals] = useState([])
+  const [wallPosts, setWallPosts] = useState([])
+  const [wallComments, setWallComments] = useState([])
   const [settings, setSettings] = useState(null)
   const [reminders, setReminders] = useState([])
   const [videoState, setVideoState] = useState([])
@@ -66,6 +68,8 @@ export function useJamieDashboard(user) {
     measurements: false,
     inbodyScans: false,
     goals: false,
+    wallPosts: false,
+    wallComments: false,
     settings: false,
     reminders: false,
     videoState: false,
@@ -78,6 +82,8 @@ export function useJamieDashboard(user) {
     measurements: { fromCache: false, hasPendingWrites: false },
     inbodyScans: { fromCache: false, hasPendingWrites: false },
     goals: { fromCache: false, hasPendingWrites: false },
+    wallPosts: { fromCache: false, hasPendingWrites: false },
+    wallComments: { fromCache: false, hasPendingWrites: false },
     settings: { fromCache: false, hasPendingWrites: false },
     reminders: { fromCache: false, hasPendingWrites: false },
     videoState: { fromCache: false, hasPendingWrites: false },
@@ -199,6 +205,32 @@ export function useJamieDashboard(user) {
           markReady('goals')
         },
         (snapshotError) => handleSnapshotError('goals', snapshotError),
+      ),
+      onSnapshot(
+        query(collection(db, 'motivation_wall'), orderBy('createdAt', 'desc'), limit(60)),
+        (snapshot) => {
+          startTransition(() => {
+            setWallPosts(mapCollectionOrdered(snapshot))
+          })
+          updateMetadata('wallPosts', snapshot)
+          markReady('wallPosts')
+        },
+        (snapshotError) => handleSnapshotError('wallPosts', snapshotError),
+      ),
+      onSnapshot(
+        query(
+          collection(db, 'motivation_wall_comments'),
+          orderBy('createdAt', 'asc'),
+          limit(240),
+        ),
+        (snapshot) => {
+          startTransition(() => {
+            setWallComments(mapCollectionOrdered(snapshot))
+          })
+          updateMetadata('wallComments', snapshot)
+          markReady('wallComments')
+        },
+        (snapshotError) => handleSnapshotError('wallComments', snapshotError),
       ),
       onSnapshot(
         doc(db, ...userPath, 'settings', 'main'),
@@ -339,6 +371,27 @@ export function useJamieDashboard(user) {
     })
   }
 
+  async function addWallPost(payload) {
+    if (!user || !db || !payload?.text?.trim()) return
+    await addDoc(collection(db, 'motivation_wall'), {
+      authorName: payload.authorName?.trim?.() || USER_NAME,
+      authorUid: user.uid,
+      text: payload.text.trim(),
+      createdAt: serverTimestamp(),
+    })
+  }
+
+  async function addWallComment(payload) {
+    if (!user || !db || !payload?.text?.trim() || !payload?.postId) return
+    await addDoc(collection(db, 'motivation_wall_comments'), {
+      authorName: payload.authorName?.trim?.() || USER_NAME,
+      authorUid: user.uid,
+      postId: String(payload.postId),
+      text: payload.text.trim(),
+      createdAt: serverTimestamp(),
+    })
+  }
+
   async function saveSettings(payload) {
     if (!user || !db) return
     await setDoc(
@@ -441,6 +494,8 @@ export function useJamieDashboard(user) {
     measurements,
     inbodyScans,
     goals,
+    wallPosts,
+    wallComments,
     sync: {
       fromCache: Object.values(metadata).some((entry) => entry.fromCache),
       hasPendingWrites: Object.values(metadata).some(
@@ -454,6 +509,8 @@ export function useJamieDashboard(user) {
       saveMeasurement,
       saveInBodyScan,
       addGoal,
+      addWallPost,
+      addWallComment,
       saveSettings,
       saveReminderPreference,
       saveVideoState,

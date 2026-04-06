@@ -38,7 +38,6 @@ import {
   PROGRAM_START,
   TOTAL_DAYS,
   USER_NAME,
-  buildProgramWeeks,
   difference,
   formatLongDate,
   getCurrentStreak,
@@ -60,8 +59,6 @@ import {
   pickMotivationLine,
   shiftDateKey,
 } from './lib/program'
-
-const PROGRAM_WEEKS = buildProgramWeeks()
 
 const EMPTY_TRACKING = {
   caloricDeficit: '',
@@ -86,7 +83,6 @@ const EMPTY_INBODY = {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('workout')
-  const [showRoadmap, setShowRoadmap] = useState(false)
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
   const [measurementDraft, setMeasurementDraft] = useState(EMPTY_MEASUREMENTS)
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
@@ -99,6 +95,8 @@ export default function App() {
   const [coachDraft, setCoachDraft] = useState('')
   const [playerOpen, setPlayerOpen] = useState(true)
   const [newGoal, setNewGoal] = useState('')
+  const [displayNameDraft, setDisplayNameDraft] = useState(USER_NAME)
+  const [wallCommentDrafts, setWallCommentDrafts] = useState({})
   const [saving, setSaving] = useState({
     workout: false,
     deficit: false,
@@ -107,6 +105,8 @@ export default function App() {
     measurement: false,
     inbody: false,
     goal: false,
+    name: false,
+    wallComment: false,
     reminders: false,
     coach: false,
     pushTest: false,
@@ -149,6 +149,7 @@ export default function App() {
     .filter((entry) => (entry.threadId ?? 'main') === 'main')
     .slice()
     .reverse()
+  const wallCommentsByPost = groupByPostId(dashboard.wallComments ?? [])
 
   useEffect(() => {
     setTrackingDraft({
@@ -192,6 +193,10 @@ export default function App() {
       closeoutTime: closeoutReminder?.time ?? '19:30',
     })
   }, [closeoutReminder, dailyReminder])
+
+  useEffect(() => {
+    setDisplayNameDraft(dashboard.settings?.displayName || USER_NAME)
+  }, [dashboard.settings?.displayName])
 
   useEffect(() => {
     if (!todayWorkout?.video) {
@@ -327,22 +332,6 @@ export default function App() {
     hydrationWins + (todayDay || 1),
   )
 
-  const heroCopy = buildHeroCopy({
-    day: todayDay,
-    workout: todayWorkout,
-    workoutComplete,
-    trackingLoggedToday,
-    measurementsDue,
-    inbodyDue,
-  })
-  const recommendedAction = buildRecommendedAction({
-    day: todayDay,
-    workout: todayWorkout,
-    workoutComplete,
-    trackingLoggedToday,
-    measurementsDue,
-    inbodyDue,
-  })
   const weeklyReset = buildWeeklyReset({
     workoutsThisWeek,
     hydrationThisWeek,
@@ -498,13 +487,60 @@ export default function App() {
     if (!newGoal.trim()) return
     setSaving((current) => ({ ...current, goal: true }))
     try {
-      await dashboard.actions.addGoal(newGoal)
+      const trimmed = newGoal.trim()
+      const authorName = displayNameDraft.trim() || dashboard.settings?.displayName || USER_NAME
+      await dashboard.actions.addGoal(trimmed)
+      await dashboard.actions.addWallPost({
+        authorName,
+        text: trimmed,
+      })
       setNewGoal('')
-      setToast('Goal added to the wall.')
+      setToast('Your words are on the wall now.')
     } catch (error) {
       setToast(error.message || 'Could not add that goal.')
     } finally {
       setSaving((current) => ({ ...current, goal: false }))
+    }
+  }
+
+  async function handleSaveDisplayName() {
+    const name = displayNameDraft.trim() || USER_NAME
+    setSaving((current) => ({ ...current, name: true }))
+    try {
+      await dashboard.actions.saveSettings({
+        ...(dashboard.settings || {}),
+        displayName: name,
+      })
+      setDisplayNameDraft(name)
+      setToast('Your name on the wall is set.')
+    } catch (error) {
+      setToast(error.message || 'Could not save your wall name.')
+    } finally {
+      setSaving((current) => ({ ...current, name: false }))
+    }
+  }
+
+  async function handleAddWallComment(postId) {
+    const text = String(wallCommentDrafts[postId] || '').trim()
+    if (!text) return
+
+    setSaving((current) => ({ ...current, wallComment: true }))
+    try {
+      await dashboard.actions.addWallComment({
+        authorName:
+          displayNameDraft.trim() || dashboard.settings?.displayName || USER_NAME,
+        postId,
+        text,
+      })
+      setWallCommentDrafts((current) => ({
+        ...current,
+        [postId]: '',
+      }))
+      setToast('Your note is on the wall.')
+    } catch (error) {
+      setToast(error.message || 'Could not add that note to the wall.')
+    } finally {
+      setSaving((current) => ({ ...current, wallComment: false }))
     }
   }
 
@@ -691,107 +727,44 @@ export default function App() {
     <div className="relative flex min-h-screen justify-center">
       <div className="app-shell">
         {activeTab === 'workout' && (
-          <>
-            <AppHero
-              currentPhaseName={currentPhaseName}
-              currentWeek={currentWeek}
-              heroCopy={heroCopy}
-              hydrationStreak={hydrationStreak}
-              progressPercent={elapsedDays ? Math.round((elapsedDays / TOTAL_DAYS) * 100) : 0}
-              sync={dashboard.sync}
-              todayDay={todayDay}
-              workoutStreak={workoutStreak}
-            />
-            <WorkoutView
-              currentPhaseName={currentPhaseName}
-              currentWeek={currentWeek}
-              currentVideoState={todayVideoState}
-              day={todayDay}
-              helloLine={helloLine}
-              inbodyDue={inbodyDue}
-              measurementsDue={measurementsDue}
-              onComplete={handleWorkoutComplete}
-              onPlayerOpenChange={handlePlayerOpenChange}
-              onToggleRoadmap={() => setShowRoadmap((current) => !current)}
-              playerOpen={playerOpen}
-              recommendedAction={recommendedAction}
-              saving={saving.workout}
-              showRoadmap={showRoadmap}
-              trackingLoggedToday={trackingLoggedToday}
-              todayKey={todayKey}
-              workout={todayWorkout}
-              workoutComplete={workoutComplete}
-              kuromiLine={kuromiLine}
-            />
-          </>
+          <WorkoutView
+            currentPhaseName={currentPhaseName}
+            currentWeek={currentWeek}
+            currentVideoState={todayVideoState}
+            day={todayDay}
+            onPlayerOpenChange={handlePlayerOpenChange}
+            playerOpen={playerOpen}
+            todayKey={todayKey}
+            workout={todayWorkout}
+            workoutComplete={workoutComplete}
+          />
         )}
 
         {activeTab === 'tracking' && (
           <TrackingView
-            bodyCheckinsDue={measurementsDue || inbodyDue}
-            closeoutHistory={buildTimelineHistory(elapsedDays, 'tracking', trackingByDate)}
-            currentDay={todayDay}
             onChangeTracking={setTrackingDraft}
-            onSaveDeficit={handleSaveDeficit}
+            onMarkWorkout={handleWorkoutComplete}
             onSaveHydration={handleSaveHydration}
-            onSaveMindset={handleSaveMindset}
-            onOpenProof={() => setActiveTab('data')}
+            onSaveDeficit={handleSaveDeficit}
             saving={saving}
-            workoutComplete={workoutComplete}
             trackingDraft={trackingDraft}
-            workoutHistory={buildTimelineHistory(elapsedDays, 'workout', workoutsByDate)}
-          />
-        )}
-
-        {activeTab === 'data' && (
-          <DataView
-            adherenceDelta={adherenceDelta}
-            adherencePercent={adherencePercent}
-            completedWorkouts={completedWorkouts.length}
-            cumulativeDeficit={cumulativeDeficit}
-            currentDay={todayDay}
-            currentWeekAdherence={currentWeekAdherence}
-            deficitBars={buildWeeklyDeficitBars(todayDay, trackingByDate)}
-            earliestMeasurement={earliestMeasurement}
-            earliestScan={earliestScan}
-            hydrationStreak={hydrationStreak}
-            inbodyDraft={inbodyDraft}
-            measurementDraft={measurementDraft}
-            latestMeasurement={latestMeasurement}
-            latestScan={latestScan}
-            measurementsDue={measurementsDue}
-            mindsetEntries={mindsetEntries}
-            onChangeInbody={setInbodyDraft}
-            onChangeMeasurements={setMeasurementDraft}
-            onSaveInbody={handleSaveInBody}
-            onSaveMeasurements={handleSaveMeasurements}
-            previousMeasurement={previousMeasurement}
-            previousScan={previousScan}
-            saving={saving}
-            trackingDaysLogged={trackingDaysLogged}
-            weeklyReset={weeklyReset}
-            weekDeficit={weekDeficit}
-            workoutsThisWeek={workoutsThisWeek}
-            hydrationThisWeek={hydrationThisWeek}
-            inbodyDue={inbodyDue}
-            mindsetThisWeek={mindsetThisWeek}
+            workout={todayWorkout}
+            workoutComplete={workoutComplete}
           />
         )}
 
         {activeTab === 'goals' && (
-          <GoalsView
+          <MotivationView
             coachDraft={coachDraft}
             coachSuggestions={coachSuggestions}
             coachSummary={coachSummary}
             coachThread={coachThread}
-            goals={dashboard.goals}
-            newGoal={newGoal}
-            onAddGoal={handleAddGoal}
             onChangeCoachDraft={setCoachDraft}
-            onChangeGoal={setNewGoal}
+            onChangeTracking={setTrackingDraft}
             onCoachSend={handleCoachSend}
             onSendTestReminder={handleSendTestReminder}
             onSaveReminder={handleSaveReminder}
+            onSaveMindset={handleSaveMindset}
             onDisablePush={push.disablePush}
             onEnablePush={push.requestPermission}
             push={push}
@@ -799,6 +772,60 @@ export default function App() {
             saving={saving.goal}
             settings={dashboard.settings}
             supportSaving={saving}
+            helloLine={helloLine}
+            kuromiLine={kuromiLine}
+            currentDay={todayDay}
+            trackingDraft={trackingDraft}
+          />
+        )}
+
+        {activeTab === 'data' && (
+          <ProgressWallView
+            adherenceDelta={adherenceDelta}
+            adherencePercent={adherencePercent}
+            cumulativeDeficit={cumulativeDeficit}
+            currentDay={todayDay}
+            currentWeekAdherence={currentWeekAdherence}
+            currentUserUid={session.user?.uid}
+            deficitBars={buildWeeklyDeficitBars(todayDay, trackingByDate)}
+            displayNameDraft={displayNameDraft}
+            earliestMeasurement={earliestMeasurement}
+            earliestScan={earliestScan}
+            goals={dashboard.goals}
+            hydrationStreak={hydrationStreak}
+            inbodyDraft={inbodyDraft}
+            inbodyDue={inbodyDue}
+            latestMeasurement={latestMeasurement}
+            latestScan={latestScan}
+            measurementDraft={measurementDraft}
+            measurementsDue={measurementsDue}
+            mindsetEntries={mindsetEntries}
+            newGoal={newGoal}
+            onAddGoal={handleAddGoal}
+            onAddWallComment={handleAddWallComment}
+            onChangeDisplayName={setDisplayNameDraft}
+            onChangeGoal={setNewGoal}
+            onChangeInbody={setInbodyDraft}
+            onChangeMeasurements={setMeasurementDraft}
+            onChangeWallComment={(postId, value) =>
+              setWallCommentDrafts((current) => ({ ...current, [postId]: value }))
+            }
+            onSaveDisplayName={handleSaveDisplayName}
+            onSaveInbody={handleSaveInBody}
+            onSaveMeasurements={handleSaveMeasurements}
+            previousMeasurement={previousMeasurement}
+            previousScan={previousScan}
+            saving={saving}
+            settings={dashboard.settings}
+            trackingDaysLogged={trackingDaysLogged}
+            wallCommentDrafts={wallCommentDrafts}
+            wallCommentsByPost={wallCommentsByPost}
+            wallPosts={dashboard.wallPosts}
+            weeklyReset={weeklyReset}
+            weekDeficit={weekDeficit}
+            workoutsThisWeek={workoutsThisWeek}
+            hydrationThisWeek={hydrationThisWeek}
+            mindsetThisWeek={mindsetThisWeek}
           />
         )}
       </div>
@@ -817,16 +844,16 @@ export default function App() {
           onClick={() => setActiveTab('tracking')}
         />
         <NavButton
-          icon={<BarChart2 size={20} />}
-          isActive={activeTab === 'data'}
-          label="Progress"
-          onClick={() => setActiveTab('data')}
+          icon={<Heart size={20} />}
+          isActive={activeTab === 'goals'}
+          label="Motivation"
+          onClick={() => setActiveTab('goals')}
         />
         <NavButton
           icon={<Target size={20} />}
-          isActive={activeTab === 'goals'}
-          label="Goals"
-          onClick={() => setActiveTab('goals')}
+          isActive={activeTab === 'data'}
+          label="Wall"
+          onClick={() => setActiveTab('data')}
         />
       </div>
 
@@ -842,89 +869,16 @@ export default function App() {
   )
 }
 
-function AppHero({
-  currentPhaseName,
-  currentWeek,
-  heroCopy,
-  hydrationStreak,
-  progressPercent,
-  sync,
-  todayDay,
-  workoutStreak,
-}) {
-  const syncLabel = sync?.hasPendingWrites
-    ? 'Saving your changes'
-    : sync?.fromCache
-      ? 'Works offline'
-      : 'Everything saved'
-
-  return (
-    <section className="hero-panel">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="micro-label">For Jamie • soft strength • steady follow-through</div>
-          <h1 className="display-copy mt-4 text-[2.2rem] leading-[0.92] text-white">
-            Jamie&apos;s 90-Day Burn
-          </h1>
-          <p className="mt-4 max-w-[28rem] text-[14px] leading-7 text-white/76">
-            {heroCopy}
-          </p>
-          <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.16em] text-white/42">
-            {syncLabel}
-          </div>
-        </div>
-        <div className="rounded-full border border-white/10 bg-white/6 p-3 text-gold-300">
-          <Sparkles size={20} />
-        </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap gap-2">
-        <span className="ghost-chip">{todayDay ? `Day ${todayDay}` : 'Starts soon'}</span>
-        <span className="ghost-chip">Week {currentWeek}</span>
-        <span className="ghost-chip">{currentPhaseName}</span>
-      </div>
-
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        <QuickStat label="Streak" value={workoutStreak} />
-        <QuickStat label="Hydration" value={hydrationStreak} />
-      </div>
-
-      <div className="mt-5">
-        <div className="mb-2 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-[0.18em] text-white/46">
-          <span>Your progress</span>
-          <span>{progressPercent}%</span>
-        </div>
-        <div className="h-2.5 overflow-hidden rounded-full bg-white/8">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-blush-500 via-gold-400 to-plum-400"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function WorkoutView({
   currentPhaseName,
   currentWeek,
   currentVideoState,
   day,
-  helloLine,
-  inbodyDue,
-  measurementsDue,
-  onComplete,
   onPlayerOpenChange,
-  onToggleRoadmap,
   playerOpen,
-  recommendedAction,
-  saving,
-  showRoadmap,
-  trackingLoggedToday,
   todayKey,
   workout,
   workoutComplete,
-  kuromiLine,
 }) {
   if (!day || !workout) {
     return (
@@ -944,17 +898,10 @@ function WorkoutView({
   const focusRows = getWorkoutFocusRows(workout.type)
   const overloadSummary = getOverloadSummary(getPhaseForDay(day), currentWeek, workout.type)
   const overloadTips = getOverloadTips(currentWeek, workout.type)
-  const roadmapWeeks = getRoadmapSlice(currentWeek)
-  const dailyProofLabel = inbodyDue
-    ? 'Scan due'
-    : measurementsDue
-      ? 'Measurements due'
-      : 'Current'
   const setupCue = getSetupCue(workout, currentWeek)
   const modificationCue = getModificationCopy(workout.type)
   const playerSubtitle = buildWorkoutPlayerSubtitle({
     currentVideoState,
-    trackingLoggedToday,
     workout,
     workoutComplete,
   })
@@ -976,13 +923,11 @@ function WorkoutView({
               {workout.name}
             </h2>
             <p className="mt-3 text-[14px] leading-7 text-white/72">
-              {formatLongDate(todayKey)}. Keep it simple, friend. One honest rep of the
-              plan is enough for today.
+              {formatLongDate(todayKey)}. Press play, move with control, and let the workout
+              fit your body today.
             </p>
           </div>
-          <div className="rounded-full border border-white/10 bg-white/6 p-3 text-gold-300">
-            <Sparkles size={18} />
-          </div>
+          <span className="ghost-chip">{workoutComplete ? 'Submitted' : 'Ready'}</span>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -993,61 +938,11 @@ function WorkoutView({
           <span className="ghost-chip">Week {currentWeek}</span>
           <span className="ghost-chip">{currentPhaseName}</span>
         </div>
-
-        <div className="mt-4 rounded-[22px] border border-white/8 bg-white/6 p-4">
-          <div className="micro-label">What matters most today</div>
-          <p className="mt-2 text-[14px] leading-7 text-white/84">{recommendedAction}</p>
-        </div>
-
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <MiniStatus
-            label="Workout"
-            tone={workoutComplete ? 'good' : 'neutral'}
-            value={
-              workoutComplete
-                ? 'Logged'
-                : workout.type === 'rest'
-                  ? 'Recovery open'
-                  : currentVideoState?.opened
-                    ? 'Started'
-                    : 'Still open'
-            }
-          />
-          <MiniStatus
-            label="Tonight"
-            tone={trackingLoggedToday ? 'good' : 'neutral'}
-            value={trackingLoggedToday ? 'Logged' : 'Still open'}
-          />
-          <MiniStatus
-            label="Progress"
-            tone={inbodyDue || measurementsDue ? 'warning' : 'good'}
-            value={dailyProofLabel}
-          />
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-2">
-          <button
-            className={clsx(workoutComplete ? 'good-button' : 'secondary-button')}
-            disabled={saving || workoutComplete}
-            onClick={onComplete}
-            type="button"
-          >
-            {workoutComplete
-              ? workout.type === 'rest'
-                ? 'I finished recovery'
-                : 'I finished today&apos;s workout'
-              : saving
-                ? 'Saving...'
-                : workout.type === 'rest'
-                  ? 'Mark recovery done'
-                  : 'Mark workout done'}
-          </button>
-        </div>
       </section>
 
       <WorkoutPlayer
         badge={workout.type === 'rest' ? 'Recovery flow' : 'Your player'}
-        defaultOpen={!workoutComplete}
+        defaultOpen={true}
         helper={
           workout.type === 'rest'
             ? 'Keep the pace gentle and stop while you still feel better than when you began.'
@@ -1062,6 +957,12 @@ function WorkoutView({
       />
 
       <section className="surface">
+        <SectionHeader
+          copy="Keep today safe, clear, and strong. The point is not matching the woman on screen. The point is finishing your version well."
+          kicker="Your cues"
+          title="What to watch for today"
+        />
+
         <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
           <div className="micro-label">
             {workout.type === 'rest'
@@ -1088,181 +989,94 @@ function WorkoutView({
             }
           />
         </div>
-
-        <div className="mt-4 rounded-[22px] border border-blush-300/14 bg-[linear-gradient(145deg,rgba(255,143,200,0.14),rgba(141,103,255,0.08)_58%,transparent)] p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/44">
-              <Heart className="text-blush-200" size={16} />
-              A note for you
-            </div>
-            <button className="ghost-chip gap-2" onClick={onToggleRoadmap} type="button">
-              <CalendarIcon size={16} />
-              {showRoadmap ? 'Hide what\'s next' : 'See what\'s next'}
-            </button>
-          </div>
-          <p className="mt-4 text-[14px] leading-7 text-white/84">{helloLine}</p>
-          <p className="mt-3 text-[14px] leading-7 text-white/68">{kuromiLine}</p>
-        </div>
       </section>
-
-      {showRoadmap && (
-        <section className="surface">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="micro-label">What&apos;s next</div>
-              <h3 className="mt-3 text-xl font-extrabold text-white">What the next stretch looks like</h3>
-              <p className="section-copy">
-                You do not need all 90 days in your head. Just let this show you the next
-                few steps so the plan feels lighter.
-              </p>
-            </div>
-            <button className="ghost-chip gap-2" onClick={onToggleRoadmap} type="button">
-              Close
-            </button>
-          </div>
-
-          <div className="no-scrollbar mt-5 grid auto-cols-[270px] grid-flow-col gap-3 overflow-x-auto pb-1">
-            {roadmapWeeks.map((week) => (
-              <article
-                className="rounded-[22px] border border-white/8 bg-white/5 p-4"
-                key={week.week}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/44">
-                      Week {week.week}
-                    </div>
-                    <div className="mt-2 text-sm font-bold text-white">{week.phase}</div>
-                  </div>
-                  <span className="ghost-chip">
-                    {week.range.start}-{week.range.end}
-                  </span>
-                </div>
-                <div className="mt-4 grid grid-cols-7 gap-2">
-                  {week.days.map((programDay) => (
-                    <div
-                      className={clsx(
-                        'flex h-10 items-center justify-center rounded-2xl text-xs font-extrabold',
-                        programDay < day && 'bg-mint-400/18 text-mint-300',
-                        programDay === day &&
-                          'bg-gradient-to-r from-blush-500 to-plum-400 text-white',
-                        programDay > day && 'bg-white/5 text-white/48',
-                      )}
-                      key={programDay}
-                    >
-                      {programDay}
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
 
 function TrackingView({
-  bodyCheckinsDue,
-  closeoutHistory,
-  currentDay,
   onChangeTracking,
-  onOpenProof,
+  onMarkWorkout,
   onSaveDeficit,
   onSaveHydration,
-  onSaveMindset,
   saving,
   trackingDraft,
+  workout,
   workoutComplete,
-  workoutHistory,
 }) {
-  const [showTrends, setShowTrends] = useState(false)
   const todayHydration = trackingDraft.hydrationTargetMet
-  const todayMindsetFilled =
-    Boolean(trackingDraft.mindsetTitle.trim()) || Boolean(trackingDraft.mindsetLog.trim())
 
   return (
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="Give yourself a clear ending to the day: calories, water, and one honest thought."
-          kicker="For tonight"
-          title="Finish today well"
+          copy="This is just the closeout. Record the workout, calories, and water so today feels complete."
+          kicker="Your closeout"
+          title="Check in and move on"
         />
 
         <div className="mt-5 grid grid-cols-3 gap-2">
           <MiniStatus
-            label="Burn"
+            label="Workout"
             tone={workoutComplete ? 'good' : 'neutral'}
-            value={workoutComplete ? 'Done' : 'Open'}
+            value={workoutComplete ? 'Submitted' : 'Open'}
           />
           <MiniStatus
-            label="Hydration"
+            label="Calories"
+            tone={
+              trackingDraft.caloricDeficit === '' ? 'neutral' : 'good'
+            }
+            value={trackingDraft.caloricDeficit === '' ? 'Open' : 'Saved'}
+          />
+          <MiniStatus
+            label="Water"
             tone={todayHydration === true ? 'good' : todayHydration === false ? 'warning' : 'neutral'}
             value={
               todayHydration === true ? 'Win' : todayHydration === false ? 'Miss' : 'Not set'
             }
           />
-          <MiniStatus
-            label="Mindset"
-            tone={todayMindsetFilled ? 'good' : 'neutral'}
-            value={todayMindsetFilled ? 'Written' : 'Blank'}
-          />
         </div>
-
-        {bodyCheckinsDue && (
-          <div className="mt-4 rounded-[22px] border border-gold-300/16 bg-gold-300/10 p-4 text-[#ffecc4]">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-[13px] leading-6">
-                Your next body check-in is due. Finish tonight here first, then head to
-                Progress when you want to add measurements or scan numbers.
-              </p>
-              <button className="ghost-chip shrink-0" onClick={onOpenProof} type="button">
-                Open progress
-              </button>
-            </div>
-          </div>
-        )}
-
-        {!workoutComplete && (
-          <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[13px] leading-6 text-white/68">
-            If your workout is still open, start there first. This part feels better once
-            the main promise of the day is already done.
-          </div>
-        )}
-
-        <div className="mt-4 flex justify-start">
-          <button className="ghost-chip" onClick={() => setShowTrends((current) => !current)} type="button">
-            {showTrends ? 'Hide trends' : 'See trends'}
-          </button>
-        </div>
-
-        {showTrends && (
-          <div className="mt-4 grid gap-4 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
-            <NinetyDayBar
-              color="text-mint-300"
-              currentDay={currentDay}
-              history={workoutHistory}
-              label="Burn timeline"
-            />
-            <NinetyDayBar
-              color="text-gold-300"
-              currentDay={currentDay}
-              history={closeoutHistory}
-              label="Closeout timeline"
-            />
-          </div>
-        )}
       </section>
 
       <TrackingCard
         accent="from-[#ff8fc8]/16 via-[#8bdcff]/10 to-[#c6b3ff]/10"
-        description="Just the few things that help you end the day with clarity instead of guessing."
+        description="Nothing extra here. Just the things that tell you the day is closed."
         icon={<Sparkles className="text-gold-300" size={18} />}
         title="Your check-in"
       >
         <div className="grid gap-4">
+          <div className="rounded-[24px] border border-mint-300/12 bg-mint-300/[0.08] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-mint-200">
+                  Workout submitted
+                </div>
+                <p className="mt-2 text-[13px] leading-6 text-white/70">
+                  {workout?.type === 'rest'
+                    ? 'Use this once your recovery work is done.'
+                    : 'Use this once your burn is done and you want the day recorded.'}
+                </p>
+              </div>
+              <CheckCircle2 className="text-mint-200" size={18} />
+            </div>
+            <button
+              className={clsx('mt-4', workoutComplete ? 'good-button' : 'cream-button')}
+              disabled={saving.workout || workoutComplete}
+              onClick={onMarkWorkout}
+              type="button"
+            >
+              {workoutComplete
+                ? workout?.type === 'rest'
+                  ? 'Recovery is recorded'
+                  : 'Today is recorded'
+                : saving.workout
+                  ? 'Saving...'
+                  : workout?.type === 'rest'
+                    ? 'Yes, I did today’s recovery'
+                    : 'Yes, I showed up for today'}
+            </button>
+          </div>
+
           <div className="rounded-[24px] border border-blush-300/12 bg-blush-300/[0.08] p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -1333,176 +1147,132 @@ function TrackingView({
               </button>
             </div>
           </div>
-
-          <div className="rounded-[24px] border border-plum-300/12 bg-plum-300/[0.08] p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-plum-200">
-                  What do you need to hear tonight?
-                </div>
-                <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  A few honest lines is enough. You are not writing for a grade here.
-                </p>
-              </div>
-              <Brain className="text-plum-200" size={18} />
-            </div>
-            <div className="mt-4 rounded-[20px] border border-white/8 bg-white/[0.05] p-4">
-              <div className="text-sm text-white/48">
-                Day {currentDay || 0} of {TOTAL_DAYS}:{' '}
-                <input
-                  className="w-2/3 bg-transparent font-semibold text-white outline-none placeholder:text-white/30"
-                  onChange={(event) =>
-                    onChangeTracking((current) => ({
-                      ...current,
-                      mindsetTitle: event.target.value,
-                    }))
-                  }
-                  placeholder="Name the day"
-                  type="text"
-                  value={trackingDraft.mindsetTitle}
-                />
-              </div>
-              <textarea
-                className="mt-3 h-24 w-full resize-none bg-transparent text-[14px] leading-7 text-white/84 outline-none placeholder:text-white/30"
-                  onChange={(event) =>
-                    onChangeTracking((current) => ({
-                      ...current,
-                      mindsetLog: event.target.value,
-                    }))
-                  }
-                placeholder="What felt hard? What felt easier? What do you want tomorrow&apos;s Jamie to remember?"
-                value={trackingDraft.mindsetLog}
-              />
-              <div className="mt-3 flex justify-end">
-                <button className="ghost-chip" onClick={onSaveMindset} type="button">
-                  {saving.mindset ? 'Saving...' : 'Save note'}
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </TrackingCard>
     </div>
   )
 }
 
-function GoalsView({
+function MotivationView({
   coachDraft,
   coachSuggestions,
   coachSummary,
   coachThread,
-  goals,
-  newGoal,
-  onAddGoal,
   onChangeCoachDraft,
-  onChangeGoal,
+  onChangeTracking,
   onCoachSend,
   onDisablePush,
   onEnablePush,
   onSendTestReminder,
   onSaveReminder,
+  onSaveMindset,
   push,
   reminderDraft,
-  saving,
   settings,
   supportSaving,
+  helloLine,
+  kuromiLine,
+  currentDay,
+  trackingDraft,
 }) {
-  const recentGoals = goals.slice(0, 3)
-  const olderGoals = goals.slice(3)
+  const [showPerspective, setShowPerspective] = useState(false)
 
   return (
     <div className="grid gap-4">
-      <section className="surface overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,106,175,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(141,103,255,0.16),transparent_30%)]" />
-        <div className="relative">
-          <div className="micro-label">Your intention</div>
-          <h2 className="display-copy mt-3 text-[1.9rem] leading-[0.96] text-white">
-            What do you want to protect today?
-          </h2>
-          <p className="mt-3 text-[14px] leading-7 text-white/72">
-            Keep it specific, kind, and real enough that you can actually follow through.
-          </p>
+      <section className="surface">
+        <SectionHeader
+          copy="This tab is here for the part of the process that needs softness, honesty, and a steadier voice."
+          kicker="For your head and heart"
+          title="What you need to hear today"
+        />
 
-          <div className="mt-5 flex items-center gap-3 rounded-[22px] border border-white/8 bg-white/6 p-2">
-            <input
-              className="w-full bg-transparent px-3 py-3 text-[14px] text-white outline-none placeholder:text-white/34"
-              onChange={(event) => onChangeGoal(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') onAddGoal()
-              }}
-              placeholder="I will keep dinner simple and protein-forward..."
-              type="text"
-              value={newGoal}
-            />
-            <button className="primary-button w-auto px-4" onClick={onAddGoal} type="button">
-              {saving ? <Check size={18} /> : <Plus size={18} />}
-            </button>
-          </div>
-
-          {!goals.length && (
-            <div className="mt-5 rounded-[22px] border border-white/8 bg-black/16 p-4">
-              <p className="text-[14px] italic leading-7 text-white/74">
-                I&apos;m starting with the woman in the mirror. If I want to take my life to a better place, I&apos;ll take a look at myself and make a change.
-              </p>
-              <div className="mt-3 text-right text-sm font-bold text-gold-300">
-                — {USER_NAME}
-              </div>
-            </div>
-          )}
+        <div className="mt-5 grid gap-3">
+          <article className="rounded-[24px] border border-blush-300/14 bg-[linear-gradient(150deg,rgba(255,143,200,0.18),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.08))] p-5">
+            <div className="micro-label">Hello Kitty softness</div>
+            <p className="mt-3 text-[15px] leading-7 text-white/88">{helloLine}</p>
+          </article>
+          <article className="rounded-[24px] border border-plum-300/14 bg-[linear-gradient(155deg,rgba(141,103,255,0.16),rgba(255,255,255,0.03)_52%,rgba(255,106,175,0.08))] p-5">
+            <div className="micro-label">Kuromi backbone</div>
+            <p className="mt-3 text-[15px] leading-7 text-white/82">{kuromiLine}</p>
+          </article>
         </div>
       </section>
 
       <section className="surface">
         <SectionHeader
-          copy="These are the promises you made to yourself. Keep them close and keep them simple."
-          kicker="Your wall"
-          title={goals.length ? `${goals.length} promises saved` : 'Your wall is ready'}
+          copy="Use this when your brain starts spiraling, bargaining, or acting like one weird day means everything is broken."
+          kicker="A steadier perspective"
+          title="Come here before you start making up stories"
         />
 
-        <div className="mt-5 space-y-4">
-          {goals.length ? (
-            <>
-              <div className="space-y-3">
-                {recentGoals.map((goal) => (
-                  <article
-                    className="rounded-[22px] border border-white/8 bg-white/[0.05] p-4"
-                    key={goal.id}
-                  >
-                    <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-                      {formatGoalDate(goal)}
-                    </div>
-                    <p className="mt-3 text-[16px] leading-7 text-white/86">“{goal.text}”</p>
-                  </article>
-                ))}
-              </div>
+        <div className="mt-5 flex justify-start">
+          <button
+            className="ghost-chip"
+            onClick={() => setShowPerspective((current) => !current)}
+            type="button"
+          >
+            {showPerspective ? 'Close this' : 'Open this'}
+          </button>
+        </div>
 
-              {olderGoals.length > 0 && (
-                <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
-                  <div className="micro-label">Still on the wall</div>
-                  <div className="mt-4 space-y-3">
-                    {olderGoals.map((goal) => (
-                      <article
-                        className="rounded-[18px] border border-white/6 bg-white/[0.03] p-4"
-                        key={goal.id}
-                      >
-                        <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/38">
-                          {formatGoalDate(goal)}
-                        </div>
-                        <p className="mt-3 text-[15px] leading-7 text-white/76">
-                          “{goal.text}”
-                        </p>
-                      </article>
-                    ))}
-                  </div>
+        {showPerspective && (
+          <div className="no-scrollbar mt-5 grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1">
+            {PERSPECTIVE_CARDS.map((card) => (
+              <article
+                className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.14),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5"
+                key={card.title}
+              >
+                <div className="micro-label">{card.category}</div>
+                <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
+                <p className="mt-3 text-[14px] leading-7 text-white/74">{card.body}</p>
+                <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[13px] leading-6 text-white/82">
+                  <span className="font-bold text-gold-300">Coach note:</span> {card.takeaway}
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[14px] leading-7 text-white/64">
-              Add the first promise to yourself. Think more &quot;I will keep dinner simple
-              and protein-forward&quot; and less &quot;I will suddenly become flawless.&quot;
-            </div>
-          )}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="surface">
+        <SectionHeader
+          copy="If you need to leave yourself a thought tonight, do it here instead of keeping it rattling around in your head."
+          kicker="A note to yourself"
+          title="Leave Jamie something kind and true"
+        />
+
+        <div className="mt-5 rounded-[24px] border border-plum-300/12 bg-plum-300/[0.08] p-4">
+          <div className="text-sm text-white/48">
+            Day {currentDay || 0} of {TOTAL_DAYS}:{' '}
+            <input
+              className="w-2/3 bg-transparent font-semibold text-white outline-none placeholder:text-white/30"
+              onChange={(event) =>
+                onChangeTracking((current) => ({
+                  ...current,
+                  mindsetTitle: event.target.value,
+                }))
+              }
+              placeholder="Name the day"
+              type="text"
+              value={trackingDraft.mindsetTitle}
+            />
+          </div>
+          <textarea
+            className="mt-3 h-24 w-full resize-none bg-transparent text-[14px] leading-7 text-white/84 outline-none placeholder:text-white/30"
+            onChange={(event) =>
+              onChangeTracking((current) => ({
+                ...current,
+                mindsetLog: event.target.value,
+              }))
+            }
+            placeholder="What felt hard? What helped? What do you want tomorrow's Jamie to remember?"
+            value={trackingDraft.mindsetLog}
+          />
+          <div className="mt-3 flex justify-end">
+            <button className="ghost-chip" onClick={onSaveMindset} type="button">
+              {supportSaving.mindset ? 'Saving...' : 'Save note'}
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1627,16 +1397,18 @@ function GoalsView({
   )
 }
 
-function DataView({
+function ProgressWallView({
   adherenceDelta,
   adherencePercent,
-  completedWorkouts,
   cumulativeDeficit,
   currentDay,
   currentWeekAdherence,
+  currentUserUid,
   deficitBars,
+  displayNameDraft,
   earliestMeasurement,
   earliestScan,
+  goals,
   hydrationStreak,
   inbodyDraft,
   inbodyDue,
@@ -1645,14 +1417,25 @@ function DataView({
   measurementDraft,
   measurementsDue,
   mindsetEntries,
+  newGoal,
+  onAddGoal,
+  onAddWallComment,
+  onChangeDisplayName,
+  onChangeGoal,
   onChangeInbody,
   onChangeMeasurements,
+  onChangeWallComment,
+  onSaveDisplayName,
   onSaveInbody,
   onSaveMeasurements,
   previousMeasurement,
   previousScan,
   saving,
+  settings,
   trackingDaysLogged,
+  wallCommentDrafts,
+  wallCommentsByPost,
+  wallPosts,
   weeklyReset,
   weekDeficit,
   workoutsThisWeek,
@@ -1678,393 +1461,500 @@ function DataView({
     latestScan,
     earliestScan,
   })
+  const wallName = displayNameDraft || settings?.displayName || USER_NAME
   const [showDetails, setShowDetails] = useState(false)
-  const [showPerspective, setShowPerspective] = useState(false)
+  const [showBodyProof, setShowBodyProof] = useState(false)
 
   return (
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="This is where your measurements and scan data can remind you that progress is still happening."
-          kicker="Your progress"
-          title="What your body is showing"
+          copy="Put the promise on the wall. Let it feel carved in, not casually tossed aside."
+          kicker="The wall"
+          title="Etch the next promise into place"
         />
 
-        {!latestMeasurement && !latestScan ? (
-          <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[14px] leading-7 text-white/64">
-            There is no progress data here yet. Once you add measurements or a scan, this
-            space starts telling a kinder story than the scale by itself.
-          </div>
-        ) : (
-          <>
-            <div className="no-scrollbar mt-5 grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1">
-              <ProofCard
-                helper={waistWeek === null ? 'Need one more tape entry' : formatDeltaText(waistWeek, 'in', 'down')}
-                label="Waist"
-                tone={getTrendTone(waistTotal, 'down')}
-                value={formatMetricValue(latestMeasurement?.waist, 'in')}
+        <div className="mt-5 grid gap-3 rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.03))] p-4">
+          <div className="rounded-[22px] border border-white/8 bg-black/16 p-4">
+            <div className="micro-label">Name on the wall</div>
+            <div className="mt-3 flex items-center gap-3">
+              <input
+                className="field-shell"
+                onChange={(event) => onChangeDisplayName(event.target.value)}
+                placeholder="Jamie"
+                type="text"
+                value={displayNameDraft}
               />
-              <ProofCard
-                helper={formatDeltaText(hipsTotal, 'in', 'down')}
-                label="Hips"
-                tone={getTrendTone(hipsTotal, 'down')}
-                value={formatMetricValue(latestMeasurement?.hips, 'in')}
-              />
-              <ProofCard
-                helper={formatDeltaText(smmWeek, 'lb', 'up')}
-                label="SMM"
-                tone={getTrendTone(smmTotal, 'up')}
-                value={formatMetricValue(latestScan?.smm, 'lb')}
-              />
-              <ProofCard
-                helper={formatDeltaText(pbfWeek, '%', 'down')}
-                label="PBF"
-                tone={getTrendTone(pbfTotal, 'down')}
-                value={formatMetricValue(latestScan?.pbf, '%')}
-              />
+              <button className="ghost-chip shrink-0" onClick={onSaveDisplayName} type="button">
+                {saving.name ? 'Saving...' : 'Save name'}
+              </button>
             </div>
-
-            <div className="mt-5 rounded-[22px] border border-white/8 bg-white/6 p-4">
-              <div className="micro-label">What this means</div>
-              <p className="mt-2 text-[14px] leading-7 text-white/80">{bodyProofNote}</p>
-            </div>
-
-            <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-                Changes since your first entry
-              </div>
-              <div className="mt-4 space-y-3">
-                <TrendRow label="Chest" trend={chestTotal} unit="in" better="down" />
-                <TrendRow label="Waist" trend={waistTotal} unit="in" better="down" />
-                <TrendRow label="Hips" trend={hipsTotal} unit="in" better="down" />
-                <TrendRow label="R. Thigh" trend={thighTotal} unit="in" better="down" />
-                <TrendRow label="R. Bicep" trend={bicepTotal} unit="in" better="up" />
-                <TrendRow label="SMM" trend={smmTotal} unit="lb" better="up" />
-                <TrendRow label="PBF" trend={pbfTotal} unit="%" better="down" />
-                <TrendRow label="BMR" trend={bmrTotal} unit="kcal" better="up" />
-              </div>
-            </div>
-          </>
-        )}
-
-        {(measurementsDue || inbodyDue) && (
-          <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[13px] leading-6 text-white/64">
-            {measurementsDue && 'Your measurements are due again. '}
-            {inbodyDue && 'Your scan data is due again. '}
-            Fresh data helps this process feel clearer and more trustworthy.
-          </div>
-        )}
-      </section>
-
-      <section className="surface">
-        <SectionHeader
-          copy="Keep your measurements and scan notes together so your progress stays easy to read."
-          kicker="Check in"
-          title="Add new progress data"
-        />
-
-        <div className="mt-5 grid gap-4">
-          <div className="rounded-[24px] border border-mint-300/12 bg-mint-300/[0.08] p-4">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-mint-200">
-                  Measurements
-                </div>
-                <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  These often show progress before the scale decides to be helpful.
-                </p>
-              </div>
-              <span className="ghost-chip">
-                {measurementsDue ? 'Recommended now' : 'Current enough'}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <MeasurementInput
-                label="Chest"
-                onChange={(value) =>
-                  onChangeMeasurements((current) => ({ ...current, chest: value }))
-                }
-                value={measurementDraft.chest}
-              />
-              <MeasurementInput
-                label="Waist (Navel)"
-                onChange={(value) =>
-                  onChangeMeasurements((current) => ({ ...current, waist: value }))
-                }
-                value={measurementDraft.waist}
-              />
-              <MeasurementInput
-                label="Hips (Widest)"
-                onChange={(value) =>
-                  onChangeMeasurements((current) => ({ ...current, hips: value }))
-                }
-                value={measurementDraft.hips}
-              />
-              <MeasurementInput
-                label="R. Thigh"
-                onChange={(value) =>
-                  onChangeMeasurements((current) => ({ ...current, rThigh: value }))
-                }
-                value={measurementDraft.rThigh}
-              />
-              <MeasurementInput
-                label="R. Bicep"
-                onChange={(value) =>
-                  onChangeMeasurements((current) => ({ ...current, rBicep: value }))
-                }
-                value={measurementDraft.rBicep}
-              />
-            </div>
-
-            <button className="cream-button mt-4" onClick={onSaveMeasurements} type="button">
-              {saving.measurement ? 'Saving...' : 'Save progress numbers'}
-            </button>
           </div>
 
-          <div className="rounded-[24px] border border-gold-300/12 bg-gold-300/[0.08] p-4">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-gold-300">
-                  InBody scan
-                </div>
-                <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  This is just information. It is here to help you, not judge you.
-                </p>
-              </div>
-              <span className="ghost-chip">
-                {inbodyDue ? 'Recommended now' : 'Current enough'}
-              </span>
+          <div className="rounded-[24px] border border-white/8 bg-[linear-gradient(160deg,rgba(97,104,121,0.38),rgba(32,34,40,0.9))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_40px_rgba(0,0,0,0.25)]">
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-stone-300/70">
+              Fresh etching
             </div>
-
-            <div className="space-y-4">
-              <InBodyInput
-                hint="The actual weight of your muscle."
-                label="Skeletal Muscle Mass (SMM)"
-                onChange={(value) =>
-                  onChangeInbody((current) => ({ ...current, smm: value }))
-                }
-                value={inbodyDraft.smm}
+            <p className="mt-3 text-[14px] leading-7 text-stone-100/76">
+              Write one promise, one truth, or one line Jamie needs to see held in place.
+            </p>
+            <div className="mt-4 flex items-center gap-3 rounded-[20px] border border-white/8 bg-black/18 p-2">
+              <input
+                className="w-full bg-transparent px-3 py-3 text-[15px] text-stone-100 outline-none placeholder:text-stone-100/28"
+                onChange={(event) => onChangeGoal(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') onAddGoal()
+                }}
+                placeholder="I am keeping my promise to myself today."
+                type="text"
+                value={newGoal}
               />
-              <InBodyInput
-                hint="The truest read on fat-loss trend."
-                label="Percent Body Fat (PBF)"
-                onChange={(value) =>
-                  onChangeInbody((current) => ({ ...current, pbf: value }))
-                }
-                value={inbodyDraft.pbf}
-              />
-              <InBodyInput
-                hint="Estimated calories burned at rest."
-                label="Basal Metabolic Rate (BMR)"
-                onChange={(value) =>
-                  onChangeInbody((current) => ({ ...current, bmr: value }))
-                }
-                value={inbodyDraft.bmr}
-              />
+              <button className="primary-button w-auto px-4" onClick={onAddGoal} type="button">
+                {saving.goal ? 'Etching...' : 'Etch it'}
+              </button>
             </div>
-
-            <button className="primary-button mt-4" onClick={onSaveInbody} type="button">
-              {saving.inbody ? 'Saving...' : 'Save scan numbers'}
-            </button>
+            <p className="mt-3 text-[12px] leading-6 text-stone-100/46">
+              Posted as {wallName || USER_NAME}. Personal promises saved: {goals.length}.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="surface">
         <SectionHeader
-          copy="This is the calm read on how your week is going."
-          kicker="This week"
-          title="How things are moving"
+          copy="This wall can hold Jamie's own promises and support from other people who want to help her keep going."
+          kicker="Running motivation wall"
+          title={wallPosts.length ? 'What is etched right now' : 'The wall is ready'}
         />
 
-        <div className="mt-5 grid gap-4">
-          <div className="flex justify-start">
-            <button className="ghost-chip" onClick={() => setShowDetails((current) => !current)} type="button">
-              {showDetails ? 'Hide details' : 'See details'}
-            </button>
-          </div>
+        <div className="mt-5 space-y-4">
+          {wallPosts.length ? (
+            wallPosts.map((post) => {
+              const comments = wallCommentsByPost[post.id] || []
+              const isOwnPost = post.authorUid && post.authorUid === currentUserUid
 
-          <div className="rounded-[22px] border border-white/8 bg-white/6 p-4">
-            <div className="micro-label">Your week</div>
-            <div className="mt-4 space-y-4">
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-                  What went well
-                </div>
-                <p className="mt-2 text-[14px] leading-7 text-white/82">{weeklyReset.recap}</p>
-              </div>
-              <div className="rounded-[18px] border border-gold-300/16 bg-gold-300/10 p-4">
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-gold-300">
-                  What the data is saying
-                </div>
-                <p className="mt-2 text-[14px] leading-7 text-[#ffecc4]">
-                  {weeklyReset.highlight}
-                </p>
-              </div>
-              <div className="rounded-[18px] border border-blush-300/16 bg-blush-300/10 p-4">
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-blush-200">
-                  What to focus on next
-                </div>
-                <p className="mt-2 text-[14px] leading-7 text-blush-50/92">
-                  {weeklyReset.focus}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {showDetails && (
-            <>
-              <div className="flex items-center justify-between gap-4 rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
-                <div>
-                  <div className="micro-label">Consistency</div>
-                  <div className="display-copy mt-3 text-[2.3rem] leading-none text-white">
-                    {adherencePercent}%
-                  </div>
-                  <div
-                    className={clsx(
-                      'mt-2 flex items-center gap-1 text-sm font-bold',
-                      adherenceDelta >= 0 ? 'text-mint-300' : 'text-blush-200',
-                    )}
-                  >
-                    {adherenceDelta >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                    {adherenceDelta >= 0 ? '+' : ''}
-                    {adherenceDelta}% versus last week
-                  </div>
-                </div>
-
-                <div className="relative h-24 w-24 flex-shrink-0">
-                  <svg className="h-full w-full -rotate-90">
-                    <circle
-                      className="text-white/8"
-                      cx="48"
-                      cy="48"
-                      fill="transparent"
-                      r="40"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      className="text-blush-400"
-                      cx="48"
-                      cy="48"
-                      fill="transparent"
-                      r="40"
-                      stroke="currentColor"
-                      strokeDasharray="251"
-                      strokeDashoffset={ringOffset}
-                      strokeLinecap="round"
-                      strokeWidth="8"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Zap className="text-gold-300" size={22} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <MiniStatus label="Burns" tone="good" value={String(workoutsThisWeek)} />
-                <MiniStatus label="Hydration" tone="good" value={String(hydrationThisWeek)} />
-                <MiniStatus label="Mindset" tone="good" value={String(mindsetThisWeek)} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <AnalyticStat
-                  icon={<Flame className="text-blush-300" size={16} />}
-                  label="Burns logged"
-                  value={String(completedWorkouts)}
-                />
-                <AnalyticStat
-                  icon={<Droplets className="text-sky-300" size={16} />}
-                  label="Hydration streak"
-                  value={String(hydrationStreak)}
-                />
-                <AnalyticStat
-                  icon={<PieChart className="text-gold-300" size={16} />}
-                  label="Week deficit"
-                  value={formatSignedNumber(weekDeficit)}
-                />
-                <AnalyticStat
-                  icon={<Brain className="text-plum-300" size={16} />}
-                  label="Mindset notes"
-                  value={String(mindsetEntries)}
-                />
-              </div>
-
-              <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-                  Last seven days
-                </div>
-
-                <div className="mt-4 flex h-40 items-end justify-between gap-2">
-                  {deficitBars.map((bar) => (
-                    <div className="flex w-full flex-col items-center gap-2" key={bar.label}>
-                      <div
-                        className={clsx(
-                          'w-full rounded-t-[12px] rounded-b-[8px]',
-                          bar.value >= 0
-                            ? 'bg-gradient-to-t from-mint-500 to-mint-300'
-                            : 'bg-gradient-to-t from-blush-500 to-blush-300',
-                        )}
-                        style={{ height: `${bar.height}%` }}
-                      />
-                      <span className="text-[10px] font-extrabold text-white/40">
-                        {bar.label}
-                      </span>
+              return (
+                <article
+                  className="rounded-[28px] border border-white/8 bg-[linear-gradient(160deg,rgba(90,95,110,0.34),rgba(27,29,35,0.96))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_38px_rgba(0,0,0,0.26)]"
+                  key={post.id}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-stone-300/62">
+                        Etched by {post.authorName || USER_NAME}
+                      </div>
+                      <div className="mt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-stone-300/40">
+                        {formatGoalDate(post)}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                    {isOwnPost && <span className="ghost-chip">Yours</span>}
+                  </div>
 
-                <p className="mt-4 text-center text-[12px] leading-6 text-white/54">
-                  Positive bars mean you logged a deficit. Negative bars mean the day closed over target or without one.
-                </p>
+                  <p
+                    className="mt-5 text-[18px] font-semibold leading-8 tracking-[0.01em] text-stone-100/88"
+                    style={{
+                      textShadow:
+                        '0 1px 0 rgba(255,255,255,0.06), 0 -1px 1px rgba(0,0,0,0.55)',
+                    }}
+                  >
+                    “{post.text}”
+                  </p>
 
-                <div className="mt-4 text-[13px] leading-6 text-white/66">
-                  Total logged deficit so far:{' '}
-                  <span className="font-bold text-white">
-                    {formatSignedNumber(cumulativeDeficit)}
-                  </span>
-                  . Tracking days saved:{' '}
-                  <span className="font-bold text-white">{trackingDaysLogged}</span>. Week score:{' '}
-                  <span className="font-bold text-white">{currentWeekAdherence}%</span>. Day{' '}
-                  <span className="font-bold text-white">{currentDay || 0}</span> of{' '}
-                  <span className="font-bold text-white">{TOTAL_DAYS}</span>.
-                </div>
-              </div>
-            </>
+                  <div className="mt-5 rounded-[20px] border border-white/8 bg-black/18 p-4">
+                    <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-stone-300/54">
+                      Notes left on the wall
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      {comments.length ? (
+                        comments.map((comment) => (
+                          <div
+                            className="rounded-[16px] border border-white/6 bg-white/[0.04] px-3 py-2"
+                            key={comment.id}
+                          >
+                            <div className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-stone-300/46">
+                              {comment.authorName || USER_NAME}
+                            </div>
+                            <p className="mt-1 text-[13px] leading-6 text-stone-100/74">
+                              {comment.text}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="rounded-[16px] border border-white/6 bg-white/[0.03] px-3 py-3 text-[13px] leading-6 text-stone-100/46">
+                          No one has added a note yet. A short line is enough.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-3">
+                      <input
+                        className="field-shell"
+                        onChange={(event) => onChangeWallComment(post.id, event.target.value)}
+                        placeholder="Leave Jamie a note..."
+                        type="text"
+                        value={wallCommentDrafts[post.id] || ''}
+                      />
+                      <button
+                        className="ghost-chip shrink-0"
+                        disabled={saving.wallComment}
+                        onClick={() => onAddWallComment(post.id)}
+                        type="button"
+                      >
+                        {saving.wallComment ? 'Adding...' : 'Add note'}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              )
+            })
+          ) : (
+            <div className="rounded-[24px] border border-white/8 bg-white/[0.04] p-5 text-[14px] leading-7 text-white/62">
+              The wall is quiet right now. Add the first promise and it will land here.
+            </div>
           )}
         </div>
       </section>
 
       <section className="surface">
         <SectionHeader
-          copy="Open this when you need a steadier way to think about the process."
-          kicker="A calmer perspective"
-          title="If your brain starts spiraling"
+          copy="Your personal proof is still here. It is just not the first thing shouting at you anymore."
+          kicker="Private body proof"
+          title="Open this when you want the numbers"
         />
 
         <div className="mt-5 flex justify-start">
-          <button className="ghost-chip" onClick={() => setShowPerspective((current) => !current)} type="button">
-            {showPerspective ? 'Close this' : 'Open this'}
+          <button className="ghost-chip" onClick={() => setShowBodyProof((current) => !current)} type="button">
+            {showBodyProof ? 'Hide body proof' : 'Open body proof'}
           </button>
         </div>
 
-        {showPerspective && (
-          <div className="no-scrollbar mt-5 grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1">
-            {PERSPECTIVE_CARDS.map((card) => (
-              <article
-                className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.14),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5"
-                key={card.title}
-              >
-                <div className="micro-label">{card.category}</div>
-                <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
-                <p className="mt-3 text-[14px] leading-7 text-white/74">{card.body}</p>
-                <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[13px] leading-6 text-white/82">
-                  <span className="font-bold text-gold-300">Coach note:</span> {card.takeaway}
+        {showBodyProof && (
+          <div className="mt-4 grid gap-4">
+            {!latestMeasurement && !latestScan ? (
+              <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[14px] leading-7 text-white/64">
+                There is no body-proof data here yet. Once you add measurements or a scan, this
+                space starts telling a kinder story than the scale by itself.
+              </div>
+            ) : (
+              <>
+                <div className="no-scrollbar grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1">
+                  <ProofCard
+                    helper={waistWeek === null ? 'Need one more tape entry' : formatDeltaText(waistWeek, 'in', 'down')}
+                    label="Waist"
+                    tone={getTrendTone(waistTotal, 'down')}
+                    value={formatMetricValue(latestMeasurement?.waist, 'in')}
+                  />
+                  <ProofCard
+                    helper={formatDeltaText(hipsTotal, 'in', 'down')}
+                    label="Hips"
+                    tone={getTrendTone(hipsTotal, 'down')}
+                    value={formatMetricValue(latestMeasurement?.hips, 'in')}
+                  />
+                  <ProofCard
+                    helper={formatDeltaText(smmWeek, 'lb', 'up')}
+                    label="SMM"
+                    tone={getTrendTone(smmTotal, 'up')}
+                    value={formatMetricValue(latestScan?.smm, 'lb')}
+                  />
+                  <ProofCard
+                    helper={formatDeltaText(pbfWeek, '%', 'down')}
+                    label="PBF"
+                    tone={getTrendTone(pbfTotal, 'down')}
+                    value={formatMetricValue(latestScan?.pbf, '%')}
+                  />
                 </div>
-              </article>
-            ))}
+
+                <div className="rounded-[22px] border border-white/8 bg-white/6 p-4">
+                  <div className="micro-label">What this means</div>
+                  <p className="mt-2 text-[14px] leading-7 text-white/80">{bodyProofNote}</p>
+                </div>
+              </>
+            )}
+
+            {(measurementsDue || inbodyDue) && (
+              <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4 text-[13px] leading-6 text-white/64">
+                {measurementsDue && 'Your measurements are due again. '}
+                {inbodyDue && 'Your scan data is due again. '}
+                Fresh data helps this stay clear and trustworthy.
+              </div>
+            )}
+
+            <div className="grid gap-4">
+              <div className="rounded-[24px] border border-mint-300/12 bg-mint-300/[0.08] p-4">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-mint-200">
+                      Measurements
+                    </div>
+                    <p className="mt-2 text-[13px] leading-6 text-white/70">
+                      These often show progress before the scale decides to be helpful.
+                    </p>
+                  </div>
+                  <span className="ghost-chip">
+                    {measurementsDue ? 'Recommended now' : 'Current enough'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <MeasurementInput
+                    label="Chest"
+                    onChange={(value) =>
+                      onChangeMeasurements((current) => ({ ...current, chest: value }))
+                    }
+                    value={measurementDraft.chest}
+                  />
+                  <MeasurementInput
+                    label="Waist (Navel)"
+                    onChange={(value) =>
+                      onChangeMeasurements((current) => ({ ...current, waist: value }))
+                    }
+                    value={measurementDraft.waist}
+                  />
+                  <MeasurementInput
+                    label="Hips (Widest)"
+                    onChange={(value) =>
+                      onChangeMeasurements((current) => ({ ...current, hips: value }))
+                    }
+                    value={measurementDraft.hips}
+                  />
+                  <MeasurementInput
+                    label="R. Thigh"
+                    onChange={(value) =>
+                      onChangeMeasurements((current) => ({ ...current, rThigh: value }))
+                    }
+                    value={measurementDraft.rThigh}
+                  />
+                  <MeasurementInput
+                    label="R. Bicep"
+                    onChange={(value) =>
+                      onChangeMeasurements((current) => ({ ...current, rBicep: value }))
+                    }
+                    value={measurementDraft.rBicep}
+                  />
+                </div>
+
+                <button className="cream-button mt-4" onClick={onSaveMeasurements} type="button">
+                  {saving.measurement ? 'Saving...' : 'Save measurements'}
+                </button>
+              </div>
+
+              <div className="rounded-[24px] border border-gold-300/12 bg-gold-300/[0.08] p-4">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-gold-300">
+                      InBody scan
+                    </div>
+                    <p className="mt-2 text-[13px] leading-6 text-white/70">
+                      This is just information. It is here to help you, not judge you.
+                    </p>
+                  </div>
+                  <span className="ghost-chip">
+                    {inbodyDue ? 'Recommended now' : 'Current enough'}
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  <InBodyInput
+                    hint="The actual weight of your muscle."
+                    label="Skeletal Muscle Mass (SMM)"
+                    onChange={(value) =>
+                      onChangeInbody((current) => ({ ...current, smm: value }))
+                    }
+                    value={inbodyDraft.smm}
+                  />
+                  <InBodyInput
+                    hint="The truest read on fat-loss trend."
+                    label="Percent Body Fat (PBF)"
+                    onChange={(value) =>
+                      onChangeInbody((current) => ({ ...current, pbf: value }))
+                    }
+                    value={inbodyDraft.pbf}
+                  />
+                  <InBodyInput
+                    hint="Estimated calories burned at rest."
+                    label="Basal Metabolic Rate (BMR)"
+                    onChange={(value) =>
+                      onChangeInbody((current) => ({ ...current, bmr: value }))
+                    }
+                    value={inbodyDraft.bmr}
+                  />
+                </div>
+
+                <button className="primary-button mt-4" onClick={onSaveInbody} type="button">
+                  {saving.inbody ? 'Saving...' : 'Save scan numbers'}
+                </button>
+              </div>
+
+              <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+                <div className="flex justify-start">
+                  <button className="ghost-chip" onClick={() => setShowDetails((current) => !current)} type="button">
+                    {showDetails ? 'Hide details' : 'See details'}
+                  </button>
+                </div>
+
+                <div className="mt-4 rounded-[22px] border border-white/8 bg-white/6 p-4">
+                  <div className="micro-label">Your week</div>
+                  <div className="mt-4 space-y-4">
+                    <div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+                        What went well
+                      </div>
+                      <p className="mt-2 text-[14px] leading-7 text-white/82">{weeklyReset.recap}</p>
+                    </div>
+                    <div className="rounded-[18px] border border-gold-300/16 bg-gold-300/10 p-4">
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-gold-300">
+                        What the data is saying
+                      </div>
+                      <p className="mt-2 text-[14px] leading-7 text-[#ffecc4]">
+                        {weeklyReset.highlight}
+                      </p>
+                    </div>
+                    <div className="rounded-[18px] border border-blush-300/16 bg-blush-300/10 p-4">
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-blush-200">
+                        What to focus on next
+                      </div>
+                      <p className="mt-2 text-[14px] leading-7 text-blush-50/92">
+                        {weeklyReset.focus}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {showDetails && (
+                  <div className="mt-4 grid gap-4">
+                    <div className="flex items-center justify-between gap-4 rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
+                      <div>
+                        <div className="micro-label">Consistency</div>
+                        <div className="display-copy mt-3 text-[2.3rem] leading-none text-white">
+                          {adherencePercent}%
+                        </div>
+                        <div
+                          className={clsx(
+                            'mt-2 flex items-center gap-1 text-sm font-bold',
+                            adherenceDelta >= 0 ? 'text-mint-300' : 'text-blush-200',
+                          )}
+                        >
+                          {adherenceDelta >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                          {adherenceDelta >= 0 ? '+' : ''}
+                          {adherenceDelta}% versus last week
+                        </div>
+                      </div>
+
+                      <div className="relative h-24 w-24 flex-shrink-0">
+                        <svg className="h-full w-full -rotate-90">
+                          <circle
+                            className="text-white/8"
+                            cx="48"
+                            cy="48"
+                            fill="transparent"
+                            r="40"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                          />
+                          <circle
+                            className="text-blush-400"
+                            cx="48"
+                            cy="48"
+                            fill="transparent"
+                            r="40"
+                            stroke="currentColor"
+                            strokeDasharray="251"
+                            strokeDashoffset={ringOffset}
+                            strokeLinecap="round"
+                            strokeWidth="8"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Zap className="text-gold-300" size={22} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <MiniStatus label="Burns" tone="good" value={String(workoutsThisWeek)} />
+                      <MiniStatus label="Hydration" tone="good" value={String(hydrationThisWeek)} />
+                      <MiniStatus label="Mindset" tone="good" value={String(mindsetThisWeek)} />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <AnalyticStat
+                        icon={<Droplets className="text-sky-300" size={16} />}
+                        label="Hydration streak"
+                        value={String(hydrationStreak)}
+                      />
+                      <AnalyticStat
+                        icon={<PieChart className="text-gold-300" size={16} />}
+                        label="Week deficit"
+                        value={formatSignedNumber(weekDeficit)}
+                      />
+                      <AnalyticStat
+                        icon={<Brain className="text-plum-300" size={16} />}
+                        label="Mindset notes"
+                        value={String(mindsetEntries)}
+                      />
+                      <AnalyticStat
+                        icon={<Target className="text-blush-300" size={16} />}
+                        label="Tracking days"
+                        value={String(trackingDaysLogged)}
+                      />
+                    </div>
+
+                    <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+                        Last seven days
+                      </div>
+
+                      <div className="mt-4 flex h-40 items-end justify-between gap-2">
+                        {deficitBars.map((bar) => (
+                          <div className="flex w-full flex-col items-center gap-2" key={bar.label}>
+                            <div
+                              className={clsx(
+                                'w-full rounded-t-[12px] rounded-b-[8px]',
+                                bar.value >= 0
+                                  ? 'bg-gradient-to-t from-mint-500 to-mint-300'
+                                  : 'bg-gradient-to-t from-blush-500 to-blush-300',
+                              )}
+                              style={{ height: `${bar.height}%` }}
+                            />
+                            <span className="text-[10px] font-extrabold text-white/40">
+                              {bar.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 text-[13px] leading-6 text-white/66">
+                        Total logged deficit so far:{' '}
+                        <span className="font-bold text-white">
+                          {formatSignedNumber(cumulativeDeficit)}
+                        </span>
+                        . Week score:{' '}
+                        <span className="font-bold text-white">{currentWeekAdherence}%</span>. Day{' '}
+                        <span className="font-bold text-white">{currentDay || 0}</span> of{' '}
+                        <span className="font-bold text-white">{TOTAL_DAYS}</span>.
+                      </div>
+                    </div>
+
+                    <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+                      <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+                        Changes since your first entry
+                      </div>
+                      <div className="mt-4 space-y-3">
+                        <TrendRow label="Chest" trend={chestTotal} unit="in" better="down" />
+                        <TrendRow label="Waist" trend={waistTotal} unit="in" better="down" />
+                        <TrendRow label="Hips" trend={hipsTotal} unit="in" better="down" />
+                        <TrendRow label="R. Thigh" trend={thighTotal} unit="in" better="down" />
+                        <TrendRow label="R. Bicep" trend={bicepTotal} unit="in" better="up" />
+                        <TrendRow label="SMM" trend={smmTotal} unit="lb" better="up" />
+                        <TrendRow label="PBF" trend={pbfTotal} unit="%" better="down" />
+                        <TrendRow label="BMR" trend={bmrTotal} unit="kcal" better="up" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </section>
@@ -2226,17 +2116,6 @@ function ReminderRow({ copy, enabled, label, onSave, reminderId, saving, time })
           Keep this at a time when a tiny nudge is actually useful.
         </p>
       </div>
-    </div>
-  )
-}
-
-function QuickStat({ label, value }) {
-  return (
-    <div className="stat-pill">
-      <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-        {label}
-      </div>
-      <div className="mt-2 text-lg font-extrabold text-white">{value}</div>
     </div>
   )
 }
@@ -2860,74 +2739,6 @@ async function requestCoachReply(payload) {
   }
 }
 
-function buildHeroCopy({
-  day,
-  workout,
-  workoutComplete,
-  trackingLoggedToday,
-  measurementsDue,
-  inbodyDue,
-}) {
-  if (!day || !workout) {
-    return `You start on ${PROGRAM_START}. Until then, this space is getting ready to make day one feel easy to step into.`
-  }
-
-  if (!workoutComplete) {
-    if (workout.type === 'rest') {
-      return `${USER_NAME}, this is a recovery day. Let gentle still count. A little movement, a little care, and the day still moves you forward.`
-    }
-
-    return `${USER_NAME}, let today stay simple. Start the workout, stay in your own pace, and give yourself one finished promise before the day gets noisy.`
-  }
-
-  if (!trackingLoggedToday) {
-    return 'Your workout is already done. Give yourself a clean ending tonight with water, calories, and a few honest words.'
-  }
-
-  if (inbodyDue) {
-    return 'Your pattern is still unfolding. A fresh scan would make the picture clearer without turning it into a big emotional event.'
-  }
-
-  if (measurementsDue) {
-    return 'Your measurements are due again. A few fresh numbers could help the mirror and the data tell the same story.'
-  }
-
-  return 'You did enough for today. Let the calm, repeatable work be the whole assignment.'
-}
-
-function buildRecommendedAction({
-  day,
-  workout,
-  workoutComplete,
-  trackingLoggedToday,
-  measurementsDue,
-  inbodyDue,
-}) {
-  if (!day || !workout) {
-    return 'Day one is coming. Once it starts, you will only need to follow the next step.'
-  }
-
-  if (!workoutComplete) {
-    return workout.type === 'rest'
-      ? 'Take the recovery day seriously, then come back tonight and finish your check-in.'
-      : `Open ${workout.name}, use the version that feels strong and safe for your body, and log it when you finish.`
-  }
-
-  if (!trackingLoggedToday) {
-    return 'Your workout is done. Finish the day with water, calories, and one honest note to yourself.'
-  }
-
-  if (measurementsDue) {
-    return 'Add fresh measurements soon so your progress stays visible, not vague.'
-  }
-
-  if (inbodyDue) {
-    return 'A fresh InBody scan would help you see the trend a little more clearly.'
-  }
-
-  return 'Today is on track. Let that be enough, and come back the same way tomorrow.'
-}
-
 function buildWeeklyReset({
   workoutsThisWeek,
   hydrationThisWeek,
@@ -3040,6 +2851,17 @@ function indexById(entries) {
   }, {})
 }
 
+function groupByPostId(entries) {
+  return entries.reduce((accumulator, entry) => {
+    const postId = entry.postId || 'unknown'
+    if (!accumulator[postId]) {
+      accumulator[postId] = []
+    }
+    accumulator[postId].push(entry)
+    return accumulator
+  }, {})
+}
+
 function hasTrackingEntry(entry) {
   if (!entry) return false
   return (
@@ -3081,22 +2903,6 @@ function getHydrationStreak(trackingEntries, todayKey) {
   return streak
 }
 
-function buildTimelineHistory(elapsedDays, type, recordsByDate) {
-  return Array.from({ length: TOTAL_DAYS }, (_, index) => {
-    const day = index + 1
-    if (day > elapsedDays) return null
-
-    const dateKey = getLocalDateKey(getProgramDateForDay(day))
-    const record = recordsByDate[dateKey]
-
-    if (type === 'workout') return Boolean(record?.completed)
-    if (type === 'tracking') return hasTrackingEntry(record)
-    if (type === 'deficit') return record ? Number(record.caloricDeficit) > 0 : false
-    if (type === 'hydration') return record ? record.hydrationTargetMet === true : false
-    return record ? Boolean(record.mindsetLog?.trim()) : false
-  })
-}
-
 function buildWeeklyDeficitBars(currentDay, trackingByDate) {
   if (!currentDay) {
     return Array.from({ length: 7 }, (_, index) => ({
@@ -3124,12 +2930,6 @@ function buildWeeklyDeficitBars(currentDay, trackingByDate) {
     value,
     height: Math.max(12, Math.round((Math.abs(value) / maxValue) * 100)),
   }))
-}
-
-function getRoadmapSlice(currentWeek) {
-  const start = Math.max(0, currentWeek - 2)
-  const end = Math.min(PROGRAM_WEEKS.length, currentWeek + 2)
-  return PROGRAM_WEEKS.slice(start, end)
 }
 
 function formatGoalDate(goal) {
