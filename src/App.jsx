@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import {
   Activity,
@@ -22,8 +22,10 @@ import WorkoutPlayer from './components/WorkoutPlayer'
 import {
   PERSPECTIVE_CARDS,
   PROGRAM_START,
+  REST_DAY_OPTIONS,
   TOTAL_DAYS,
   USER_NAME,
+  formatCompactDate,
   formatLongDate,
   getLatestByDate,
   getLocalDateKey,
@@ -31,6 +33,8 @@ import {
   getPhaseForDay,
   getPhaseName,
   getProgramDay,
+  getProgramDateForDay,
+  getRestOptionById,
   getRestPlan,
   getWeekForDay,
   getWorkoutForDay,
@@ -71,6 +75,7 @@ export default function App() {
   const [coachSending, setCoachSending] = useState(false)
   const [saving, setSaving] = useState({
     workout: false,
+    rest: false,
     deficit: false,
     hydration: false,
     mindset: false,
@@ -101,6 +106,7 @@ export default function App() {
   const truthReactions = dashboard.coachMemory?.truthReactions || {}
   const likedTruths = getTruthsByReaction(truthReactions, 'liked')
   const sensitiveTruths = getTruthsByReaction(truthReactions, 'sensitive')
+  const latestHeavyRestRecord = getLatestHeavyRestRecord(dashboard.videoState, todayKey)
 
   const todayWorkoutEntry = workoutsByDate[todayKey]
   const todayTrackingEntry = trackingByDate[todayKey]
@@ -408,6 +414,37 @@ export default function App() {
     }
   }
 
+  async function handleSelectRestOption(optionId) {
+    setSaving((current) => ({ ...current, rest: true }))
+    try {
+      await dashboard.actions.saveVideoState(todayKey, {
+        restOptionId: optionId,
+        workoutName: todayWorkout?.name ?? null,
+      })
+      setToast('Recovery plan saved.')
+    } catch (error) {
+      setToast(error.message || 'Could not save that recovery choice yet.')
+    } finally {
+      setSaving((current) => ({ ...current, rest: false }))
+    }
+  }
+
+  async function handleSaveHeavyLift(log) {
+    setSaving((current) => ({ ...current, rest: true }))
+    try {
+      await dashboard.actions.saveVideoState(todayKey, {
+        restOptionId: 'heavy',
+        heavyLiftLog: log,
+        workoutName: todayWorkout?.name ?? null,
+      })
+      setToast('Heavy lift note saved.')
+    } catch (error) {
+      setToast(error.message || 'Could not save the heavy lift note.')
+    } finally {
+      setSaving((current) => ({ ...current, rest: false }))
+    }
+  }
+
   async function handleTruthReaction(card, reaction) {
     const truthId = getPerspectiveCardId(card)
     const nextTruthReactions = {
@@ -541,13 +578,17 @@ export default function App() {
           <WorkoutView
             adviceChecks={adviceChecks}
             currentPhaseName={currentPhaseName}
+            latestHeavyRestRecord={latestHeavyRestRecord}
             currentWeek={currentWeek}
             currentVideoState={todayVideoState}
             day={todayDay}
             onAdviceCheck={handleAdviceCheck}
             onPlayerOpenChange={handlePlayerOpenChange}
+            onSaveHeavyLift={handleSaveHeavyLift}
+            onSelectRestOption={handleSelectRestOption}
             onUnlockWorkout={handleUnlockWorkout}
             playerOpen={playerOpen}
+            saving={saving}
             todayKey={todayKey}
             workout={todayWorkout}
             workoutComplete={workoutComplete}
@@ -650,18 +691,34 @@ export default function App() {
 function WorkoutView({
   adviceChecks,
   currentPhaseName,
+  latestHeavyRestRecord,
   currentWeek,
   currentVideoState,
   day,
   onAdviceCheck,
   onPlayerOpenChange,
+  onSaveHeavyLift,
+  onSelectRestOption,
   onUnlockWorkout,
   playerOpen,
+  saving,
   todayKey,
   workout,
   workoutComplete,
   workoutReady,
 }) {
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState(day)
+  const [heavyDraft, setHeavyDraft] = useState(() => buildHeavyDraft(currentVideoState?.heavyLiftLog))
+
+  useEffect(() => {
+    setSelectedCalendarDay(day)
+  }, [day])
+
+  useEffect(() => {
+    setHeavyDraft(buildHeavyDraft(currentVideoState?.heavyLiftLog))
+  }, [currentVideoState?.heavyLiftLog])
+
   if (!day || !workout) {
     return (
       <section className="surface">
@@ -691,6 +748,9 @@ function WorkoutView({
     workout,
     workoutComplete,
   })
+  const selectedDayWorkout = getWorkoutForDay(selectedCalendarDay)
+  const selectedDayDateKey = getLocalDateKey(getProgramDateForDay(selectedCalendarDay))
+  const selectedRestOption = getRestOptionById(currentVideoState?.restOptionId)
   const playerStatus = currentVideoState?.opened
     ? workoutComplete
       ? 'Logged today'
@@ -709,7 +769,10 @@ function WorkoutView({
               {workout.name}
             </h2>
             <p className="mt-3 text-[14px] leading-7 text-white/72">
-              {formatLongDate(todayKey)}. Press play and make the session fit your body.
+              {formatLongDate(todayKey)}.{' '}
+              {workout.type === 'rest'
+                ? 'No XS video today. Pick a recovery path and let it count.'
+                : 'Press play and make the session fit your body.'}
             </p>
           </div>
           <span className="ghost-chip">{workoutComplete ? 'Submitted' : 'Ready'}</span>
@@ -723,13 +786,89 @@ function WorkoutView({
           <span className="ghost-chip">Week {currentWeek}</span>
           <span className="ghost-chip">{currentPhaseName}</span>
         </div>
+
+        <button
+          className="secondary-button mt-4"
+          onClick={() => setCalendarOpen((current) => !current)}
+          type="button"
+        >
+          {calendarOpen ? 'Hide the 90-day map' : 'See the whole 90-day map'}
+        </button>
       </section>
+
+      {calendarOpen ? (
+        <section className="surface">
+          <SectionHeader
+            copy="Tap any day to see what waits there."
+            kicker="The full burn"
+            title="All 90 days"
+          />
+
+          <div className="mt-5 grid grid-cols-5 gap-2">
+            {Array.from({ length: TOTAL_DAYS }, (_, index) => {
+              const mapDay = index + 1
+              const mapWorkout = getWorkoutForDay(mapDay)
+
+              return (
+                <button
+                  className={clsx(
+                    'rounded-[18px] border px-2 py-3 text-left transition',
+                    mapDay === selectedCalendarDay
+                      ? 'border-blush-300/22 bg-blush-300/12 text-white'
+                      : mapDay === day
+                        ? 'border-mint-300/18 bg-mint-300/[0.08] text-white/90'
+                        : 'border-white/8 bg-white/[0.03] text-white/72',
+                  )}
+                  key={mapDay}
+                  onClick={() => setSelectedCalendarDay(mapDay)}
+                  type="button"
+                >
+                  <div className="text-[10px] font-extrabold uppercase tracking-[0.16em]">
+                    Day {mapDay}
+                  </div>
+                  <div className="mt-1 text-[11px] leading-5">
+                    {mapWorkout.type === 'rest' ? 'Rest' : mapWorkout.type}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          <div className="mt-5 rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="micro-label">{formatCompactDate(selectedDayDateKey)}</div>
+                <h4 className="mt-3 text-lg font-extrabold text-white">
+                  Day {selectedCalendarDay}: {selectedDayWorkout.name}
+                </h4>
+                <p className="mt-2 text-[13px] leading-6 text-white/68">
+                  {getWorkoutSummary(selectedDayWorkout)}
+                </p>
+              </div>
+              <span className="ghost-chip">
+                {selectedDayWorkout.type === 'rest'
+                  ? 'Recovery'
+                  : selectedDayWorkout.duration === '-'
+                    ? 'Recovery'
+                    : `${selectedDayWorkout.duration} min`}
+              </span>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="ghost-chip">{selectedDayWorkout.equipment}</span>
+              <span className="ghost-chip">
+                {getPhaseName(getPhaseForDay(selectedCalendarDay))}
+              </span>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="surface">
         <SectionHeader
           copy={
             workout.type === 'rest'
-              ? 'Read through today first.'
+              ? 'Pick the recovery path that actually fits today.'
               : workoutReady
                 ? 'You unlocked the workout. Keep these cues in mind.'
                 : 'Read each point, check it off, then unlock the workout.'
@@ -739,12 +878,116 @@ function WorkoutView({
         />
 
         {workout.type === 'rest' ? (
-          <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
-            <div className="micro-label">What recovery looks like today</div>
-            <div className="mt-4 space-y-3">
-              {focusRows.map((row) => (
-                <FocusRow key={`${row.title}-${row.meta}`} row={row} />
-              ))}
+          <div className="mt-5 grid gap-4">
+            <div className="grid gap-3">
+              {REST_DAY_OPTIONS.map((option) => {
+                const selected = selectedRestOption?.id === option.id
+
+                return (
+                  <button
+                    className={clsx(
+                      'rounded-[22px] border p-4 text-left transition',
+                      selected
+                        ? 'border-blush-300/24 bg-blush-300/[0.12]'
+                        : 'border-white/8 bg-white/[0.03]',
+                    )}
+                    key={option.id}
+                    onClick={() => onSelectRestOption(option.id)}
+                    type="button"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="micro-label text-blush-100">{option.badge}</div>
+                        <div className="mt-2 text-sm font-bold text-white">{option.title}</div>
+                        <div className="mt-2 text-[13px] leading-6 text-white/68">
+                          {option.summary}
+                        </div>
+                        <div className="mt-2 text-[12px] leading-6 text-white/52">
+                          {option.detail}
+                        </div>
+                      </div>
+                      <span className="ghost-chip">{selected ? 'Picked' : 'Choose'}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+              <div className="micro-label">Recovery timer</div>
+              <h4 className="mt-3 text-lg font-extrabold text-white">
+                {selectedRestOption.title}
+              </h4>
+              <p className="mt-2 text-[13px] leading-6 text-white/68">
+                {selectedRestOption.summary}
+              </p>
+
+              <RestDayTimer key={selectedRestOption.id} option={selectedRestOption} />
+
+              {selectedRestOption.id === 'heavy' ? (
+                <div className="mt-5 grid gap-4">
+                  {latestHeavyRestRecord ? (
+                    <div className="rounded-[18px] border border-gold-300/14 bg-gold-300/[0.08] p-4 text-[13px] leading-6 text-white/74">
+                      Last time: {latestHeavyRestRecord.exercise || 'Lift'} ·{' '}
+                      {latestHeavyRestRecord.weight || '—'} lb ·{' '}
+                      {latestHeavyRestRecord.sets || '3'} x {latestHeavyRestRecord.reps || '5'}
+                    </div>
+                  ) : null}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <TextEntryField
+                      label="Lift"
+                      onChange={(value) =>
+                        setHeavyDraft((current) => ({ ...current, exercise: value }))
+                      }
+                      placeholder="Squat"
+                      value={heavyDraft.exercise}
+                    />
+                    <TextEntryField
+                      label="Partner"
+                      onChange={(value) =>
+                        setHeavyDraft((current) => ({ ...current, partner: value }))
+                      }
+                      placeholder="Mike or Gary"
+                      value={heavyDraft.partner}
+                    />
+                    <TextEntryField
+                      label="Weight"
+                      onChange={(value) =>
+                        setHeavyDraft((current) => ({ ...current, weight: value }))
+                      }
+                      placeholder="95"
+                      value={heavyDraft.weight}
+                    />
+                    <TextEntryField
+                      label="Sets x Reps"
+                      onChange={(value) =>
+                        setHeavyDraft((current) => ({ ...current, scheme: value }))
+                      }
+                      placeholder="3 x 5"
+                      value={heavyDraft.scheme}
+                    />
+                  </div>
+
+                  <button
+                    className="primary-button"
+                    disabled={saving.rest}
+                    onClick={() => onSaveHeavyLift(normalizeHeavyDraft(heavyDraft))}
+                    type="button"
+                  >
+                    {saving.rest ? 'Saving...' : 'Save heavy lift note'}
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+              <div className="micro-label">Still useful today</div>
+              <div className="mt-4 space-y-3">
+                {focusRows.map((row) => (
+                  <FocusRow key={`${row.title}-${row.meta}`} row={row} />
+                ))}
+              </div>
             </div>
           </div>
         ) : (
@@ -1669,6 +1912,102 @@ function InBodyInput({ hint, label, onChange, value }) {
   )
 }
 
+function TextEntryField({ label, onChange, placeholder, value }) {
+  return (
+    <label className="rounded-[18px] border border-white/8 bg-white/[0.04] p-3">
+      <div className="text-[12px] font-bold text-white/68">{label}</div>
+      <input
+        className="field-shell mt-3 px-3 py-2"
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        type="text"
+        value={value}
+      />
+    </label>
+  )
+}
+
+function RestDayTimer({ option }) {
+  const phases = useMemo(() => option?.phases || [], [option])
+  const [activePhaseIndex, setActivePhaseIndex] = useState(0)
+  const [secondsLeft, setSecondsLeft] = useState(phases[0]?.seconds || 0)
+  const [running, setRunning] = useState(false)
+
+  useEffect(() => {
+    if (!running || secondsLeft <= 0) return undefined
+
+    const timeoutId = window.setTimeout(() => {
+      setSecondsLeft((current) => {
+        if (current > 1) return current - 1
+
+        const nextPhase = phases[activePhaseIndex + 1]
+        if (nextPhase) {
+          setActivePhaseIndex((index) => index + 1)
+          return nextPhase.seconds
+        }
+
+        setRunning(false)
+        return 0
+      })
+    }, 1000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [activePhaseIndex, phases, running, secondsLeft])
+
+  const currentPhase = phases[activePhaseIndex]
+  const totalSeconds = phases.reduce((sum, phase) => sum + phase.seconds, 0)
+  const completedSeconds =
+    phases.slice(0, activePhaseIndex).reduce((sum, phase) => sum + phase.seconds, 0) +
+    ((currentPhase?.seconds || 0) - secondsLeft)
+  const progress = totalSeconds ? Math.max(0, Math.min(100, (completedSeconds / totalSeconds) * 100)) : 0
+
+  return (
+    <div className="mt-4 rounded-[20px] border border-white/8 bg-black/18 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+            {currentPhase?.label || 'Ready'}
+          </div>
+          <div className="mt-2 text-3xl font-extrabold text-white">
+            {formatCountdown(secondsLeft)}
+          </div>
+        </div>
+        <span className="ghost-chip">
+          {activePhaseIndex + 1} / {phases.length}
+        </span>
+      </div>
+
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/8">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-blush-500 to-gold-400 transition-all"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <button
+          className="primary-button"
+          onClick={() => setRunning((current) => !current)}
+          type="button"
+        >
+          {running ? 'Pause' : 'Start'}
+        </button>
+        <button
+          className="secondary-button"
+          onClick={() => {
+            setRunning(false)
+            setActivePhaseIndex(0)
+            setSecondsLeft(phases[0]?.seconds || 0)
+          }}
+          type="button"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function NavButton({ icon, isActive, label, onClick }) {
   return (
     <button
@@ -2042,6 +2381,59 @@ function extractFollowUpQuestion(reply) {
   const match = String(reply || '').match(/[^?]*\?/g)
   if (!match?.length) return ''
   return String(match.at(-1)).trim()
+}
+
+function getWorkoutSummary(workout) {
+  if (!workout) return ''
+  if (workout.type === 'rest') {
+    return 'Recovery day. Pick dance, a brisk walk, or one heavy lift if you feel fresh.'
+  }
+  if (workout.type === 'upper') {
+    return `Upper-body day with ${workout.equipment.toLowerCase()}. Keep the reps clean and let the bigger pulls and presses do the work.`
+  }
+  if (workout.type === 'lower') {
+    return `Lower-body day with ${workout.equipment.toLowerCase()}. Stay stable, move with control, and let the legs work without rushing.`
+  }
+  return `Full-body session with ${workout.equipment.toLowerCase()}. Strong reps over sloppy hustle.`
+}
+
+function formatCountdown(totalSeconds) {
+  const safeSeconds = Math.max(0, totalSeconds || 0)
+  const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, '0')
+  const seconds = String(safeSeconds % 60).padStart(2, '0')
+  return `${minutes}:${seconds}`
+}
+
+function buildHeavyDraft(log) {
+  return {
+    exercise: log?.exercise || '',
+    partner: log?.partner || '',
+    weight: log?.weight || '',
+    scheme: log?.scheme || '3 x 5',
+  }
+}
+
+function normalizeHeavyDraft(draft) {
+  return {
+    exercise: String(draft?.exercise || '').trim(),
+    partner: String(draft?.partner || '').trim(),
+    weight: String(draft?.weight || '').trim(),
+    scheme: String(draft?.scheme || '').trim() || '3 x 5',
+  }
+}
+
+function getLatestHeavyRestRecord(videoStateEntries, todayKey) {
+  return [...(videoStateEntries || [])]
+    .filter(
+      (entry) =>
+        entry?.id !== todayKey &&
+        entry?.restOptionId === 'heavy' &&
+        entry?.heavyLiftLog &&
+        Object.values(entry.heavyLiftLog).some(Boolean),
+    )
+    .sort((a, b) => String(b.id).localeCompare(String(a.id)))
+    .map((entry) => entry.heavyLiftLog)
+    .at(0) || null
 }
 
 function shortenText(value, maxLength) {

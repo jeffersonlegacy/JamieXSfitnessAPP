@@ -593,6 +593,46 @@ export function getRestPlan() {
   ]
 }
 
+export const REST_DAY_OPTIONS = [
+  {
+    id: 'dance',
+    badge: 'Playful sweat',
+    title: 'Dance + stretch',
+    summary: 'Dance 15 minutes straight, then stretch 10.',
+    detail: 'Get silly. One rule: once you start, you do not stop until the dance block is done.',
+    phases: [
+      { label: 'Dance it out', seconds: 15 * 60 },
+      { label: 'Stretch it out', seconds: 10 * 60 },
+    ],
+  },
+  {
+    id: 'walk',
+    badge: 'Outside reset',
+    title: 'Brighton Landing brisk walk',
+    summary: 'Walk 25 minutes, then stretch 5.',
+    detail: 'Head around Brighton Landing at a brisk pace, then take five easy minutes to loosen up.',
+    phases: [
+      { label: 'Brisk walk', seconds: 25 * 60 },
+      { label: 'Cool-down stretch', seconds: 5 * 60 },
+    ],
+  },
+  {
+    id: 'heavy',
+    badge: 'Strength side quest',
+    title: 'Heavy lift with Mike or Gary',
+    summary: 'Pick one basic lift and hit 3 sets of 5 if you feel fresh.',
+    detail: 'Only take this one if you are not sore. Use a load that feels heavy but still clean for five reps.',
+    phases: [
+      { label: 'Heavy lift block', seconds: 20 * 60 },
+      { label: 'Stretch and log it', seconds: 5 * 60 },
+    ],
+  },
+]
+
+export function getRestOptionById(optionId) {
+  return REST_DAY_OPTIONS.find((option) => option.id === optionId) || REST_DAY_OPTIONS[0]
+}
+
 export function getMealFlow(isRestDay) {
   return [
     { time: '6:30 AM', name: 'Soft start', detail: isRestDay ? 'Tea or coffee and 10 almonds' : 'Tea or coffee and half a banana', note: 'A gentle start keeps the day from feeling chaotic later.' },

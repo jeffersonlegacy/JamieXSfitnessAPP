@@ -24,92 +24,2859 @@ RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
-UID:jamie-burn-workout-checkin-2026@jamieburn
-DTSTAMP:20260406T220000Z
+UID:jamie-burn-day-1-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
 DTSTART;TZID=America/Los_Angeles:20260402T070000
 DTEND;TZID=America/Los_Angeles:20260402T071500
-RRULE:FREQ=DAILY;COUNT=90
-SUMMARY:Jamie check in and start today's burn
-DESCRIPTION:Jamie\, open the app\, see today's workout\, and let the first step be enough.\\n\\nUse the app link here: https://jamie-x-sfitness-app-six.vercel.app/\\n\\nIf the trainer on video moves faster or heavier\, you do not need to match that. Clean and controlled wins.
+SUMMARY:Jamie Day 1: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
 URL:https://jamie-x-sfitness-app-six.vercel.app/
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Open Jamie's app and check today's burn.
+DESCRIPTION:Jamie Day 1: Full Body 1
 TRIGGER:-PT15M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:jamie-burn-closeout-2026@jamieburn
-DTSTAMP:20260406T220000Z
+UID:jamie-burn-day-2-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260403T070000
+DTEND;TZID=America/Los_Angeles:20260403T071500
+SUMMARY:Jamie Day 2: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 2: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-3-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260404T070000
+DTEND;TZID=America/Los_Angeles:20260404T071500
+SUMMARY:Jamie Day 3: Full Body 2
+DESCRIPTION:Today's workout is Full Body 2. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 3: Full Body 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-4-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260405T070000
+DTEND;TZID=America/Los_Angeles:20260405T071500
+SUMMARY:Jamie Day 4: Lower Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 1. Equipment: Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 4: Lower Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-5-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260406T070000
+DTEND;TZID=America/Los_Angeles:20260406T071500
+SUMMARY:Jamie Day 5: Full Body 3
+DESCRIPTION:Today's workout is Full Body 3. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 5: Full Body 3
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-6-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260407T070000
+DTEND;TZID=America/Los_Angeles:20260407T071500
+SUMMARY:Jamie Day 6: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 6: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-7-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260408T070000
+DTEND;TZID=America/Los_Angeles:20260408T071500
+SUMMARY:Jamie Day 7: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 7: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-8-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260409T070000
+DTEND;TZID=America/Los_Angeles:20260409T071500
+SUMMARY:Jamie Day 8: Full Body 4
+DESCRIPTION:Today's workout is Full Body 4. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 8: Full Body 4
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-9-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260410T070000
+DTEND;TZID=America/Los_Angeles:20260410T071500
+SUMMARY:Jamie Day 9: Upper Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 9: Upper Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-10-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260411T070000
+DTEND;TZID=America/Los_Angeles:20260411T071500
+SUMMARY:Jamie Day 10: Full Body 5
+DESCRIPTION:Today's workout is Full Body 5. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 10: Full Body 5
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-11-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260412T070000
+DTEND;TZID=America/Los_Angeles:20260412T071500
+SUMMARY:Jamie Day 11: Lower Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 11: Lower Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-12-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260413T070000
+DTEND;TZID=America/Los_Angeles:20260413T071500
+SUMMARY:Jamie Day 12: Full Body 6
+DESCRIPTION:Today's workout is Full Body 6. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 12: Full Body 6
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-13-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260414T070000
+DTEND;TZID=America/Los_Angeles:20260414T071500
+SUMMARY:Jamie Day 13: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 13: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-14-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260415T070000
+DTEND;TZID=America/Los_Angeles:20260415T071500
+SUMMARY:Jamie Day 14: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 14: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-15-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260416T070000
+DTEND;TZID=America/Los_Angeles:20260416T071500
+SUMMARY:Jamie Day 15: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 15: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-16-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260417T070000
+DTEND;TZID=America/Los_Angeles:20260417T071500
+SUMMARY:Jamie Day 16: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 16: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-17-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260418T070000
+DTEND;TZID=America/Los_Angeles:20260418T071500
+SUMMARY:Jamie Day 17: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 17: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-18-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260419T070000
+DTEND;TZID=America/Los_Angeles:20260419T071500
+SUMMARY:Jamie Day 18: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 18: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-19-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260420T070000
+DTEND;TZID=America/Los_Angeles:20260420T071500
+SUMMARY:Jamie Day 19: Full Body 2
+DESCRIPTION:Today's workout is Full Body 2. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 19: Full Body 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-20-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260421T070000
+DTEND;TZID=America/Los_Angeles:20260421T071500
+SUMMARY:Jamie Day 20: Lower Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 1. Equipment: Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 20: Lower Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-21-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260422T070000
+DTEND;TZID=America/Los_Angeles:20260422T071500
+SUMMARY:Jamie Day 21: Full Body 3
+DESCRIPTION:Today's workout is Full Body 3. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 21: Full Body 3
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-22-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260423T070000
+DTEND;TZID=America/Los_Angeles:20260423T071500
+SUMMARY:Jamie Day 22: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 22: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-23-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260424T070000
+DTEND;TZID=America/Los_Angeles:20260424T071500
+SUMMARY:Jamie Day 23: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 23: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-24-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260425T070000
+DTEND;TZID=America/Los_Angeles:20260425T071500
+SUMMARY:Jamie Day 24: Full Body 4
+DESCRIPTION:Today's workout is Full Body 4. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 24: Full Body 4
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-25-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260426T070000
+DTEND;TZID=America/Los_Angeles:20260426T071500
+SUMMARY:Jamie Day 25: Upper Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 25: Upper Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-26-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260427T070000
+DTEND;TZID=America/Los_Angeles:20260427T071500
+SUMMARY:Jamie Day 26: Full Body 5
+DESCRIPTION:Today's workout is Full Body 5. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 26: Full Body 5
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-27-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260428T070000
+DTEND;TZID=America/Los_Angeles:20260428T071500
+SUMMARY:Jamie Day 27: Lower Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 27: Lower Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-28-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260429T070000
+DTEND;TZID=America/Los_Angeles:20260429T071500
+SUMMARY:Jamie Day 28: Full Body 6
+DESCRIPTION:Today's workout is Full Body 6. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 28: Full Body 6
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-29-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260430T070000
+DTEND;TZID=America/Los_Angeles:20260430T071500
+SUMMARY:Jamie Day 29: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 29: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-30-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260501T070000
+DTEND;TZID=America/Los_Angeles:20260501T071500
+SUMMARY:Jamie Day 30: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 30: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-31-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260502T070000
+DTEND;TZID=America/Los_Angeles:20260502T071500
+SUMMARY:Jamie Day 31: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 31: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-32-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260503T070000
+DTEND;TZID=America/Los_Angeles:20260503T071500
+SUMMARY:Jamie Day 32: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 32: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-33-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260504T070000
+DTEND;TZID=America/Los_Angeles:20260504T071500
+SUMMARY:Jamie Day 33: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 33: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-34-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260505T070000
+DTEND;TZID=America/Los_Angeles:20260505T071500
+SUMMARY:Jamie Day 34: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 34: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-35-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260506T070000
+DTEND;TZID=America/Los_Angeles:20260506T071500
+SUMMARY:Jamie Day 35: Full Body 2
+DESCRIPTION:Today's workout is Full Body 2. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 35: Full Body 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-36-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260507T070000
+DTEND;TZID=America/Los_Angeles:20260507T071500
+SUMMARY:Jamie Day 36: Lower Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 1. Equipment: Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 36: Lower Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-37-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260508T070000
+DTEND;TZID=America/Los_Angeles:20260508T071500
+SUMMARY:Jamie Day 37: Full Body 3
+DESCRIPTION:Today's workout is Full Body 3. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 37: Full Body 3
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-38-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260509T070000
+DTEND;TZID=America/Los_Angeles:20260509T071500
+SUMMARY:Jamie Day 38: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 38: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-39-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260510T070000
+DTEND;TZID=America/Los_Angeles:20260510T071500
+SUMMARY:Jamie Day 39: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 39: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-40-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260511T070000
+DTEND;TZID=America/Los_Angeles:20260511T071500
+SUMMARY:Jamie Day 40: Full Body 4
+DESCRIPTION:Today's workout is Full Body 4. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 40: Full Body 4
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-41-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260512T070000
+DTEND;TZID=America/Los_Angeles:20260512T071500
+SUMMARY:Jamie Day 41: Upper Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 41: Upper Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-42-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260513T070000
+DTEND;TZID=America/Los_Angeles:20260513T071500
+SUMMARY:Jamie Day 42: Full Body 5
+DESCRIPTION:Today's workout is Full Body 5. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 42: Full Body 5
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-43-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260514T070000
+DTEND;TZID=America/Los_Angeles:20260514T071500
+SUMMARY:Jamie Day 43: Lower Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 43: Lower Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-44-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260515T070000
+DTEND;TZID=America/Los_Angeles:20260515T071500
+SUMMARY:Jamie Day 44: Full Body 6
+DESCRIPTION:Today's workout is Full Body 6. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 44: Full Body 6
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-45-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260516T070000
+DTEND;TZID=America/Los_Angeles:20260516T071500
+SUMMARY:Jamie Day 45: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 45: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-46-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260517T070000
+DTEND;TZID=America/Los_Angeles:20260517T071500
+SUMMARY:Jamie Day 46: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 46: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-47-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260518T070000
+DTEND;TZID=America/Los_Angeles:20260518T071500
+SUMMARY:Jamie Day 47: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 47: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-48-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260519T070000
+DTEND;TZID=America/Los_Angeles:20260519T071500
+SUMMARY:Jamie Day 48: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 48: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-49-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260520T070000
+DTEND;TZID=America/Los_Angeles:20260520T071500
+SUMMARY:Jamie Day 49: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 49: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-50-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260521T070000
+DTEND;TZID=America/Los_Angeles:20260521T071500
+SUMMARY:Jamie Day 50: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 50: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-51-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260522T070000
+DTEND;TZID=America/Los_Angeles:20260522T071500
+SUMMARY:Jamie Day 51: Full Body 2
+DESCRIPTION:Today's workout is Full Body 2. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 51: Full Body 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-52-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260523T070000
+DTEND;TZID=America/Los_Angeles:20260523T071500
+SUMMARY:Jamie Day 52: Lower Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 1. Equipment: Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 52: Lower Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-53-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260524T070000
+DTEND;TZID=America/Los_Angeles:20260524T071500
+SUMMARY:Jamie Day 53: Full Body 3
+DESCRIPTION:Today's workout is Full Body 3. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 53: Full Body 3
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-54-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260525T070000
+DTEND;TZID=America/Los_Angeles:20260525T071500
+SUMMARY:Jamie Day 54: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 54: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-55-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260526T070000
+DTEND;TZID=America/Los_Angeles:20260526T071500
+SUMMARY:Jamie Day 55: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 55: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-56-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260527T070000
+DTEND;TZID=America/Los_Angeles:20260527T071500
+SUMMARY:Jamie Day 56: Full Body 4
+DESCRIPTION:Today's workout is Full Body 4. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 56: Full Body 4
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-57-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260528T070000
+DTEND;TZID=America/Los_Angeles:20260528T071500
+SUMMARY:Jamie Day 57: Upper Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 57: Upper Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-58-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260529T070000
+DTEND;TZID=America/Los_Angeles:20260529T071500
+SUMMARY:Jamie Day 58: Full Body 5
+DESCRIPTION:Today's workout is Full Body 5. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 58: Full Body 5
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-59-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260530T070000
+DTEND;TZID=America/Los_Angeles:20260530T071500
+SUMMARY:Jamie Day 59: Lower Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 59: Lower Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-60-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260531T070000
+DTEND;TZID=America/Los_Angeles:20260531T071500
+SUMMARY:Jamie Day 60: Full Body 6
+DESCRIPTION:Today's workout is Full Body 6. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 60: Full Body 6
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-61-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260601T070000
+DTEND;TZID=America/Los_Angeles:20260601T071500
+SUMMARY:Jamie Day 61: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 61: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-62-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260602T070000
+DTEND;TZID=America/Los_Angeles:20260602T071500
+SUMMARY:Jamie Day 62: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 62: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-63-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260603T070000
+DTEND;TZID=America/Los_Angeles:20260603T071500
+SUMMARY:Jamie Day 63: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 63: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-64-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260604T070000
+DTEND;TZID=America/Los_Angeles:20260604T071500
+SUMMARY:Jamie Day 64: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 64: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-65-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260605T070000
+DTEND;TZID=America/Los_Angeles:20260605T071500
+SUMMARY:Jamie Day 65: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 65: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-66-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260606T070000
+DTEND;TZID=America/Los_Angeles:20260606T071500
+SUMMARY:Jamie Day 66: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 66: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-67-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260607T070000
+DTEND;TZID=America/Los_Angeles:20260607T071500
+SUMMARY:Jamie Day 67: Full Body 2
+DESCRIPTION:Today's workout is Full Body 2. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 67: Full Body 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-68-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260608T070000
+DTEND;TZID=America/Los_Angeles:20260608T071500
+SUMMARY:Jamie Day 68: Lower Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 1. Equipment: Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 68: Lower Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-69-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260609T070000
+DTEND;TZID=America/Los_Angeles:20260609T071500
+SUMMARY:Jamie Day 69: Full Body 3
+DESCRIPTION:Today's workout is Full Body 3. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 69: Full Body 3
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-70-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260610T070000
+DTEND;TZID=America/Los_Angeles:20260610T071500
+SUMMARY:Jamie Day 70: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 70: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-71-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260611T070000
+DTEND;TZID=America/Los_Angeles:20260611T071500
+SUMMARY:Jamie Day 71: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 71: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-72-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260612T070000
+DTEND;TZID=America/Los_Angeles:20260612T071500
+SUMMARY:Jamie Day 72: Full Body 4
+DESCRIPTION:Today's workout is Full Body 4. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 72: Full Body 4
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-73-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260613T070000
+DTEND;TZID=America/Los_Angeles:20260613T071500
+SUMMARY:Jamie Day 73: Upper Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 73: Upper Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-74-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260614T070000
+DTEND;TZID=America/Los_Angeles:20260614T071500
+SUMMARY:Jamie Day 74: Full Body 5
+DESCRIPTION:Today's workout is Full Body 5. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 74: Full Body 5
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-75-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260615T070000
+DTEND;TZID=America/Los_Angeles:20260615T071500
+SUMMARY:Jamie Day 75: Lower Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 75: Lower Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-76-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260616T070000
+DTEND;TZID=America/Los_Angeles:20260616T071500
+SUMMARY:Jamie Day 76: Full Body 6
+DESCRIPTION:Today's workout is Full Body 6. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 76: Full Body 6
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-77-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260617T070000
+DTEND;TZID=America/Los_Angeles:20260617T071500
+SUMMARY:Jamie Day 77: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 77: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-78-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260618T070000
+DTEND;TZID=America/Los_Angeles:20260618T071500
+SUMMARY:Jamie Day 78: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 78: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-79-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260619T070000
+DTEND;TZID=America/Los_Angeles:20260619T071500
+SUMMARY:Jamie Day 79: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 79: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-80-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260620T070000
+DTEND;TZID=America/Los_Angeles:20260620T071500
+SUMMARY:Jamie Day 80: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 80: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-81-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260621T070000
+DTEND;TZID=America/Los_Angeles:20260621T071500
+SUMMARY:Jamie Day 81: Full Body 1
+DESCRIPTION:Today's workout is Full Body 1. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 81: Full Body 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-82-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260622T070000
+DTEND;TZID=America/Los_Angeles:20260622T071500
+SUMMARY:Jamie Day 82: Upper Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 1. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 82: Upper Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-83-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260623T070000
+DTEND;TZID=America/Los_Angeles:20260623T071500
+SUMMARY:Jamie Day 83: Full Body 2
+DESCRIPTION:Today's workout is Full Body 2. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 83: Full Body 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-84-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260624T070000
+DTEND;TZID=America/Los_Angeles:20260624T071500
+SUMMARY:Jamie Day 84: Lower Body Pump + Mobility 1
+DESCRIPTION:Today's workout is Lower Body Pump + Mobility 1. Equipment: Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 84: Lower Body Pump + Mobility 1
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-85-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260625T070000
+DTEND;TZID=America/Los_Angeles:20260625T071500
+SUMMARY:Jamie Day 85: Full Body 3
+DESCRIPTION:Today's workout is Full Body 3. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 85: Full Body 3
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-86-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260626T070000
+DTEND;TZID=America/Los_Angeles:20260626T071500
+SUMMARY:Jamie Day 86: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 86: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-87-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260627T070000
+DTEND;TZID=America/Los_Angeles:20260627T071500
+SUMMARY:Jamie Day 87: recovery day choice
+DESCRIPTION:Open the app and pick today's recovery path. Option 1: dance 15 minutes straight\, then stretch 10. Option 2: brisk Brighton Landing walk 25\, then stretch 5. Option 3: if you feel fresh\, do one heavy basic lift for 3 sets of 5 and log the weight. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 87: recovery day choice
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-88-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260628T070000
+DTEND;TZID=America/Los_Angeles:20260628T071500
+SUMMARY:Jamie Day 88: Full Body 4
+DESCRIPTION:Today's workout is Full Body 4. Equipment: Dumbbells\, Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 88: Full Body 4
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-89-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260629T070000
+DTEND;TZID=America/Los_Angeles:20260629T071500
+SUMMARY:Jamie Day 89: Upper Body Pump + Mobility 2
+DESCRIPTION:Today's workout is Upper Body Pump + Mobility 2. Equipment: Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 89: Upper Body Pump + Mobility 2
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-day-90-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260630T070000
+DTEND;TZID=America/Los_Angeles:20260630T071500
+SUMMARY:Jamie Day 90: Full Body 5
+DESCRIPTION:Today's workout is Full Body 5. Equipment: Dumbbells\, Short & Long Bands. Open the app\, read the cues\, unlock the video\, and keep it clean instead of trying to match the trainer. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie Day 90: Full Body 5
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-1-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
 DTSTART;TZID=America/Los_Angeles:20260402T193000
 DTEND;TZID=America/Los_Angeles:20260402T194500
-RRULE:FREQ=DAILY;COUNT=90
 SUMMARY:Jamie close the loop tonight
-DESCRIPTION:Jamie\, take two calm minutes to log the day. Record the workout\, calories or deficit\, hydration\, and a quick mindset note so the day feels complete and easy to trust.\\n\\nOpen the app: https://jamie-x-sfitness-app-six.vercel.app/
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
 URL:https://jamie-x-sfitness-app-six.vercel.app/
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Close the loop in Jamie's app tonight.
+DESCRIPTION:Jamie close the loop tonight
 TRIGGER:-PT15M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:jamie-burn-weekly-reset-2026@jamieburn
-DTSTAMP:20260406T220000Z
-DTSTART;TZID=America/Los_Angeles:20260405T183000
-DTEND;TZID=America/Los_Angeles:20260405T185000
-RRULE:FREQ=WEEKLY;COUNT=13;BYDAY=SU
-SUMMARY:Jamie weekly reset and next-step preview
-DESCRIPTION:Open the app and look at the week with a steady head. Check what got done\, what needs a lighter touch next week\, and what one promise matters most now.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+UID:jamie-burn-closeout-2-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260403T193000
+DTEND;TZID=America/Los_Angeles:20260403T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
 URL:https://jamie-x-sfitness-app-six.vercel.app/
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Take a weekly reset look in Jamie's app.
-TRIGGER:-PT30M
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:jamie-burn-measurements-2026@jamieburn
-DTSTAMP:20260406T220000Z
+UID:jamie-burn-closeout-3-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260404T193000
+DTEND;TZID=America/Los_Angeles:20260404T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-4-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260405T193000
+DTEND;TZID=America/Los_Angeles:20260405T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-5-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260406T193000
+DTEND;TZID=America/Los_Angeles:20260406T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-6-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260407T193000
+DTEND;TZID=America/Los_Angeles:20260407T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-7-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260408T193000
+DTEND;TZID=America/Los_Angeles:20260408T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-8-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260409T193000
+DTEND;TZID=America/Los_Angeles:20260409T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-9-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260410T193000
+DTEND;TZID=America/Los_Angeles:20260410T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-10-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260411T193000
+DTEND;TZID=America/Los_Angeles:20260411T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-11-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260412T193000
+DTEND;TZID=America/Los_Angeles:20260412T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-12-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260413T193000
+DTEND;TZID=America/Los_Angeles:20260413T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-13-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260414T193000
+DTEND;TZID=America/Los_Angeles:20260414T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-14-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260415T193000
+DTEND;TZID=America/Los_Angeles:20260415T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-15-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260416T193000
+DTEND;TZID=America/Los_Angeles:20260416T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-16-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260417T193000
+DTEND;TZID=America/Los_Angeles:20260417T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-17-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260418T193000
+DTEND;TZID=America/Los_Angeles:20260418T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-18-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260419T193000
+DTEND;TZID=America/Los_Angeles:20260419T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-19-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260420T193000
+DTEND;TZID=America/Los_Angeles:20260420T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-20-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260421T193000
+DTEND;TZID=America/Los_Angeles:20260421T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-21-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260422T193000
+DTEND;TZID=America/Los_Angeles:20260422T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-22-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260423T193000
+DTEND;TZID=America/Los_Angeles:20260423T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-23-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260424T193000
+DTEND;TZID=America/Los_Angeles:20260424T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-24-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260425T193000
+DTEND;TZID=America/Los_Angeles:20260425T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-25-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260426T193000
+DTEND;TZID=America/Los_Angeles:20260426T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-26-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260427T193000
+DTEND;TZID=America/Los_Angeles:20260427T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-27-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260428T193000
+DTEND;TZID=America/Los_Angeles:20260428T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-28-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260429T193000
+DTEND;TZID=America/Los_Angeles:20260429T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-29-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260430T193000
+DTEND;TZID=America/Los_Angeles:20260430T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-30-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260501T193000
+DTEND;TZID=America/Los_Angeles:20260501T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-31-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260502T193000
+DTEND;TZID=America/Los_Angeles:20260502T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-32-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260503T193000
+DTEND;TZID=America/Los_Angeles:20260503T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-33-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260504T193000
+DTEND;TZID=America/Los_Angeles:20260504T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-34-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260505T193000
+DTEND;TZID=America/Los_Angeles:20260505T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-35-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260506T193000
+DTEND;TZID=America/Los_Angeles:20260506T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-36-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260507T193000
+DTEND;TZID=America/Los_Angeles:20260507T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-37-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260508T193000
+DTEND;TZID=America/Los_Angeles:20260508T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-38-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260509T193000
+DTEND;TZID=America/Los_Angeles:20260509T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-39-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260510T193000
+DTEND;TZID=America/Los_Angeles:20260510T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-40-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260511T193000
+DTEND;TZID=America/Los_Angeles:20260511T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-41-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260512T193000
+DTEND;TZID=America/Los_Angeles:20260512T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-42-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260513T193000
+DTEND;TZID=America/Los_Angeles:20260513T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-43-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260514T193000
+DTEND;TZID=America/Los_Angeles:20260514T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-44-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260515T193000
+DTEND;TZID=America/Los_Angeles:20260515T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-45-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260516T193000
+DTEND;TZID=America/Los_Angeles:20260516T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-46-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260517T193000
+DTEND;TZID=America/Los_Angeles:20260517T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-47-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260518T193000
+DTEND;TZID=America/Los_Angeles:20260518T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-48-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260519T193000
+DTEND;TZID=America/Los_Angeles:20260519T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-49-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260520T193000
+DTEND;TZID=America/Los_Angeles:20260520T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-50-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260521T193000
+DTEND;TZID=America/Los_Angeles:20260521T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-51-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260522T193000
+DTEND;TZID=America/Los_Angeles:20260522T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-52-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260523T193000
+DTEND;TZID=America/Los_Angeles:20260523T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-53-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260524T193000
+DTEND;TZID=America/Los_Angeles:20260524T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-54-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260525T193000
+DTEND;TZID=America/Los_Angeles:20260525T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-55-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260526T193000
+DTEND;TZID=America/Los_Angeles:20260526T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-56-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260527T193000
+DTEND;TZID=America/Los_Angeles:20260527T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-57-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260528T193000
+DTEND;TZID=America/Los_Angeles:20260528T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-58-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260529T193000
+DTEND;TZID=America/Los_Angeles:20260529T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-59-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260530T193000
+DTEND;TZID=America/Los_Angeles:20260530T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-60-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260531T193000
+DTEND;TZID=America/Los_Angeles:20260531T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-61-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260601T193000
+DTEND;TZID=America/Los_Angeles:20260601T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-62-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260602T193000
+DTEND;TZID=America/Los_Angeles:20260602T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-63-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260603T193000
+DTEND;TZID=America/Los_Angeles:20260603T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-64-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260604T193000
+DTEND;TZID=America/Los_Angeles:20260604T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-65-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260605T193000
+DTEND;TZID=America/Los_Angeles:20260605T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-66-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260606T193000
+DTEND;TZID=America/Los_Angeles:20260606T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-67-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260607T193000
+DTEND;TZID=America/Los_Angeles:20260607T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-68-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260608T193000
+DTEND;TZID=America/Los_Angeles:20260608T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-69-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260609T193000
+DTEND;TZID=America/Los_Angeles:20260609T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-70-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260610T193000
+DTEND;TZID=America/Los_Angeles:20260610T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-71-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260611T193000
+DTEND;TZID=America/Los_Angeles:20260611T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-72-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260612T193000
+DTEND;TZID=America/Los_Angeles:20260612T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-73-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260613T193000
+DTEND;TZID=America/Los_Angeles:20260613T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-74-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260614T193000
+DTEND;TZID=America/Los_Angeles:20260614T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-75-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260615T193000
+DTEND;TZID=America/Los_Angeles:20260615T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-76-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260616T193000
+DTEND;TZID=America/Los_Angeles:20260616T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-77-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260617T193000
+DTEND;TZID=America/Los_Angeles:20260617T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-78-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260618T193000
+DTEND;TZID=America/Los_Angeles:20260618T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-79-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260619T193000
+DTEND;TZID=America/Los_Angeles:20260619T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-80-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260620T193000
+DTEND;TZID=America/Los_Angeles:20260620T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-81-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260621T193000
+DTEND;TZID=America/Los_Angeles:20260621T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-82-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260622T193000
+DTEND;TZID=America/Los_Angeles:20260622T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-83-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260623T193000
+DTEND;TZID=America/Los_Angeles:20260623T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-84-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260624T193000
+DTEND;TZID=America/Los_Angeles:20260624T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-85-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260625T193000
+DTEND;TZID=America/Los_Angeles:20260625T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-86-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260626T193000
+DTEND;TZID=America/Los_Angeles:20260626T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-87-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260627T193000
+DTEND;TZID=America/Los_Angeles:20260627T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-88-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260628T193000
+DTEND;TZID=America/Los_Angeles:20260628T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-89-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260629T193000
+DTEND;TZID=America/Los_Angeles:20260629T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-closeout-90-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260630T193000
+DTEND;TZID=America/Los_Angeles:20260630T194500
+SUMMARY:Jamie close the loop tonight
+DESCRIPTION:Take two calm minutes to log the day. Record the workout\, calories\, water\, and a quick note if you need it. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie close the loop tonight
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-measurements-1-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
 DTSTART;TZID=America/Los_Angeles:20260402T201500
 DTEND;TZID=America/Los_Angeles:20260402T203500
-RRULE:FREQ=DAILY;INTERVAL=14;COUNT=7
 SUMMARY:Jamie measurement check-in
-DESCRIPTION:Tonight is a tape-measure night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. Stay consistent with how you measure rather than chasing a perfect number.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
 URL:https://jamie-x-sfitness-app-six.vercel.app/
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Measurement check-in tonight.
+DESCRIPTION:Jamie measurement check-in
 TRIGGER:-PT30M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:jamie-burn-inbody-2026@jamieburn
-DTSTAMP:20260406T220000Z
-DTSTART;TZID=America/Los_Angeles:20260402T204500
-DTEND;TZID=America/Los_Angeles:20260402T210500
-RRULE:FREQ=MONTHLY;COUNT=3
-SUMMARY:Jamie body-proof scan reminder
-DESCRIPTION:If you have a fresh InBody or body-composition reading\, log it tonight. This is not for judgment. It is for clearer proof and steadier decisions.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+UID:jamie-burn-measurements-15-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260416T201500
+DTEND;TZID=America/Los_Angeles:20260416T203500
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
 URL:https://jamie-x-sfitness-app-six.vercel.app/
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Log your body-proof scan if you have one.
-TRIGGER:-PT1H
+DESCRIPTION:Jamie measurement check-in
+TRIGGER:-PT30M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:jamie-burn-finish-line-proof-2026@jamieburn
-DTSTAMP:20260406T220000Z
+UID:jamie-burn-measurements-29-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260430T201500
+DTEND;TZID=America/Los_Angeles:20260430T203500
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie measurement check-in
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-measurements-43-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260514T201500
+DTEND;TZID=America/Los_Angeles:20260514T203500
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie measurement check-in
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-measurements-57-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260528T201500
+DTEND;TZID=America/Los_Angeles:20260528T203500
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie measurement check-in
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-measurements-71-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260611T201500
+DTEND;TZID=America/Los_Angeles:20260611T203500
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie measurement check-in
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-measurements-85-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260625T201500
+DTEND;TZID=America/Los_Angeles:20260625T203500
+SUMMARY:Jamie measurement check-in
+DESCRIPTION:Tape-check night. Log chest\, waist\, hips\, right thigh\, and right bicep in the app. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie measurement check-in
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-inbody-1-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260402T204500
+DTEND;TZID=America/Los_Angeles:20260402T210500
+SUMMARY:Jamie body-proof scan reminder
+DESCRIPTION:If you have fresh scan numbers\, log them tonight. This is proof\, not punishment. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie body-proof scan reminder
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-inbody-31-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260502T204500
+DTEND;TZID=America/Los_Angeles:20260502T210500
+SUMMARY:Jamie body-proof scan reminder
+DESCRIPTION:If you have fresh scan numbers\, log them tonight. This is proof\, not punishment. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie body-proof scan reminder
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-inbody-61-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260601T204500
+DTEND;TZID=America/Los_Angeles:20260601T210500
+SUMMARY:Jamie body-proof scan reminder
+DESCRIPTION:If you have fresh scan numbers\, log them tonight. This is proof\, not punishment. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie body-proof scan reminder
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-4-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260405T183000
+DTEND;TZID=America/Los_Angeles:20260405T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-11-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260412T183000
+DTEND;TZID=America/Los_Angeles:20260412T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-18-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260419T183000
+DTEND;TZID=America/Los_Angeles:20260419T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-25-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260426T183000
+DTEND;TZID=America/Los_Angeles:20260426T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-32-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260503T183000
+DTEND;TZID=America/Los_Angeles:20260503T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-39-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260510T183000
+DTEND;TZID=America/Los_Angeles:20260510T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-46-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260517T183000
+DTEND;TZID=America/Los_Angeles:20260517T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-53-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260524T183000
+DTEND;TZID=America/Los_Angeles:20260524T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-60-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260531T183000
+DTEND;TZID=America/Los_Angeles:20260531T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-67-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260607T183000
+DTEND;TZID=America/Los_Angeles:20260607T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-74-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260614T183000
+DTEND;TZID=America/Los_Angeles:20260614T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-81-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260621T183000
+DTEND;TZID=America/Los_Angeles:20260621T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-weekly-reset-88-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
+DTSTART;TZID=America/Los_Angeles:20260628T183000
+DTEND;TZID=America/Los_Angeles:20260628T185000
+SUMMARY:Jamie weekly reset and next-step preview
+DESCRIPTION:Open the app\, look at the week with a steady head\, and pick the one promise that matters most next. App link: https://jamie-x-sfitness-app-six.vercel.app/
+URL:https://jamie-x-sfitness-app-six.vercel.app/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Jamie weekly reset and next-step preview
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:jamie-burn-finish-line-proof-2026-04-02@jamieburn
+DTSTAMP:20260407T060000Z
 DTSTART;TZID=America/Los_Angeles:20260630T200000
 DTEND;TZID=America/Los_Angeles:20260630T203000
 SUMMARY:Jamie final 90-day proof check
-DESCRIPTION:Take the final look with kindness and honesty. Log any last workout details\, closeout notes\, measurements\, and scan data that help you see the full story of these 90 days.\\n\\nApp link: https://jamie-x-sfitness-app-six.vercel.app/
+DESCRIPTION:Take the final look with kindness and honesty. Log anything that helps you see the full story of these 90 days. App link: https://jamie-x-sfitness-app-six.vercel.app/
 URL:https://jamie-x-sfitness-app-six.vercel.app/
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Final 90-day proof check tonight.
-TRIGGER:-PT1H
+DESCRIPTION:Jamie final 90-day proof check
+TRIGGER:-PT60M
 END:VALARM
 END:VEVENT
 END:VCALENDAR
