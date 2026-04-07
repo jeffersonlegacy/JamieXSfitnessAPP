@@ -22,8 +22,6 @@ import { useJamieDashboard } from './hooks/useJamieDashboard'
 import WorkoutCoachPanel from './components/WorkoutCoachPanel'
 import WorkoutPlayer from './components/WorkoutPlayer'
 import {
-  HELLO_LINES,
-  KUROMI_LINES,
   PERSPECTIVE_CARDS,
   PROGRAM_START,
   TOTAL_DAYS,
@@ -42,7 +40,6 @@ import {
   isInBodyDue,
   isMeasurementDue,
   numberOrNull,
-  pickMotivationLine,
 } from './lib/program'
 
 const EMPTY_TRACKING = {
@@ -66,8 +63,6 @@ const EMPTY_INBODY = {
   bmr: '',
 }
 
-const COACH_STORAGE_KEY = 'jamie-coach-v1'
-
 export default function App() {
   const [activeTab, setActiveTab] = useState('workout')
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
@@ -78,7 +73,6 @@ export default function App() {
   const [coachOpen, setCoachOpen] = useState(false)
   const [coachDraft, setCoachDraft] = useState('')
   const [coachSending, setCoachSending] = useState(false)
-  const [coachMessages, setCoachMessages] = useState(() => loadStoredCoachMessages())
   const [saving, setSaving] = useState({
     workout: false,
     deficit: false,
@@ -104,6 +98,10 @@ export default function App() {
   const trackingByDate = indexById(dashboard.tracking)
   const measurementsByDate = indexById(dashboard.measurements)
   const scansByDate = indexById(dashboard.inbodyScans)
+  const coachMessages = (dashboard.coachMessages || []).map((entry) => ({
+    role: entry.role === 'assistant' ? 'assistant' : 'user',
+    content: String(entry.content || '').trim(),
+  }))
 
   const todayWorkoutEntry = workoutsByDate[todayKey]
   const todayTrackingEntry = trackingByDate[todayKey]
@@ -174,23 +172,6 @@ export default function App() {
     return () => window.clearTimeout(timeoutId)
   }, [toast])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    try {
-      if (coachMessages.length) {
-        window.localStorage.setItem(
-          COACH_STORAGE_KEY,
-          JSON.stringify(coachMessages.slice(-8)),
-        )
-      } else {
-        window.localStorage.removeItem(COACH_STORAGE_KEY)
-      }
-    } catch (error) {
-      console.warn('Could not store coach history.', error)
-    }
-  }, [coachMessages])
-
   if (!isFirebaseConfigured || session.status === 'needs-config') {
     return <ConfigurationState envKeys={firebaseEnvKeys} />
   }
@@ -217,15 +198,13 @@ export default function App() {
   const trackingLoggedToday = hasTrackingContent(todayTrackingEntry)
   const adviceChecks = todayVideoState?.adviceChecks || {}
   const workoutReady = Boolean(todayVideoState?.readyConfirmed || workoutComplete)
-  const helloLine = pickMotivationLine(
-    HELLO_LINES,
-    completedWorkouts.length + currentWeek,
-  )
-  const kuromiLine = pickMotivationLine(
-    KUROMI_LINES,
-    hydrationWins + (todayDay || 1),
-  )
   const currentGoal = dashboard.goals[0]?.text ?? ''
+  const recentMindsetNotes = getRecentMindsetNotes(dashboard.tracking)
+  const coachMemorySummary = buildCoachMemorySummary({
+    coachMemory: dashboard.coachMemory,
+    currentGoal,
+    recentMindsetNotes,
+  })
 
   async function handleWorkoutComplete() {
     if (!todayDay) return
@@ -293,6 +272,12 @@ export default function App() {
         mindsetTitle: trackingDraft.mindsetTitle.trim(),
         mindsetLog: trackingDraft.mindsetLog.trim(),
       })
+      await dashboard.actions.saveCoachMemory({
+        latestMindsetTitle: trackingDraft.mindsetTitle.trim(),
+        latestMindsetLog: trackingDraft.mindsetLog.trim(),
+        lastSoulEntryDate: todayKey,
+        latestGoal: currentGoal || null,
+      })
       setToast('Mindset note saved.')
     } catch (error) {
       setToast(error.message || 'Could not save the mindset note.')
@@ -355,6 +340,9 @@ export default function App() {
     try {
       const trimmed = newGoal.trim()
       await dashboard.actions.addGoal(trimmed)
+      await dashboard.actions.saveCoachMemory({
+        latestGoal: trimmed,
+      })
       setNewGoal('')
       setToast('Your words are on the wall now.')
     } catch (error) {
@@ -424,33 +412,28 @@ export default function App() {
   async function handleSendCoachMessage() {
     const prompt = coachDraft.trim()
     if (!prompt) return
-
-    const nextMessages = [
-      ...coachMessages,
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ].slice(-8)
-
-    setCoachMessages(nextMessages)
     setCoachDraft('')
     setCoachSending(true)
 
     try {
+      await dashboard.actions.addCoachMessage({
+        role: 'user',
+        content: prompt,
+        source: 'coach-kitty',
+      })
+
       const response = await fetch('/api/coach', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: nextMessages,
+          messages: [...coachMessages, { role: 'user', content: prompt }].slice(-12),
           context: {
+            displayName: dashboard.settings?.displayName || USER_NAME,
             day: todayDay,
             workoutName: todayWorkout?.name ?? '',
             phaseName: currentPhaseName,
-            coachTitle: helloLine,
-            coachBody: kuromiLine,
             nextStep: buildNextStep({
               trackingLoggedToday,
               workout: todayWorkout,
@@ -463,6 +446,13 @@ export default function App() {
             goal: currentGoal,
             workoutStreak: completedWorkouts.length,
             hydrationStreak: hydrationWins,
+            memorySummary: coachMemorySummary,
+            recentGoals: dashboard.goals.slice(0, 4).map((entry) => entry.text),
+            recentMindsetNotes,
+            latestMindsetTitle:
+              dashboard.coachMemory?.latestMindsetTitle || todayTrackingEntry?.mindsetTitle || '',
+            latestMindsetLog:
+              dashboard.coachMemory?.latestMindsetLog || todayTrackingEntry?.mindsetLog || '',
           },
         }),
       })
@@ -473,34 +463,32 @@ export default function App() {
         throw new Error(payload?.error || 'Coach is not ready yet.')
       }
 
-      setCoachMessages((current) =>
-        [
-          ...current,
-          {
-            role: 'assistant',
-            content: payload.reply,
-          },
-        ].slice(-10),
-      )
+      await dashboard.actions.addCoachMessage({
+        role: 'assistant',
+        content: payload.reply,
+        source: 'coach-kitty',
+      })
+      await dashboard.actions.saveCoachMemory({
+        latestCoachQuestion: extractFollowUpQuestion(payload.reply),
+        latestCoachReply: payload.reply,
+        latestGoal: currentGoal || dashboard.coachMemory?.latestGoal || null,
+      })
     } catch {
-      setCoachMessages((current) =>
-        [
-          ...current,
-          {
-            role: 'assistant',
-            content: buildCoachFallbackReply({
-              helloLine,
-              inbodyDue,
-              kuromiLine,
-              measurementsDue,
-              prompt,
-              trackingLoggedToday,
-              workout: todayWorkout,
-              workoutComplete,
-            }),
-          },
-        ].slice(-10),
-      )
+      const fallbackReply = buildCoachFallbackReply({
+        coachMemorySummary,
+        currentGoal,
+        inbodyDue,
+        measurementsDue,
+        prompt,
+        trackingLoggedToday,
+        workout: todayWorkout,
+        workoutComplete,
+      })
+      await dashboard.actions.addCoachMessage({
+        role: 'assistant',
+        content: fallbackReply,
+        source: 'coach-kitty',
+      })
       setToast('Coach answered in backup mode.')
     } finally {
       setCoachSending(false)
@@ -557,16 +545,14 @@ export default function App() {
             coachMessages={coachMessages}
             coachOpen={coachOpen}
             coachSending={coachSending}
+            coachSummary={coachMemorySummary}
             onChangeTracking={setTrackingDraft}
             onCoachDraftChange={setCoachDraft}
             onCoachOpenChange={setCoachOpen}
             onSaveMindset={handleSaveMindset}
             onSendCoachMessage={handleSendCoachMessage}
             saving={saving.goal}
-            settings={dashboard.settings}
             supportSaving={saving}
-            helloLine={helloLine}
-            kuromiLine={kuromiLine}
             currentDay={todayDay}
             trackingDraft={trackingDraft}
           />
@@ -1130,72 +1116,56 @@ function MotivationView({
   coachMessages,
   coachOpen,
   coachSending,
+  coachSummary,
   onChangeTracking,
   onCoachDraftChange,
   onCoachOpenChange,
   onSaveMindset,
   onSendCoachMessage,
-  settings,
   supportSaving,
-  helloLine,
-  kuromiLine,
   currentDay,
   trackingDraft,
 }) {
-  const [showPerspective, setShowPerspective] = useState(false)
-
   return (
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="A steadier voice for the hard part."
-          kicker="Support"
-          title="What you need today"
+          copy="Swipe this when your brain gets loud."
+          kicker="Mindset gallery"
+          title="What is actually true"
         />
 
-        <div className="mt-5 grid gap-3">
-          <article className="rounded-[24px] border border-blush-300/14 bg-[linear-gradient(150deg,rgba(255,143,200,0.18),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.08))] p-5">
-            <div className="micro-label">Hello Kitty softness</div>
-            <p className="mt-3 text-[15px] leading-7 text-white/88">{helloLine}</p>
-          </article>
-          <article className="rounded-[24px] border border-plum-300/14 bg-[linear-gradient(155deg,rgba(141,103,255,0.16),rgba(255,255,255,0.03)_52%,rgba(255,106,175,0.08))] p-5">
-            <div className="micro-label">Kuromi backbone</div>
-            <p className="mt-3 text-[15px] leading-7 text-white/82">{kuromiLine}</p>
-          </article>
+        <div className="no-scrollbar mt-5 grid auto-cols-[86%] grid-flow-col gap-3 overflow-x-auto pb-1">
+          {PERSPECTIVE_CARDS.map((card) => (
+            <PerspectiveCard card={card} key={card.title} />
+          ))}
         </div>
       </section>
 
       <section className="surface">
         <SectionHeader
-          copy="Use this before your brain turns one weird day into a whole story."
-          kicker="Perspective"
-          title="When your brain spirals"
+          copy="Talk here when your head is being mean, dramatic, or tired. Coach Kitty remembers what matters."
+          kicker="Coach Kitty"
+          title="Talk to Coach Kitty"
         />
 
-        <div className="mt-5 flex justify-start">
-          <button
-            className="ghost-chip"
-            onClick={() => setShowPerspective((current) => !current)}
-            type="button"
-          >
-            {showPerspective ? 'Hide' : 'Read this'}
-          </button>
-        </div>
-
-        {showPerspective && (
-          <div className="no-scrollbar mt-5 grid auto-cols-[84%] grid-flow-col gap-3 overflow-x-auto pb-1">
-            {PERSPECTIVE_CARDS.map((card) => (
-              <PerspectiveCard card={card} key={card.title} />
-            ))}
-          </div>
-        )}
+        <CoachSupportCard
+          draft={coachDraft}
+          isOpen={coachOpen}
+          memorySummary={coachSummary}
+          messages={coachMessages}
+          onDraftChange={onCoachDraftChange}
+          onOpenChange={onCoachOpenChange}
+          onSend={onSendCoachMessage}
+          sending={coachSending}
+        />
       </section>
 
       <section className="surface">
         <SectionHeader
-          copy="Leave yourself something honest before the day ends."
-          kicker="Mindset note"
-          title="Leave yourself a note"
+          copy="Coach Kitty reads this too, so this is where you teach the app the real you."
+          kicker="Soul file"
+          title="Leave the real story"
         />
 
         <div className="mt-5 rounded-[24px] border border-plum-300/12 bg-plum-300/[0.08] p-4">
@@ -1235,36 +1205,13 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="A quick place to talk it out when you need a voice back."
-          kicker="Coach"
-          title="Talk to coach"
-        />
-
-        <CoachSupportCard
-          draft={coachDraft}
-          isOpen={coachOpen}
-          messages={coachMessages}
-          onDraftChange={onCoachDraftChange}
-          onOpenChange={onCoachOpenChange}
-          onSend={onSendCoachMessage}
-          sending={coachSending}
-        />
-      </section>
-
-      <section className="surface">
-        <SectionHeader
-          copy="Add the reminders once and let Calendar carry the rhythm."
+          copy="One download. Then Calendar handles it."
           kicker="Reminders"
-          title="Keep the reminders easy"
+          title="Add once and done"
         />
 
-        <div className="mt-5 grid gap-3">
+        <div className="mt-4 grid gap-3">
           <CalendarSupportCard calendarUrl="/Jamie_90_Day_Burn_Reminders.ics" />
-        </div>
-
-        <div className="mt-4 rounded-[20px] border border-white/8 bg-white/[0.04] p-4 text-[13px] leading-6 text-white/64">
-          {settings?.displayName || USER_NAME}, this should feel like a hand on your back,
-          not another thing you have to manage.
         </div>
       </section>
     </div>
@@ -1316,32 +1263,57 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
 
       <section className="surface">
         <SectionHeader
-          copy="Each line stays dated so you can see what mattered and when."
-          kicker="Recent promises"
-          title={jamiePosts.length ? 'On the board' : 'The board is ready'}
+          copy="One living board. Every line stays dated and becomes part of the piece."
+          kicker="The board"
+          title={jamiePosts.length ? 'Your promises in motion' : 'The board is ready'}
         />
 
-        <div className="mt-5 space-y-4">
+        <div className="relative mt-5 overflow-hidden rounded-[30px] border border-[#d7f0d8]/10 bg-[linear-gradient(180deg,rgba(23,43,36,0.98),rgba(17,31,27,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.03),0_18px_38px_rgba(0,0,0,0.26)]">
+          <div className="pointer-events-none absolute -left-8 top-8 h-24 w-24 rounded-full bg-[#dff6e2]/[0.03] blur-2xl" />
+          <div className="pointer-events-none absolute right-0 top-16 h-20 w-32 rounded-full bg-[#f4fff6]/[0.02] blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-6 top-4 h-px bg-white/8" />
+          <div className="pointer-events-none absolute inset-x-8 bottom-4 h-3 rounded-full bg-black/18 blur-md" />
+
           {jamiePosts.length ? (
-            jamiePosts.map((post) => (
-              <article
-                className="rounded-[28px] border border-[#d7f0d8]/10 bg-[linear-gradient(180deg,rgba(23,43,36,0.98),rgba(17,31,27,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.03),0_18px_38px_rgba(0,0,0,0.26)]"
-                key={post.id}
-              >
-                <div className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
-                  {formatGoalDate(post)}
-                </div>
-                <p
-                  className="mt-4 text-[20px] leading-8 text-[#f3fff5]/88"
-                  style={{
-                    fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-                    textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(237,255,242,0.06)',
-                  }}
-                >
-                  {post.text}
-                </p>
-              </article>
-            ))
+            <div className="relative space-y-4">
+              {jamiePosts.map((post, index) => {
+                const art = getChalkArtStyle(index)
+
+                return (
+                  <article
+                    className="relative"
+                    key={post.id}
+                    style={{
+                      marginLeft: art.marginLeft,
+                      maxWidth: art.maxWidth,
+                      transform: art.transform,
+                    }}
+                  >
+                    <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
+                      <span>{formatGoalDate(post)}</span>
+                      <span className="h-px flex-1 bg-white/8" />
+                    </div>
+                    <p
+                      className="mt-3 text-[20px] leading-8 text-[#f3fff5]/88"
+                      style={{
+                        fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
+                        textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(237,255,242,0.06)',
+                      }}
+                    >
+                      {post.text}
+                    </p>
+                    <div
+                      className="mt-2 h-[3px] rounded-full"
+                      style={{
+                        background: art.stroke,
+                        opacity: 0.8,
+                        width: art.strokeWidth,
+                      }}
+                    />
+                  </article>
+                )
+              })}
+            </div>
           ) : (
             <div className="rounded-[24px] border border-white/8 bg-white/[0.04] p-5 text-[14px] leading-7 text-white/62">
               The chalkboard is empty right now. Add one line and it will show up here with today's date.
@@ -1375,13 +1347,12 @@ function CalendarSupportCard({ calendarUrl }) {
             Add reminders
           </div>
         </div>
-        <p className="mt-3 text-[14px] leading-7 text-white/74">
-          Download one calendar file for the 7:00 AM workout reminder, the nightly closeout,
-          and the progress check-ins.
+        <p className="mt-2 text-[13px] leading-6 text-white/70">
+          Download once. Calendar takes it from there.
         </p>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <a
           className="primary-button inline-flex w-auto items-center justify-center px-4"
           download="Jamie_90_Day_Burn_Reminders.ics"
@@ -1412,6 +1383,7 @@ function CalendarSupportCard({ calendarUrl }) {
 function CoachSupportCard({
   draft,
   isOpen,
+  memorySummary,
   messages,
   onDraftChange,
   onOpenChange,
@@ -1427,11 +1399,11 @@ function CoachSupportCard({
           <div className="flex items-center gap-2">
             <Brain className="text-plum-300" size={16} />
             <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-              First version
+              Coach Kitty
             </div>
           </div>
           <p className="mt-3 text-[14px] leading-7 text-white/74">
-            Ask for one clear next step, a reset, or help getting unstuck.
+            She calls out the bullshit gently, reminds you what is true, and gives you one next move.
           </p>
         </div>
         <button className="ghost-chip" onClick={() => onOpenChange(!isOpen)} type="button">
@@ -1441,6 +1413,12 @@ function CoachSupportCard({
 
       {isOpen ? (
         <div className="mt-4 grid gap-3">
+          {memorySummary ? (
+            <div className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3 text-[12px] leading-6 text-white/64">
+              What Coach Kitty knows about you right now: {memorySummary}
+            </div>
+          ) : null}
+
           {visibleMessages.length ? (
             <div className="grid gap-2">
               {visibleMessages.map((message, index) => (
@@ -1463,11 +1441,11 @@ function CoachSupportCard({
             <textarea
               className="field-shell min-h-[96px] resize-none"
               onChange={(event) => onDraftChange(event.target.value)}
-              placeholder="I need help getting moving today."
+              placeholder="Coach Kitty, talk me out of the nonsense in my head right now."
               value={draft}
             />
             <button className="primary-button" disabled={sending} onClick={onSend} type="button">
-              {sending ? 'Thinking...' : 'Ask coach'}
+              {sending ? 'Thinking...' : 'Send to Coach Kitty'}
             </button>
           </div>
         </div>
@@ -1477,19 +1455,14 @@ function CoachSupportCard({
 }
 
 function PerspectiveCard({ card }) {
-  const [expanded, setExpanded] = useState(false)
-
   return (
-    <article className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.14),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5">
+    <article className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.16),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5">
       <div className="micro-label">{card.category}</div>
       <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
+      <p className="mt-3 text-[14px] leading-7 text-white/76">{card.body}</p>
       <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[13px] leading-6 text-white/82">
         <span className="font-bold text-gold-300">Coach note:</span> {card.takeaway}
       </div>
-      {expanded ? <p className="mt-4 text-[14px] leading-7 text-white/74">{card.body}</p> : null}
-      <button className="ghost-chip mt-4" onClick={() => setExpanded((current) => !current)} type="button">
-        {expanded ? 'Hide' : 'Why this matters'}
-      </button>
     </article>
   )
 }
@@ -1872,29 +1845,6 @@ function hasTrackingContent(entry) {
   )
 }
 
-function loadStoredCoachMessages() {
-  if (typeof window === 'undefined') return []
-
-  try {
-    const raw = window.localStorage.getItem(COACH_STORAGE_KEY)
-    if (!raw) return []
-
-    const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-
-    return parsed
-      .map((entry) => ({
-        role: entry?.role === 'assistant' ? 'assistant' : 'user',
-        content: String(entry?.content || '').trim(),
-      }))
-      .filter((entry) => entry.content)
-      .slice(-8)
-  } catch (error) {
-    console.warn('Could not read stored coach history.', error)
-    return []
-  }
-}
-
 function buildNextStep({ trackingLoggedToday, workout, workoutComplete }) {
   if (workoutComplete) {
     return trackingLoggedToday
@@ -1910,9 +1860,9 @@ function buildNextStep({ trackingLoggedToday, workout, workoutComplete }) {
 }
 
 function buildCoachFallbackReply({
-  helloLine,
+  coachMemorySummary,
+  currentGoal,
   inbodyDue,
-  kuromiLine,
   measurementsDue,
   prompt,
   trackingLoggedToday,
@@ -1931,13 +1881,78 @@ function buildCoachFallbackReply({
     return 'One data point is not your whole story. Stay with the trend, not the panic.'
   }
 
+  if (text.includes('protein') || text.includes('calories') || text.includes('cardio')) {
+    return 'Back to basics, babe: protein, enough movement, enough recovery, and consistency still beat gimmicks and panic every single time.'
+  }
+
   if (measurementsDue || inbodyDue) {
     return 'If you have the numbers, log them. If you do not, keep moving and come back when you do.'
   }
 
   if (trackingLoggedToday) {
-    return kuromiLine
+    return 'You already logged the day. That counts. Now let yourself stop spiraling and take the damn win.'
   }
 
-  return helloLine
+  if (currentGoal) {
+    return `Come back to your promise: ${currentGoal}`
+  }
+
+  if (coachMemorySummary) {
+    return `What is true right now: ${coachMemorySummary}`
+  }
+
+  return workout?.type === 'rest'
+    ? 'Keep it simple. A calm recovery block still counts and still moves this forward.'
+    : 'You do not need a heroic mood. You need one honest start.'
+}
+
+function buildCoachMemorySummary({ coachMemory, currentGoal, recentMindsetNotes }) {
+  const pieces = []
+
+  if (currentGoal) pieces.push(`Your current promise is "${currentGoal}".`)
+  if (coachMemory?.latestMindsetTitle) {
+    pieces.push(`Your latest note was titled "${coachMemory.latestMindsetTitle}".`)
+  }
+  if (coachMemory?.latestMindsetLog) {
+    pieces.push(shortenText(coachMemory.latestMindsetLog, 120))
+  } else if (recentMindsetNotes[0]?.log) {
+    pieces.push(shortenText(recentMindsetNotes[0].log, 120))
+  }
+
+  return pieces.join(' ').trim()
+}
+
+function getRecentMindsetNotes(trackingEntries) {
+  return [...trackingEntries]
+    .filter((entry) => entry.mindsetTitle || entry.mindsetLog)
+    .sort((a, b) => String(b.id).localeCompare(String(a.id)))
+    .slice(0, 4)
+    .map((entry) => ({
+      date: entry.id,
+      title: String(entry.mindsetTitle || '').trim(),
+      log: shortenText(String(entry.mindsetLog || '').trim(), 140),
+    }))
+}
+
+function extractFollowUpQuestion(reply) {
+  const match = String(reply || '').match(/[^?]*\?/g)
+  if (!match?.length) return ''
+  return String(match.at(-1)).trim()
+}
+
+function shortenText(value, maxLength) {
+  const text = String(value || '').trim()
+  if (text.length <= maxLength) return text
+  return `${text.slice(0, maxLength - 1).trim()}…`
+}
+
+function getChalkArtStyle(index) {
+  const variants = [
+    { marginLeft: '0%', maxWidth: '90%', transform: 'rotate(-1deg)', stroke: 'linear-gradient(90deg, rgba(209,240,214,0.9), rgba(209,240,214,0.12))', strokeWidth: '58%' },
+    { marginLeft: '8%', maxWidth: '82%', transform: 'rotate(0.8deg)', stroke: 'linear-gradient(90deg, rgba(255,227,175,0.88), rgba(255,227,175,0.1))', strokeWidth: '46%' },
+    { marginLeft: '3%', maxWidth: '86%', transform: 'rotate(-0.5deg)', stroke: 'linear-gradient(90deg, rgba(230,244,255,0.92), rgba(230,244,255,0.12))', strokeWidth: '52%' },
+    { marginLeft: '12%', maxWidth: '78%', transform: 'rotate(1.2deg)', stroke: 'linear-gradient(90deg, rgba(255,210,221,0.86), rgba(255,210,221,0.1))', strokeWidth: '40%' },
+  ]
+
+  return variants[index % variants.length]
 }

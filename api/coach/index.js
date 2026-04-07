@@ -104,6 +104,26 @@ function buildConversation(messages) {
   }))
 }
 
+function isHighRiskMessage(text) {
+  const normalized = String(text || '').toLowerCase()
+
+  return [
+    'suicide',
+    'kill myself',
+    'want to die',
+    'hurt myself',
+    'self harm',
+    'self-harm',
+    'end my life',
+    'not worth living',
+    'better off dead',
+  ].some((phrase) => normalized.includes(phrase))
+}
+
+function buildHighRiskReply() {
+  return 'Jamie, I’m really glad you said that out loud. I need you to reach out to a real person right now: call or text 988 in the U.S., or call emergency services if you might act on this tonight. Stay with someone, or get someone to stay with you.'
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Allow', 'POST,OPTIONS')
@@ -140,6 +160,16 @@ export default async function handler(req, res) {
     const latestUserMessage =
       messages.filter((entry) => entry.role === 'user').at(-1)?.text ||
       String(body?.message || '').trim()
+
+    if (isHighRiskMessage(latestUserMessage)) {
+      json(res, 200, {
+        success: true,
+        model: 'safety-fallback',
+        reply: buildHighRiskReply(),
+        usage: null,
+      })
+      return
+    }
 
     const prompt = buildCoachInstruction(context)
     const ai = getGeminiClient()
