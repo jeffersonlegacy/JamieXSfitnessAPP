@@ -6,8 +6,6 @@ import {
   Brain,
   Calendar as CalendarIcon,
   CheckCircle2,
-  ChevronDown,
-  ChevronUp,
   Droplets,
   Flame,
   Heart,
@@ -68,7 +66,6 @@ export default function App() {
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
   const [playerOpen, setPlayerOpen] = useState(true)
   const [newGoal, setNewGoal] = useState('')
-  const [coachOpen, setCoachOpen] = useState(false)
   const [coachDraft, setCoachDraft] = useState('')
   const [coachSending, setCoachSending] = useState(false)
   const [saving, setSaving] = useState({
@@ -550,15 +547,12 @@ export default function App() {
           <MotivationView
             coachDraft={coachDraft}
             coachMessages={coachMessages}
-            coachOpen={coachOpen}
             coachSending={coachSending}
             coachSummary={coachMemorySummary}
             onChangeTracking={setTrackingDraft}
             onCoachDraftChange={setCoachDraft}
-            onCoachOpenChange={setCoachOpen}
             onSaveMindset={handleSaveMindset}
             onSendCoachMessage={handleSendCoachMessage}
-            saving={saving.goal}
             supportSaving={saving}
             currentDay={todayDay}
             trackingDraft={trackingDraft}
@@ -1105,12 +1099,10 @@ function TrackingView({
 function MotivationView({
   coachDraft,
   coachMessages,
-  coachOpen,
   coachSending,
   coachSummary,
   onChangeTracking,
   onCoachDraftChange,
-  onCoachOpenChange,
   onSaveMindset,
   onSendCoachMessage,
   supportSaving,
@@ -1119,14 +1111,26 @@ function MotivationView({
 }) {
   return (
     <div className="grid gap-4">
-      <section className="surface">
-        <SectionHeader
-          copy="Swipe this when your brain gets loud."
-          kicker="Mindset gallery"
-          title="What is actually true"
-        />
+      <section className="surface overflow-hidden">
+        <div className="relative overflow-hidden rounded-[26px] border border-white/10">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('/coach-kitty-gym.jpeg')" }}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,4,10,0.92),rgba(18,8,18,0.72)_44%,rgba(18,8,22,0.58)),linear-gradient(180deg,rgba(255,78,162,0.2),transparent_56%,rgba(0,0,0,0.22))]" />
+          <div className="relative p-5">
+            <div className="micro-label text-blush-100">Coach Kitty / Kuromi Squad</div>
+            <h3 className="display-copy mt-3 max-w-[12ch] text-[2rem] leading-[0.92] text-white">
+              Swipe when your brain starts lying.
+            </h3>
+            <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/76">
+              Quick gym truths. Real science. No soft bullshit.
+            </p>
+          </div>
+        </div>
 
-        <div className="no-scrollbar mt-5 grid auto-cols-[86%] grid-flow-col gap-3 overflow-x-auto pb-1">
+        <div className="no-scrollbar mt-4 grid auto-cols-[88%] grid-flow-col gap-3 overflow-x-auto pb-1">
+          <CoachKittyPosterCard />
           {PERSPECTIVE_CARDS.map((card) => (
             <PerspectiveCard card={card} key={card.title} />
           ))}
@@ -1135,18 +1139,16 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="Use this when your head gets mean, loud, or tired. She remembers the important stuff and helps you steady the next step."
+          copy="Say it straight. She remembers the important stuff and helps you steady the next move."
           kicker="Coach Kitty"
-          title="Talk to Coach Kitty"
+          title="Gym floor talk"
         />
 
         <CoachSupportCard
           draft={coachDraft}
-          isOpen={coachOpen}
           memorySummary={coachSummary}
           messages={coachMessages}
           onDraftChange={onCoachDraftChange}
-          onOpenChange={onCoachOpenChange}
           onSend={onSendCoachMessage}
           sending={coachSending}
         />
@@ -1154,12 +1156,12 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="Use this when a quick message is not enough. It helps Coach Kitty understand your patterns, your wins, and what actually helps."
+          copy="Write it before the night starts lying to you."
           kicker="Mindset note"
-          title="Leave the fuller story"
+          title="The fuller story"
         />
 
-        <div className="mt-5 rounded-[24px] border border-plum-300/12 bg-plum-300/[0.08] p-4">
+        <div className="mt-5 rounded-[24px] border border-[#ff74b4]/14 bg-[linear-gradient(180deg,rgba(255,87,164,0.08),rgba(255,255,255,0.03)),rgba(15,10,17,0.82)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <div className="text-sm text-white/48">
             Day {currentDay || 0} of {TOTAL_DAYS}:{' '}
             <input
@@ -1187,23 +1189,15 @@ function MotivationView({
             value={trackingDraft.mindsetLog}
           />
           <div className="mt-3 flex justify-end">
-            <button className="ghost-chip" onClick={onSaveMindset} type="button">
-              {supportSaving.mindset ? 'Saving...' : 'Save note'}
+            <button className="primary-button w-auto px-4" onClick={onSaveMindset} type="button">
+              {supportSaving.mindset ? 'Saving...' : 'Save this note'}
             </button>
           </div>
         </div>
       </section>
 
-      <section className="surface">
-        <SectionHeader
-          copy="One download. Then Calendar handles it."
-          kicker="Reminders"
-          title="Add once and done"
-        />
-
-        <div className="mt-4 grid gap-3">
-          <CalendarSupportCard calendarUrl="/Jamie_90_Day_Burn_Reminders.ics" />
-        </div>
+      <section className="surface-soft border border-white/8 bg-white/[0.035] p-3">
+        <CalendarSupportCard calendarUrl="/Jamie_90_Day_Burn_Reminders.ics" />
       </section>
     </div>
   )
@@ -1212,41 +1206,62 @@ function MotivationView({
 function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, settings }) {
   const wallName = settings?.displayName || USER_NAME
   const jamiePosts = goals
+  const featuredPost = jamiePosts[0] || null
+  const archivePosts = jamiePosts.slice(1, 9)
 
   return (
     <div className="grid gap-4">
       <section className="surface">
-        <SectionHeader
-          copy="Write one line and let it land."
-          kicker="Your wall"
-          title="Today's promise"
-        />
-
-        <div className="mt-5 rounded-[28px] border border-[#d7f0d8]/10 bg-[linear-gradient(180deg,rgba(25,45,38,0.98),rgba(18,34,30,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.03),0_22px_44px_rgba(0,0,0,0.28)]">
-          <div className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#c7dfcb]/58">
-            Fresh chalk
+        <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,11,19,0.98),rgba(10,7,13,0.98))] p-5 shadow-[0_26px_50px_rgba(0,0,0,0.34)]">
+          <div
+            className="absolute inset-x-0 top-0 h-36 bg-cover bg-center opacity-42"
+            style={{ backgroundImage: "url('/coach-kitty-gym.jpeg')" }}
+          />
+          <div className="absolute inset-x-0 top-0 h-36 bg-[linear-gradient(180deg,rgba(10,5,12,0.18),rgba(10,5,12,0.88))]" />
+          <div className="relative">
+            <div className="micro-label text-blush-100">Promise wall</div>
+            <h3 className="display-copy mt-3 max-w-[12ch] text-[1.9rem] leading-[0.94] text-white">
+              Put the line on the wall.
+            </h3>
+            <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/72">
+              Write the promise you want staring back at you tonight.
+            </p>
           </div>
-          <p className="mt-3 text-[14px] leading-7 text-[#ecf7ee]/72">
-            One promise. One truth. One line you want to see staring back at you later.
-          </p>
-          <div className="mt-4 rounded-[22px] border border-white/8 bg-black/14 p-2">
+
+          <div className="relative mt-24 rounded-[22px] border border-white/8 bg-black/20 p-2 backdrop-blur-md">
             <input
               className="w-full bg-transparent px-3 py-3 text-[15px] text-[#f6fff8] outline-none placeholder:text-[#f6fff8]/28"
               onChange={(event) => onChangeGoal(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') onAddGoal()
               }}
-              placeholder="I am keeping my promise to myself today."
+              placeholder="I keep promises to myself."
               type="text"
               value={newGoal}
             />
           </div>
+          {newGoal.trim() ? (
+            <div className="relative mt-4 rounded-[22px] border border-[#ffe6f1]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),rgba(20,29,25,0.92)] p-4">
+              <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#f7dbe5]/52">
+                Waiting for chalk
+              </div>
+              <p
+                className="mt-3 text-[22px] leading-8 text-[#f7fff8]/88"
+                style={{
+                  fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
+                  textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(255,182,219,0.08)',
+                }}
+              >
+                {newGoal}
+              </p>
+            </div>
+          ) : null}
           <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="text-[12px] leading-6 text-[#d5e8d9]/48">
-              Saved as {wallName}. Total promises: {goals.length}.
+            <div className="text-[12px] leading-6 text-[#f4dce7]/48">
+              Signed as {wallName}.
             </div>
             <button className="primary-button w-auto px-4" onClick={onAddGoal} type="button">
-              {saving.goal ? 'Saving...' : 'Save'}
+              {saving.goal ? 'Etching...' : 'Etch it'}
             </button>
           </div>
         </div>
@@ -1254,9 +1269,9 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
 
       <section className="surface">
         <SectionHeader
-          copy="One living board. Every line stays dated and becomes part of the piece."
+          copy="One board. One big promise. Everything else becomes part of the mural."
           kicker="The board"
-          title={jamiePosts.length ? 'Your promises in motion' : 'The board is ready'}
+          title={jamiePosts.length ? 'Your promises in motion' : 'The wall is ready'}
         />
 
         <div className="relative mt-5 overflow-hidden rounded-[30px] border border-[#d7f0d8]/10 bg-[linear-gradient(180deg,rgba(23,43,36,0.98),rgba(17,31,27,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.03),0_18px_38px_rgba(0,0,0,0.26)]">
@@ -1264,50 +1279,74 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
           <div className="pointer-events-none absolute right-0 top-16 h-20 w-32 rounded-full bg-[#f4fff6]/[0.02] blur-2xl" />
           <div className="pointer-events-none absolute inset-x-6 top-4 h-px bg-white/8" />
           <div className="pointer-events-none absolute inset-x-8 bottom-4 h-3 rounded-full bg-black/18 blur-md" />
+          <div className="pointer-events-none absolute right-6 top-5 rounded-full border border-[#ffd2e6]/14 bg-[#ff7dbd]/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ffd5e9]/56">
+            Chalk squad
+          </div>
 
-          {jamiePosts.length ? (
-            <div className="relative space-y-4">
-              {jamiePosts.map((post, index) => {
-                const art = getChalkArtStyle(index)
+          {featuredPost ? (
+            <div className="relative">
+              <div className="rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),rgba(18,31,27,0.92)] p-5">
+                <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
+                  <span>{formatGoalDate(featuredPost)}</span>
+                  <span className="h-px flex-1 bg-white/8" />
+                  <span>Front and center</span>
+                </div>
+                <p
+                  className="mt-4 text-[28px] leading-10 text-[#f3fff5]/92"
+                  style={{
+                    fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
+                    textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(237,255,242,0.06)',
+                  }}
+                >
+                  {featuredPost.text}
+                </p>
+              </div>
 
-                return (
-                  <article
-                    className="relative"
-                    key={post.id}
-                    style={{
-                      marginLeft: art.marginLeft,
-                      maxWidth: art.maxWidth,
-                      transform: art.transform,
-                    }}
-                  >
-                    <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
-                      <span>{formatGoalDate(post)}</span>
-                      <span className="h-px flex-1 bg-white/8" />
-                    </div>
-                    <p
-                      className="mt-3 text-[20px] leading-8 text-[#f3fff5]/88"
-                      style={{
-                        fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-                        textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(237,255,242,0.06)',
-                      }}
-                    >
-                      {post.text}
-                    </p>
-                    <div
-                      className="mt-2 h-[3px] rounded-full"
-                      style={{
-                        background: art.stroke,
-                        opacity: 0.8,
-                        width: art.strokeWidth,
-                      }}
-                    />
-                  </article>
-                )
-              })}
+              {archivePosts.length ? (
+                <div className="mt-5 space-y-3">
+                  {archivePosts.map((post, index) => {
+                    const art = getChalkArtStyle(index)
+
+                    return (
+                      <article
+                        className="relative rounded-[22px] border border-white/8 bg-white/[0.035] px-4 py-3"
+                        key={post.id}
+                        style={{
+                          marginLeft: art.marginLeft,
+                          maxWidth: art.maxWidth,
+                          transform: art.transform,
+                        }}
+                      >
+                        <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#cfdfd2]/48">
+                          <span>{formatGoalDate(post)}</span>
+                          <span className="h-px flex-1 bg-white/8" />
+                        </div>
+                        <p
+                          className="mt-2 text-[18px] leading-7 text-[#f3fff5]/84"
+                          style={{
+                            fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
+                            textShadow: '0 1px 0 rgba(255,255,255,0.05)',
+                          }}
+                        >
+                          {post.text}
+                        </p>
+                        <div
+                          className="mt-2 h-[3px] rounded-full"
+                          style={{
+                            background: art.stroke,
+                            opacity: 0.72,
+                            width: art.strokeWidth,
+                          }}
+                        />
+                      </article>
+                    )
+                  })}
+                </div>
+              ) : null}
             </div>
           ) : (
             <div className="rounded-[24px] border border-white/8 bg-white/[0.04] p-5 text-[14px] leading-7 text-white/62">
-              The chalkboard is empty right now. Add one line and it will show up here with today's date.
+              The wall is ready. Add one line and it will show up here with today&apos;s date.
             </div>
           )}
         </div>
@@ -1327,132 +1366,159 @@ function SectionHeader({ copy, kicker, title }) {
 }
 
 function CalendarSupportCard({ calendarUrl }) {
-  const [showHelp, setShowHelp] = useState(false)
-
   return (
-    <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
-      <div className="min-w-0">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <CalendarIcon className="text-gold-300" size={16} />
           <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
             Add reminders
           </div>
         </div>
-        <p className="mt-2 text-[13px] leading-6 text-white/70">
-          Download once. Calendar takes it from there.
+        <p className="mt-1 text-[12px] leading-5 text-white/66">
+          One download. Then your calendar takes over.
         </p>
       </div>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        <a
-          className="primary-button inline-flex w-auto items-center justify-center px-4"
-          download="Jamie_90_Day_Burn_Reminders.ics"
-          href={calendarUrl}
-        >
-          Download reminders
-        </a>
-        <button
-          className="secondary-button inline-flex w-auto items-center justify-center px-4"
-          onClick={() => setShowHelp((current) => !current)}
-          type="button"
-        >
-          {showHelp ? 'Hide steps' : 'How to add it'}
-        </button>
-      </div>
-
-      {showHelp ? (
-        <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[12px] leading-6 text-white/72">
-          <div>iPhone: tap the downloaded file, then choose Calendar.</div>
-          <div>Mac: open the file in Calendar, or use File → Import.</div>
-          <div>Once it is imported, Calendar handles the reminders for you.</div>
-        </div>
-      ) : null}
+      <a
+        className="primary-button inline-flex w-auto min-w-[168px] items-center justify-center px-4"
+        download="Jamie_90_Day_Burn_Reminders.ics"
+        href={calendarUrl}
+      >
+        Download .ics
+      </a>
     </div>
   )
 }
 
-function CoachSupportCard({
-  draft,
-  isOpen,
-  memorySummary,
-  messages,
-  onDraftChange,
-  onOpenChange,
-  onSend,
-  sending,
-}) {
+function CoachSupportCard({ draft, memorySummary, messages, onDraftChange, onSend, sending }) {
   const visibleMessages = messages.slice(-4)
+  const prompts = [
+    'The scale got in my head today.',
+    'I do not want to start the workout.',
+    'I feel behind and weirdly guilty.',
+  ]
 
   return (
-    <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+    <div className="mt-5 rounded-[24px] border border-[#ff74b4]/14 bg-[linear-gradient(180deg,rgba(255,82,162,0.09),rgba(255,255,255,0.03)),rgba(13,9,16,0.88)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Brain className="text-plum-300" size={16} />
+            <Brain className="text-blush-300" size={16} />
             <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
-              Coach Kitty
+              Coach Kitty on deck
             </div>
           </div>
           <p className="mt-3 text-[14px] leading-7 text-white/74">
-            She helps you cut through the bullshit, remember what is true, and take the next honest step.
+            Cut through the bullshit, remember what is true, and take the next honest step.
           </p>
         </div>
-        <button className="ghost-chip" onClick={() => onOpenChange(!isOpen)} type="button">
-          {isOpen ? 'Hide' : 'Open'}
-        </button>
       </div>
 
-      {isOpen ? (
-        <div className="mt-4 grid gap-3">
-          {memorySummary ? (
-            <div className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3 text-[12px] leading-6 text-white/64">
-              What I&apos;m holding onto for you right now: {memorySummary}
-            </div>
-          ) : null}
-
-          {visibleMessages.length ? (
-            <div className="grid gap-2">
-              {visibleMessages.map((message, index) => (
-                <div
-                  className={clsx(
-                    'rounded-[18px] border px-4 py-3 text-[13px] leading-6',
-                    message.role === 'assistant'
-                      ? 'border-plum-300/12 bg-plum-300/[0.08] text-white/82'
-                      : 'border-white/8 bg-white/[0.04] text-white/74',
-                  )}
-                  key={`${message.role}-${index}-${message.content.slice(0, 12)}`}
-                >
-                  {message.content}
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          <div className="grid gap-3">
-            <textarea
-              className="field-shell min-h-[96px] resize-none"
-              onChange={(event) => onDraftChange(event.target.value)}
-              placeholder="Coach Kitty, my brain is being weird about..."
-              value={draft}
-            />
-            <button className="primary-button" disabled={sending} onClick={onSend} type="button">
-              {sending ? 'Thinking...' : 'Send to Coach Kitty'}
-            </button>
+      <div className="mt-4 grid gap-3">
+        {memorySummary ? (
+          <div className="rounded-[18px] border border-[#ffcee5]/10 bg-black/20 px-4 py-3 text-[12px] leading-6 text-white/66">
+            I remember this about you: {memorySummary}
           </div>
+        ) : null}
+
+        {!visibleMessages.length ? (
+          <div className="flex flex-wrap gap-2">
+            {prompts.map((prompt) => (
+              <button
+                className="ghost-chip"
+                key={prompt}
+                onClick={() => onDraftChange(prompt)}
+                type="button"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {visibleMessages.length ? (
+          <div className="grid gap-2">
+            {visibleMessages.map((message, index) => (
+              <div
+                className={clsx(
+                  'rounded-[18px] border px-4 py-3 text-[13px] leading-6',
+                  message.role === 'assistant'
+                    ? 'border-[#ff77b8]/16 bg-[#ff77b8]/10 text-white/84'
+                    : 'border-white/8 bg-white/[0.04] text-white/74',
+                )}
+                key={`${message.role}-${index}-${message.content.slice(0, 12)}`}
+              >
+                {message.content}
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="grid gap-3">
+          <textarea
+            className="field-shell min-h-[96px] resize-none"
+            onChange={(event) => onDraftChange(event.target.value)}
+            placeholder="Coach Kitty, my brain is being weird about..."
+            value={draft}
+          />
+          <button className="primary-button" disabled={sending} onClick={onSend} type="button">
+            {sending ? 'Thinking...' : 'Talk it out'}
+          </button>
         </div>
-      ) : null}
+      </div>
     </div>
   )
 }
 
 function PerspectiveCard({ card }) {
+  const [expanded, setExpanded] = useState(false)
+  const longBody = String(card.body || '').length > 150
+  const body = expanded || !longBody ? card.body : shortenText(card.body, 148)
+
   return (
-    <article className="rounded-[24px] border border-white/8 bg-[linear-gradient(155deg,rgba(255,106,175,0.16),rgba(255,255,255,0.04)_52%,rgba(141,103,255,0.14))] p-5">
-      <div className="micro-label">{card.category}</div>
+    <article className="rounded-[26px] border border-[#ff8ec8]/12 bg-[linear-gradient(160deg,rgba(255,86,163,0.2),rgba(255,255,255,0.04)_40%,rgba(10,8,13,0.92)_100%)] p-5 shadow-[0_18px_34px_rgba(0,0,0,0.24)]">
+      <div className="flex items-center justify-between gap-3">
+        <div className="micro-label text-blush-100">{card.category}</div>
+        <div className="rounded-full border border-white/10 bg-black/18 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/58">
+          Gym truth
+        </div>
+      </div>
       <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
-      <p className="mt-3 text-[14px] leading-7 text-white/76">{card.body}</p>
-      <div className="mt-4 rounded-[18px] border border-white/8 bg-white/8 p-3 text-[13px] leading-6 text-white/82">
-        <span className="font-bold text-gold-300">Coach note:</span> {card.takeaway}
+      <p className="mt-3 text-[14px] leading-7 text-white/76">{body}</p>
+      {longBody ? (
+        <button
+          className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-blush-200"
+          onClick={() => setExpanded((current) => !current)}
+          type="button"
+        >
+          {expanded ? 'Show less' : 'Read the rest'}
+        </button>
+      ) : null}
+      <div className="mt-4 rounded-[18px] border border-white/8 bg-black/18 p-3 text-[13px] leading-6 text-white/82">
+        <span className="font-bold text-gold-300">Use this:</span> {card.takeaway}
+      </div>
+    </article>
+  )
+}
+
+function CoachKittyPosterCard() {
+  return (
+    <article className="relative overflow-hidden rounded-[26px] border border-[#ff9bcc]/16 bg-[linear-gradient(180deg,rgba(10,6,13,0.95),rgba(18,11,21,0.95))] shadow-[0_18px_38px_rgba(0,0,0,0.28)]">
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-42"
+        style={{ backgroundImage: "url('/coach-kitty-gym.jpeg')" }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.16),rgba(13,7,16,0.88)_62%),radial-gradient(circle_at_20%_10%,rgba(255,88,166,0.22),transparent_28%)]" />
+      <div className="relative flex min-h-[350px] flex-col justify-end p-5">
+        <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-blush-100/90">
+          Sanrio strength gym
+        </div>
+        <h3 className="display-copy mt-3 max-w-[10ch] text-[2rem] leading-[0.92] text-white">
+          Cute. Dangerous. Still doing the work.
+        </h3>
+        <p className="mt-3 max-w-[16rem] text-[13px] leading-6 text-white/74">
+          This is the energy. Strong body. Clear head. No drama about earning your place.
+        </p>
       </div>
     </article>
   )

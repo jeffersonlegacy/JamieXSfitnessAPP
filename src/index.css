@@ -52,10 +52,11 @@ body {
   margin: 0;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 18% 0%, rgba(255, 106, 175, 0.34), transparent 34%),
-    radial-gradient(circle at 82% 8%, rgba(141, 103, 255, 0.22), transparent 28%),
-    radial-gradient(circle at 50% 100%, rgba(255, 106, 175, 0.12), transparent 30%),
-    linear-gradient(180deg, #2a0f1d 0%, #170f1e 22%, #100b16 48%, #09060d 100%);
+    linear-gradient(180deg, rgba(255, 109, 178, 0.14), transparent 18%),
+    radial-gradient(circle at 14% 0%, rgba(255, 61, 151, 0.46), transparent 32%),
+    radial-gradient(circle at 84% 10%, rgba(255, 126, 190, 0.22), transparent 26%),
+    radial-gradient(circle at 50% 100%, rgba(141, 103, 255, 0.16), transparent 30%),
+    linear-gradient(180deg, #3d0d22 0%, #240d18 20%, #130b16 48%, #08060b 100%);
   color: #fff7fb;
   font-family: var(--font-sans);
 }
@@ -73,19 +74,19 @@ body::after {
 body::before {
   top: -40px;
   left: -70px;
-  width: 260px;
-  height: 260px;
+  width: 320px;
+  height: 320px;
   border-radius: 999px;
-  background: rgba(255, 106, 175, 0.28);
+  background: rgba(255, 67, 150, 0.34);
 }
 
 body::after {
   right: -80px;
   bottom: 120px;
-  width: 280px;
-  height: 280px;
+  width: 320px;
+  height: 320px;
   border-radius: 999px;
-  background: rgba(141, 103, 255, 0.18);
+  background: rgba(255, 129, 190, 0.18);
 }
 
 #root {
@@ -117,11 +118,11 @@ button {
   .hero-panel {
     @apply relative overflow-hidden rounded-[32px] border border-white/8 p-5;
     background:
-      radial-gradient(circle at 14% 16%, rgba(255, 228, 240, 0.22), transparent 18%),
-      radial-gradient(circle at 84% 20%, rgba(141, 103, 255, 0.28), transparent 24%),
-      radial-gradient(circle at 72% 84%, rgba(255, 106, 175, 0.20), transparent 28%),
-      linear-gradient(155deg, rgba(255, 106, 175, 0.22), rgba(255, 255, 255, 0.05) 40%, rgba(141, 103, 255, 0.16) 100%),
-      rgba(22, 14, 28, 0.88);
+      radial-gradient(circle at 14% 16%, rgba(255, 182, 219, 0.16), transparent 18%),
+      radial-gradient(circle at 84% 20%, rgba(255, 85, 167, 0.24), transparent 24%),
+      radial-gradient(circle at 72% 84%, rgba(141, 103, 255, 0.18), transparent 28%),
+      linear-gradient(155deg, rgba(255, 92, 171, 0.2), rgba(255, 255, 255, 0.04) 40%, rgba(141, 103, 255, 0.12) 100%),
+      rgba(16, 10, 18, 0.92);
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: var(--shadow-soft);
   }
@@ -129,15 +130,15 @@ button {
   .surface {
     @apply relative overflow-hidden rounded-[28px] border border-white/8 bg-white/[0.045] p-4 backdrop-blur-xl;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
-      linear-gradient(135deg, rgba(255, 106, 175, 0.05), rgba(141, 103, 255, 0.04)),
-      rgba(20, 13, 22, 0.68);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018)),
+      linear-gradient(135deg, rgba(255, 72, 160, 0.08), rgba(141, 103, 255, 0.03)),
+      rgba(12, 8, 15, 0.76);
     backdrop-filter: blur(24px) saturate(140%);
     box-shadow: var(--shadow-soft);
   }
 
   .surface-soft {
-    @apply rounded-[24px] border border-white/8 bg-white/[0.045] p-4;
+    @apply rounded-[24px] border border-white/8 bg-white/[0.035] p-4;
   }
 
   .display-copy {
@@ -190,15 +191,16 @@ button {
     width: min(calc(100% - 20px), 410px);
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
-      linear-gradient(135deg, rgba(255, 106, 175, 0.10), rgba(141, 103, 255, 0.08)),
-      rgba(16, 10, 20, 0.58);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03)),
+      linear-gradient(135deg, rgba(255, 72, 160, 0.16), rgba(141, 103, 255, 0.09)),
+      rgba(12, 8, 15, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     backdrop-filter: blur(26px) saturate(180%);
     -webkit-backdrop-filter: blur(26px) saturate(180%);
     box-shadow:
-      0 24px 60px rgba(0, 0, 0, 0.34),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      0 24px 60px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 0 28px rgba(255, 79, 160, 0.12);
   }
 
   .floating-dock::before {
@@ -229,12 +231,12 @@ button {
   .dock-item-active {
     color: #fff;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
-      linear-gradient(135deg, rgba(255, 106, 175, 0.14), rgba(141, 103, 255, 0.12));
+      linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05)),
+      linear-gradient(135deg, rgba(255, 84, 165, 0.2), rgba(141, 103, 255, 0.12));
     border-color: rgba(255, 255, 255, 0.14);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 10px 24px rgba(0, 0, 0, 0.2);
+      0 10px 24px rgba(0, 0, 0, 0.28);
   }
 }
 
