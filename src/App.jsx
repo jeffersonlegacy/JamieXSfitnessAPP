@@ -69,6 +69,7 @@ export default function App() {
   const actualTodayDay = getProgramDay(actualTodayKey) || 1
   const [activeTab, setActiveTab] = useState('workout')
   const [selectedDay, setSelectedDay] = useState(actualTodayDay)
+  const [completionShakeClass, setCompletionShakeClass] = useState('')
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
   const [measurementDraft, setMeasurementDraft] = useState(EMPTY_MEASUREMENTS)
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
@@ -181,6 +182,12 @@ export default function App() {
     return () => window.clearTimeout(timeoutId)
   }, [toast])
 
+  useEffect(() => {
+    if (!completionShakeClass) return undefined
+    const timeoutId = window.setTimeout(() => setCompletionShakeClass(''), 760)
+    return () => window.clearTimeout(timeoutId)
+  }, [completionShakeClass])
+
   if (!isFirebaseConfigured || session.status === 'needs-config') {
     return <ConfigurationState envKeys={firebaseEnvKeys} />
   }
@@ -194,6 +201,7 @@ export default function App() {
   }
 
   const completedWorkouts = dashboard.workouts.filter((entry) => entry.completed)
+  const completedWorkoutKeys = completedWorkouts.map((entry) => entry.id)
   const hydrationWins = dashboard.tracking.filter(
     (entry) => entry.hydrationTargetMet === true,
   ).length
@@ -225,6 +233,9 @@ export default function App() {
         expanded: playerOpen,
         workoutName: todayWorkout?.name ?? null,
       })
+      setCompletionShakeClass((current) =>
+        current === 'app-shell-quake-a' ? 'app-shell-quake-b' : 'app-shell-quake-a',
+      )
       setToast(todayWorkout?.type === 'rest' ? 'Recovery day logged.' : 'Burn completion logged.')
     } catch (error) {
       setToast(error.message || 'Could not log today just yet.')
@@ -590,17 +601,19 @@ export default function App() {
 
   return (
     <div className="relative flex min-h-screen justify-center">
-      <div className="app-shell">
+      <div className={clsx('app-shell', completionShakeClass)}>
         {activeTab === 'workout' && (
           <WorkoutView
             adviceChecks={adviceChecks}
+            actualTodayDay={actualTodayDay}
+            completedWorkoutKeys={completedWorkoutKeys}
             currentPhaseName={currentPhaseName}
             latestHeavyRestRecord={latestHeavyRestRecord}
             currentWeek={currentWeek}
             currentVideoState={todayVideoState}
             day={todayDay}
-            key={todayKey}
             onAdviceCheck={handleAdviceCheck}
+            onEditSelectedDay={() => setActiveTab('tracking')}
             onPlayerOpenChange={handlePlayerOpenChange}
             onResetToToday={() => setSelectedDay(actualTodayDay)}
             onSaveHeavyLift={handleSaveHeavyLift}
@@ -715,12 +728,15 @@ export default function App() {
 
 function WorkoutView({
   adviceChecks,
+  actualTodayDay,
+  completedWorkoutKeys,
   currentPhaseName,
   latestHeavyRestRecord,
   currentWeek,
   currentVideoState,
   day,
   onAdviceCheck,
+  onEditSelectedDay,
   onPlayerOpenChange,
   onResetToToday,
   onSaveHeavyLift,
@@ -737,7 +753,55 @@ function WorkoutView({
   viewingToday,
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false)
-  const [heavyDraft, setHeavyDraft] = useState(() => buildHeavyDraft(currentVideoState?.heavyLiftLog))
+  const [heavyDraftState, setHeavyDraftState] = useState(() => ({
+    sourceDayKey: todayKey,
+    draft: buildHeavyDraft(currentVideoState?.heavyLiftLog),
+  }))
+  const completedWorkoutSet = useMemo(
+    () => new Set(completedWorkoutKeys || []),
+    [completedWorkoutKeys],
+  )
+  const selectedDayWorkout = getWorkoutForDay(selectedDay)
+  const selectedDayDateKey = getLocalDateKey(getProgramDateForDay(selectedDay))
+  const selectedRestOption = getRestOptionById(currentVideoState?.restOptionId)
+  const heavyDraft =
+    heavyDraftState.sourceDayKey === todayKey
+      ? heavyDraftState.draft
+      : buildHeavyDraft(currentVideoState?.heavyLiftLog)
+  const updateHeavyDraft = (updater) => {
+    setHeavyDraftState((current) => ({
+      sourceDayKey: todayKey,
+      draft:
+        typeof updater === 'function'
+          ? updater(current.sourceDayKey === todayKey ? current.draft : heavyDraft)
+          : updater,
+    }))
+  }
+  const calendarCells = useMemo(() => {
+    const leadingBlankCount = getProgramDateForDay(1).getDay()
+    const blankCells = Array.from({ length: leadingBlankCount }, (_, index) => ({
+      id: `blank-${index}`,
+      type: 'blank',
+    }))
+    const dayCells = Array.from({ length: TOTAL_DAYS }, (_, index) => {
+      const mapDay = index + 1
+      const mapWorkout = getWorkoutForDay(mapDay)
+      const mapDateKey = getLocalDateKey(getProgramDateForDay(mapDay))
+
+      return {
+        id: `day-${mapDay}`,
+        type: 'day',
+        day: mapDay,
+        isCompleted: completedWorkoutSet.has(mapDateKey),
+        isRest: mapWorkout.type === 'rest',
+        isSelected: mapDay === selectedDay,
+        isToday: mapDay === actualTodayDay,
+        workout: mapWorkout,
+      }
+    })
+
+    return [...blankCells, ...dayCells]
+  }, [actualTodayDay, completedWorkoutSet, selectedDay])
 
   if (!day || !workout) {
     return (
@@ -768,9 +832,6 @@ function WorkoutView({
     workout,
     workoutComplete,
   })
-  const selectedDayWorkout = getWorkoutForDay(selectedDay)
-  const selectedDayDateKey = getLocalDateKey(getProgramDateForDay(selectedDay))
-  const selectedRestOption = getRestOptionById(currentVideoState?.restOptionId)
   const playerStatus = currentVideoState?.opened
     ? workoutComplete
       ? 'Logged today'
@@ -808,7 +869,22 @@ function WorkoutView({
           {!viewingToday ? <span className="ghost-chip">Editing past day</span> : null}
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/42">
+            {viewingToday ? 'Tap the map to edit any day.' : `Editing Day ${selectedDay} right now.`}
+          </span>
+          {!viewingToday ? (
+            <button
+              className="text-[12px] font-extrabold text-blush-100 transition hover:text-white"
+              onClick={onResetToToday}
+              type="button"
+            >
+              Back to today
+            </button>
+          ) : null}
+        </div>
+
+        <div className="mt-3">
           <button
             className="secondary-button"
             onClick={() => setCalendarOpen((current) => !current)}
@@ -816,53 +892,58 @@ function WorkoutView({
           >
             {calendarOpen ? 'Hide the 90-day map' : 'See the whole 90-day map'}
           </button>
-          {!viewingToday ? (
-            <button className="cream-button" onClick={onResetToToday} type="button">
-              Back to today
-            </button>
-          ) : null}
         </div>
       </section>
 
       {calendarOpen ? (
         <section className="surface">
           <SectionHeader
-            copy="Tap any day to see what waits there."
+            copy="Tap any day. The app switches into that day so you can review or fix it fast."
             kicker="The full burn"
             title="All 90 days"
           />
 
-          <div className="mt-5 grid grid-cols-5 gap-2">
-            {Array.from({ length: TOTAL_DAYS }, (_, index) => {
-              const mapDay = index + 1
-              const mapWorkout = getWorkoutForDay(mapDay)
-
-              return (
-                <button
-                  className={clsx(
-                    'rounded-[18px] border px-2 py-3 text-left transition',
-                    mapDay === selectedDay
-                      ? 'border-blush-300/22 bg-blush-300/12 text-white'
-                      : mapDay === day
-                        ? 'border-mint-300/18 bg-mint-300/[0.08] text-white/90'
-                        : 'border-white/8 bg-white/[0.03] text-white/72',
-                  )}
-                  key={mapDay}
-                  onClick={() => onSelectDay(mapDay)}
-                  type="button"
+          <div className="mt-5 rounded-[24px] border border-white/8 bg-black/14 p-3">
+            <div className="grid grid-cols-7 gap-1.5">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((label) => (
+                <div
+                  className="pb-1 text-center text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/34"
+                  key={label}
                 >
-                  <div className="text-[10px] font-extrabold uppercase tracking-[0.16em]">
-                    Day {mapDay}
-                  </div>
-                  <div className="mt-1 text-[11px] leading-5">
-                    {mapWorkout.type === 'rest' ? 'Rest' : mapWorkout.type}
-                  </div>
-                </button>
-              )
-            })}
+                  {label}
+                </div>
+              ))}
+              {calendarCells.map((cell) =>
+                cell.type === 'blank' ? (
+                  <div className="h-[48px] rounded-[16px]" key={cell.id} />
+                ) : (
+                  <button
+                    className={clsx(
+                      'calendar-day-chip',
+                      cell.isRest && 'calendar-day-rest',
+                      cell.isToday && 'calendar-day-today',
+                      cell.isSelected && 'calendar-day-selected',
+                      cell.isCompleted && 'calendar-day-complete',
+                    )}
+                    key={cell.id}
+                    onClick={() => onSelectDay(cell.day)}
+                    style={{ '--crush-tilt': `${((cell.day % 5) - 2) * 1.25}deg` }}
+                    type="button"
+                  >
+                    <span className="calendar-day-number">{cell.day}</span>
+                    <span
+                      className={clsx(
+                        'calendar-day-dot',
+                        cell.isRest ? 'calendar-day-dot-rest' : 'calendar-day-dot-work',
+                      )}
+                    />
+                  </button>
+                ),
+              )}
+            </div>
           </div>
 
-          <div className="mt-5 rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
+          <div className="mt-4 rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="micro-label">{formatCompactDate(selectedDayDateKey)}</div>
@@ -887,7 +968,21 @@ function WorkoutView({
               <span className="ghost-chip">
                 {getPhaseName(getPhaseForDay(selectedDay))}
               </span>
+              {selectedDay === actualTodayDay ? <span className="ghost-chip">Today</span> : null}
+              {completedWorkoutSet.has(selectedDayDateKey) ? (
+                <span className="ghost-chip">Crushed</span>
+              ) : null}
             </div>
+
+            <button
+              className="secondary-button mt-4"
+              onClick={onEditSelectedDay}
+              type="button"
+            >
+              {selectedDay === actualTodayDay
+                ? 'Open today in tracking'
+                : `Edit Day ${selectedDay} in tracking`}
+            </button>
           </div>
         </section>
       ) : null}
@@ -966,7 +1061,7 @@ function WorkoutView({
                     <TextEntryField
                       label="Lift"
                       onChange={(value) =>
-                        setHeavyDraft((current) => ({ ...current, exercise: value }))
+                        updateHeavyDraft((current) => ({ ...current, exercise: value }))
                       }
                       placeholder="Squat"
                       value={heavyDraft.exercise}
@@ -974,7 +1069,7 @@ function WorkoutView({
                     <TextEntryField
                       label="Partner"
                       onChange={(value) =>
-                        setHeavyDraft((current) => ({ ...current, partner: value }))
+                        updateHeavyDraft((current) => ({ ...current, partner: value }))
                       }
                       placeholder="Mike or Gary"
                       value={heavyDraft.partner}
@@ -982,7 +1077,7 @@ function WorkoutView({
                     <TextEntryField
                       label="Weight"
                       onChange={(value) =>
-                        setHeavyDraft((current) => ({ ...current, weight: value }))
+                        updateHeavyDraft((current) => ({ ...current, weight: value }))
                       }
                       placeholder="95"
                       value={heavyDraft.weight}
@@ -990,7 +1085,7 @@ function WorkoutView({
                     <TextEntryField
                       label="Sets x Reps"
                       onChange={(value) =>
-                        setHeavyDraft((current) => ({ ...current, scheme: value }))
+                        updateHeavyDraft((current) => ({ ...current, scheme: value }))
                       }
                       placeholder="3 x 5"
                       value={heavyDraft.scheme}
