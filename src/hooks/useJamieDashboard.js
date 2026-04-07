@@ -2,7 +2,9 @@ import { startTransition, useEffect, useState } from 'react'
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
+  getDocs,
   limit,
   onSnapshot,
   orderBy,
@@ -373,6 +375,40 @@ export function useJamieDashboard(user) {
     )
   }
 
+  async function resetAllData() {
+    if (!user || !db) return
+
+    const collectionNames = [
+      'workouts',
+      'tracking',
+      'measurements',
+      'inbody_scans',
+      'goals',
+      'video_state',
+      'coach_messages',
+    ]
+
+    await Promise.all(
+      collectionNames.map(async (collectionName) => {
+        const snapshot = await getDocs(collection(db, 'users', user.uid, collectionName))
+        await Promise.all(snapshot.docs.map((entry) => deleteDoc(entry.ref)))
+      }),
+    )
+
+    await Promise.all([
+      deleteDoc(doc(db, 'users', user.uid, 'coach_memory', 'main')).catch(() => {}),
+      setDoc(
+        doc(db, 'users', user.uid, 'settings', 'main'),
+        {
+          displayName: USER_NAME,
+          programStart: PROGRAM_START,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      ),
+    ])
+  }
+
   const videoStateById = indexById(videoState)
 
   return {
@@ -405,6 +441,7 @@ export function useJamieDashboard(user) {
       saveVideoState,
       addCoachMessage,
       saveCoachMemory,
+      resetAllData,
     },
   }
 }

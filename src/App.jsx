@@ -65,7 +65,10 @@ const EMPTY_INBODY = {
 }
 
 export default function App() {
+  const actualTodayKey = getLocalDateKey()
+  const actualTodayDay = getProgramDay(actualTodayKey) || 1
   const [activeTab, setActiveTab] = useState('workout')
+  const [selectedDay, setSelectedDay] = useState(actualTodayDay)
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
   const [measurementDraft, setMeasurementDraft] = useState(EMPTY_MEASUREMENTS)
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
@@ -76,6 +79,7 @@ export default function App() {
   const [saving, setSaving] = useState({
     workout: false,
     rest: false,
+    reset: false,
     deficit: false,
     hydration: false,
     mindset: false,
@@ -88,8 +92,8 @@ export default function App() {
   const session = useFirebaseSession()
   const dashboard = useJamieDashboard(session.user)
 
-  const todayKey = getLocalDateKey()
-  const todayDay = getProgramDay(todayKey)
+  const todayDay = selectedDay
+  const todayKey = getLocalDateKey(getProgramDateForDay(todayDay))
   const todayWorkout = todayDay ? getWorkoutForDay(todayDay) : null
   const currentWeek = todayDay ? getWeekForDay(todayDay) : 1
   const currentPhase = todayDay ? getPhaseForDay(todayDay) : 1
@@ -445,6 +449,19 @@ export default function App() {
     }
   }
 
+  async function handleResetApp() {
+    setSaving((current) => ({ ...current, reset: true }))
+    try {
+      await dashboard.actions.resetAllData()
+      setSelectedDay(actualTodayDay)
+      setToast('Jamie got a fresh start.')
+    } catch (error) {
+      setToast(error.message || 'Could not reset the app yet.')
+    } finally {
+      setSaving((current) => ({ ...current, reset: false }))
+    }
+  }
+
   async function handleTruthReaction(card, reaction) {
     const truthId = getPerspectiveCardId(card)
     const nextTruthReactions = {
@@ -582,17 +599,22 @@ export default function App() {
             currentWeek={currentWeek}
             currentVideoState={todayVideoState}
             day={todayDay}
+            key={todayKey}
             onAdviceCheck={handleAdviceCheck}
             onPlayerOpenChange={handlePlayerOpenChange}
+            onResetToToday={() => setSelectedDay(actualTodayDay)}
             onSaveHeavyLift={handleSaveHeavyLift}
+            onSelectDay={setSelectedDay}
             onSelectRestOption={handleSelectRestOption}
             onUnlockWorkout={handleUnlockWorkout}
             playerOpen={playerOpen}
             saving={saving}
+            selectedDay={selectedDay}
             todayKey={todayKey}
             workout={todayWorkout}
             workoutComplete={workoutComplete}
             workoutReady={workoutReady}
+            viewingToday={selectedDay === actualTodayDay}
           />
         )}
 
@@ -613,9 +635,11 @@ export default function App() {
             onSaveHydration={handleSaveHydration}
             onSaveDeficit={handleSaveDeficit}
             saving={saving}
+            selectedDay={selectedDay}
             trackingDraft={trackingDraft}
             workout={todayWorkout}
             workoutComplete={workoutComplete}
+            viewingToday={selectedDay === actualTodayDay}
           />
         )}
 
@@ -643,6 +667,7 @@ export default function App() {
             newGoal={newGoal}
             onAddGoal={handleAddGoal}
             onChangeGoal={setNewGoal}
+            onResetApp={handleResetApp}
             saving={saving}
             settings={dashboard.settings}
           />
@@ -697,27 +722,22 @@ function WorkoutView({
   day,
   onAdviceCheck,
   onPlayerOpenChange,
+  onResetToToday,
   onSaveHeavyLift,
+  onSelectDay,
   onSelectRestOption,
   onUnlockWorkout,
   playerOpen,
   saving,
+  selectedDay,
   todayKey,
   workout,
   workoutComplete,
   workoutReady,
+  viewingToday,
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false)
-  const [selectedCalendarDay, setSelectedCalendarDay] = useState(day)
   const [heavyDraft, setHeavyDraft] = useState(() => buildHeavyDraft(currentVideoState?.heavyLiftLog))
-
-  useEffect(() => {
-    setSelectedCalendarDay(day)
-  }, [day])
-
-  useEffect(() => {
-    setHeavyDraft(buildHeavyDraft(currentVideoState?.heavyLiftLog))
-  }, [currentVideoState?.heavyLiftLog])
 
   if (!day || !workout) {
     return (
@@ -748,8 +768,8 @@ function WorkoutView({
     workout,
     workoutComplete,
   })
-  const selectedDayWorkout = getWorkoutForDay(selectedCalendarDay)
-  const selectedDayDateKey = getLocalDateKey(getProgramDateForDay(selectedCalendarDay))
+  const selectedDayWorkout = getWorkoutForDay(selectedDay)
+  const selectedDayDateKey = getLocalDateKey(getProgramDateForDay(selectedDay))
   const selectedRestOption = getRestOptionById(currentVideoState?.restOptionId)
   const playerStatus = currentVideoState?.opened
     ? workoutComplete
@@ -785,15 +805,23 @@ function WorkoutView({
           <span className="ghost-chip">{workout.equipment}</span>
           <span className="ghost-chip">Week {currentWeek}</span>
           <span className="ghost-chip">{currentPhaseName}</span>
+          {!viewingToday ? <span className="ghost-chip">Editing past day</span> : null}
         </div>
 
-        <button
-          className="secondary-button mt-4"
-          onClick={() => setCalendarOpen((current) => !current)}
-          type="button"
-        >
-          {calendarOpen ? 'Hide the 90-day map' : 'See the whole 90-day map'}
-        </button>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <button
+            className="secondary-button"
+            onClick={() => setCalendarOpen((current) => !current)}
+            type="button"
+          >
+            {calendarOpen ? 'Hide the 90-day map' : 'See the whole 90-day map'}
+          </button>
+          {!viewingToday ? (
+            <button className="cream-button" onClick={onResetToToday} type="button">
+              Back to today
+            </button>
+          ) : null}
+        </div>
       </section>
 
       {calendarOpen ? (
@@ -813,14 +841,14 @@ function WorkoutView({
                 <button
                   className={clsx(
                     'rounded-[18px] border px-2 py-3 text-left transition',
-                    mapDay === selectedCalendarDay
+                    mapDay === selectedDay
                       ? 'border-blush-300/22 bg-blush-300/12 text-white'
                       : mapDay === day
                         ? 'border-mint-300/18 bg-mint-300/[0.08] text-white/90'
                         : 'border-white/8 bg-white/[0.03] text-white/72',
                   )}
                   key={mapDay}
-                  onClick={() => setSelectedCalendarDay(mapDay)}
+                  onClick={() => onSelectDay(mapDay)}
                   type="button"
                 >
                   <div className="text-[10px] font-extrabold uppercase tracking-[0.16em]">
@@ -839,7 +867,7 @@ function WorkoutView({
               <div>
                 <div className="micro-label">{formatCompactDate(selectedDayDateKey)}</div>
                 <h4 className="mt-3 text-lg font-extrabold text-white">
-                  Day {selectedCalendarDay}: {selectedDayWorkout.name}
+                  Day {selectedDay}: {selectedDayWorkout.name}
                 </h4>
                 <p className="mt-2 text-[13px] leading-6 text-white/68">
                   {getWorkoutSummary(selectedDayWorkout)}
@@ -857,7 +885,7 @@ function WorkoutView({
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="ghost-chip">{selectedDayWorkout.equipment}</span>
               <span className="ghost-chip">
-                {getPhaseName(getPhaseForDay(selectedCalendarDay))}
+                {getPhaseName(getPhaseForDay(selectedDay))}
               </span>
             </div>
           </div>
@@ -1072,10 +1100,12 @@ function TrackingView({
   onSaveMeasurements,
   onSaveDeficit,
   onSaveHydration,
+  selectedDay,
   saving,
   trackingDraft,
   workout,
   workoutComplete,
+  viewingToday,
 }) {
   const todayHydration = trackingDraft.hydrationTargetMet
 
@@ -1083,9 +1113,13 @@ function TrackingView({
     <div className="grid gap-4">
       <section className="surface">
         <SectionHeader
-          copy="Log today and move on."
+          copy={
+            viewingToday
+              ? 'Log today and move on.'
+              : `You are editing Day ${selectedDay}. Make the correction you need and move on.`
+          }
           kicker="Your closeout"
-          title="Tonight"
+          title={viewingToday ? 'Tonight' : `Day ${selectedDay}`}
         />
 
         <div className="mt-5 grid grid-cols-3 gap-2">
@@ -1491,7 +1525,15 @@ function MotivationView({
   )
 }
 
-function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, settings }) {
+function ProgressWallView({
+  goals,
+  newGoal,
+  onAddGoal,
+  onChangeGoal,
+  onResetApp,
+  saving,
+  settings,
+}) {
   const wallName = settings?.displayName || USER_NAME
   const jamiePosts = goals
   const featuredPost = jamiePosts[0] || null
@@ -1557,7 +1599,7 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
 
       <section className="surface">
         <SectionHeader
-          copy="One board. One big promise. Everything else becomes part of the mural."
+          copy="Your newest line goes big. The rest stay underneath like proof you kept showing up."
           kicker="The board"
           title={jamiePosts.length ? 'Your promises in motion' : 'The wall is ready'}
         />
@@ -1577,7 +1619,7 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
                 <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
                   <span>{formatGoalDate(featuredPost)}</span>
                   <span className="h-px flex-1 bg-white/8" />
-                  <span>Front and center</span>
+                  <span>{wallName}</span>
                 </div>
                 <p
                   className="mt-4 text-[28px] leading-10 text-[#f3fff5]/92"
@@ -1591,44 +1633,27 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
               </div>
 
               {archivePosts.length ? (
-                <div className="mt-5 space-y-3">
-                  {archivePosts.map((post, index) => {
-                    const art = getChalkArtStyle(index)
-
-                    return (
-                      <article
-                        className="relative rounded-[22px] border border-white/8 bg-white/[0.035] px-4 py-3"
-                        key={post.id}
+                <div className="mt-5 grid gap-3">
+                  {archivePosts.map((post) => (
+                    <article
+                      className="relative rounded-[20px] border border-white/8 bg-white/[0.035] px-4 py-3"
+                      key={post.id}
+                    >
+                      <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#cfdfd2]/48">
+                        <span>{formatGoalDate(post)}</span>
+                        <span className="h-px flex-1 bg-white/8" />
+                      </div>
+                      <p
+                        className="mt-2 text-[17px] leading-7 text-[#f3fff5]/84"
                         style={{
-                          marginLeft: art.marginLeft,
-                          maxWidth: art.maxWidth,
-                          transform: art.transform,
+                          fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
+                          textShadow: '0 1px 0 rgba(255,255,255,0.05)',
                         }}
                       >
-                        <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#cfdfd2]/48">
-                          <span>{formatGoalDate(post)}</span>
-                          <span className="h-px flex-1 bg-white/8" />
-                        </div>
-                        <p
-                          className="mt-2 text-[18px] leading-7 text-[#f3fff5]/84"
-                          style={{
-                            fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-                            textShadow: '0 1px 0 rgba(255,255,255,0.05)',
-                          }}
-                        >
-                          {post.text}
-                        </p>
-                        <div
-                          className="mt-2 h-[3px] rounded-full"
-                          style={{
-                            background: art.stroke,
-                            opacity: 0.72,
-                            width: art.strokeWidth,
-                          }}
-                        />
-                      </article>
-                    )
-                  })}
+                        {post.text}
+                      </p>
+                    </article>
+                  ))}
                 </div>
               ) : null}
             </div>
@@ -1637,6 +1662,23 @@ function ProgressWallView({ goals, newGoal, onAddGoal, onChangeGoal, saving, set
               The wall is ready. Add one line and it will show up here with today&apos;s date.
             </div>
           )}
+        </div>
+
+        <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+          <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+            Fresh start
+          </div>
+          <p className="mt-2 text-[13px] leading-6 text-white/64">
+            Clear Jamie&apos;s saved check-ins, notes, wall lines, timers, and coach memory.
+          </p>
+          <button
+            className="secondary-button mt-4"
+            disabled={saving.reset}
+            onClick={onResetApp}
+            type="button"
+          >
+            {saving.reset ? 'Resetting...' : 'Reset the app'}
+          </button>
         </div>
       </section>
     </div>
@@ -2454,15 +2496,4 @@ function getTruthsByReaction(truthReactions, reaction) {
     .filter((entry) => entry?.reaction === reaction && entry?.title)
     .sort((a, b) => String(b.reactedOn || '').localeCompare(String(a.reactedOn || '')))
     .map((entry) => entry.title)
-}
-
-function getChalkArtStyle(index) {
-  const variants = [
-    { marginLeft: '0%', maxWidth: '90%', transform: 'rotate(-1deg)', stroke: 'linear-gradient(90deg, rgba(209,240,214,0.9), rgba(209,240,214,0.12))', strokeWidth: '58%' },
-    { marginLeft: '8%', maxWidth: '82%', transform: 'rotate(0.8deg)', stroke: 'linear-gradient(90deg, rgba(255,227,175,0.88), rgba(255,227,175,0.1))', strokeWidth: '46%' },
-    { marginLeft: '3%', maxWidth: '86%', transform: 'rotate(-0.5deg)', stroke: 'linear-gradient(90deg, rgba(230,244,255,0.92), rgba(230,244,255,0.12))', strokeWidth: '52%' },
-    { marginLeft: '12%', maxWidth: '78%', transform: 'rotate(1.2deg)', stroke: 'linear-gradient(90deg, rgba(255,210,221,0.86), rgba(255,210,221,0.1))', strokeWidth: '40%' },
-  ]
-
-  return variants[index % variants.length]
 }
