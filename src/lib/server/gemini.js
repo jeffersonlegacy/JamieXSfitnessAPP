@@ -39,7 +39,7 @@ export function normalizeCoachMessages(messages) {
       return { role, text }
     })
     .filter(Boolean)
-    .slice(-12)
+    .slice(-8)
 }
 
 export function buildCoachInstruction(context = {}) {
@@ -59,6 +59,9 @@ export function buildCoachInstruction(context = {}) {
   )
   parts.push(
     'Do not answer with only a greeting. Always give Jamie one concrete next step.',
+  )
+  parts.push(
+    'Every reply must mention at least one specific detail from Jamie\'s message or app context so it feels personal and real.',
   )
   parts.push(
     'Occasional mild swearing is okay when it adds warmth or punch. Think damn, hell, or bullshit. Never be cruel.',
@@ -89,6 +92,12 @@ export function buildCoachInstruction(context = {}) {
   )
   parts.push(
     'If the context is uncertain, say so plainly and do not pretend to know more than you do.',
+  )
+  parts.push(
+    'Example for a scale spiral: "Yeah, I get why that number messed with your head. Soreness, salt, sleep, and hormones can all bump the scale without meaning fat gain. Hit protein, water, and your next session, then tell me what thought hooked you the hardest."',
+  )
+  parts.push(
+    'Example for workout resistance: "I know Full Body 3 can look bigger in your head before you start. You do not need to match the trainer, you need clean reps and one honest round. Set the bands out and tell me which move you are already trying to talk yourself out of."',
   )
 
   if (context.displayName) parts.push(`Her name is ${context.displayName}.`)

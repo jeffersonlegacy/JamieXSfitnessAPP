@@ -421,6 +421,10 @@ export default function App() {
         content: prompt,
         source: 'coach-kitty',
       })
+      await dashboard.actions.saveCoachMemory({
+        latestCoachAnswer: dashboard.coachMemory?.latestCoachQuestion ? prompt : null,
+        latestShare: prompt,
+      })
 
       const response = await fetch('/api/coach', {
         method: 'POST',
@@ -469,6 +473,7 @@ export default function App() {
         source: 'coach-kitty',
       })
       await dashboard.actions.saveCoachMemory({
+        latestShare: prompt,
         latestCoachQuestion: extractFollowUpQuestion(payload.reply),
         latestCoachReply: payload.reply,
         latestGoal: currentGoal || dashboard.coachMemory?.latestGoal || null,
@@ -488,6 +493,10 @@ export default function App() {
         role: 'assistant',
         content: fallbackReply,
         source: 'coach-kitty',
+      })
+      await dashboard.actions.saveCoachMemory({
+        latestShare: prompt,
+        latestCoachReply: fallbackReply,
       })
       setToast('Coach answered in backup mode.')
     } finally {
@@ -1144,7 +1153,7 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="Talk here when your head is being mean, dramatic, or tired. Coach Kitty remembers what matters."
+          copy="Use this when your head gets mean, loud, or tired. She remembers the important stuff and helps you steady the next step."
           kicker="Coach Kitty"
           title="Talk to Coach Kitty"
         />
@@ -1163,9 +1172,9 @@ function MotivationView({
 
       <section className="surface">
         <SectionHeader
-          copy="Coach Kitty reads this too, so this is where you teach the app the real you."
-          kicker="Soul file"
-          title="Leave the real story"
+          copy="Use this when a quick message is not enough. It helps Coach Kitty understand your patterns, your wins, and what actually helps."
+          kicker="Mindset note"
+          title="Leave the fuller story"
         />
 
         <div className="mt-5 rounded-[24px] border border-plum-300/12 bg-plum-300/[0.08] p-4">
@@ -1192,7 +1201,7 @@ function MotivationView({
                 mindsetLog: event.target.value,
               }))
             }
-            placeholder="What felt hard? What helped? What do you want tomorrow's Jamie to remember?"
+            placeholder="What felt hard? What helped? What does tomorrow's Jamie need to remember?"
             value={trackingDraft.mindsetLog}
           />
           <div className="mt-3 flex justify-end">
@@ -1403,7 +1412,7 @@ function CoachSupportCard({
             </div>
           </div>
           <p className="mt-3 text-[14px] leading-7 text-white/74">
-            She calls out the bullshit gently, reminds you what is true, and gives you one next move.
+            She helps you cut through the bullshit, remember what is true, and take the next honest step.
           </p>
         </div>
         <button className="ghost-chip" onClick={() => onOpenChange(!isOpen)} type="button">
@@ -1415,7 +1424,7 @@ function CoachSupportCard({
         <div className="mt-4 grid gap-3">
           {memorySummary ? (
             <div className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3 text-[12px] leading-6 text-white/64">
-              What Coach Kitty knows about you right now: {memorySummary}
+              What I&apos;m holding onto for you right now: {memorySummary}
             </div>
           ) : null}
 
@@ -1441,7 +1450,7 @@ function CoachSupportCard({
             <textarea
               className="field-shell min-h-[96px] resize-none"
               onChange={(event) => onDraftChange(event.target.value)}
-              placeholder="Coach Kitty, talk me out of the nonsense in my head right now."
+              placeholder="Coach Kitty, my brain is being weird about..."
               value={draft}
             />
             <button className="primary-button" disabled={sending} onClick={onSend} type="button">
@@ -1870,23 +1879,40 @@ function buildCoachFallbackReply({
   workoutComplete,
 }) {
   const text = String(prompt || '').toLowerCase()
+  const nextStep = buildNextStep({
+    trackingLoggedToday,
+    workout,
+    workoutComplete,
+  })
 
-  if (text.includes('stuck') || text.includes('motivat') || text.includes('start')) {
+  if (
+    ['stuck', 'motivat', 'start', 'behind', 'tired', 'overwhelmed', 'lazy'].some((phrase) =>
+      text.includes(phrase),
+    )
+  ) {
     return workoutComplete
-      ? 'You already did the hard part today. Close the loop gently and let that be enough.'
-      : `Start smaller than your brain wants. ${workout?.type === 'rest' ? 'Do ten calm minutes.' : 'Press play and give yourself one round.'}`
+      ? 'I know your brain is still trying to make today not enough, but you already did the hard part. Close the loop gently, drink some water, and let yourself take the damn win.'
+      : `Of course this feels bigger in your head than it is in real life. Momentum usually shows up after you start, not before. ${nextStep} What part usually throws you off first?`
   }
 
-  if (text.includes('scale') || text.includes('weight') || text.includes('body')) {
-    return 'One data point is not your whole story. Stay with the trend, not the panic.'
+  if (
+    ['scale', 'weight', 'body', 'bloated', 'puffy', 'mirror', 'fat'].some((phrase) =>
+      text.includes(phrase),
+    )
+  ) {
+    return 'Yeah, I get why that got loud in your head. A weird scale or bloated day can come from soreness, sodium, stress, sleep, hormones, or just being a woman with a body, and none of that means you screwed this up. Go back to signal over drama: protein, water, and your next honest session.'
   }
 
-  if (text.includes('protein') || text.includes('calories') || text.includes('cardio')) {
-    return 'Back to basics, babe: protein, enough movement, enough recovery, and consistency still beat gimmicks and panic every single time.'
+  if (['protein', 'calories', 'cardio', 'food', 'eat'].some((phrase) => text.includes(phrase))) {
+    return 'Food noise gets dramatic fast, but the boring truth still wins. Protein, enough movement, enough sleep, and a calorie target you can repeat still beat hacks every damn time. Pick one anchor meal you can trust today and start there.'
+  }
+
+  if (['guilty', 'ashamed', 'mad at myself', 'hate', 'disappointed'].some((phrase) => text.includes(phrase))) {
+    return 'That self-attack voice is loud because you care, not because it is right. If your best friend said this about herself, you would shut that nonsense down fast. Take one kind useful step right now, then come back to the facts.'
   }
 
   if (measurementsDue || inbodyDue) {
-    return 'If you have the numbers, log them. If you do not, keep moving and come back when you do.'
+    return 'The numbers are information, not a verdict. If you have them, log them cleanly and let the trend do the talking. If you do not, keep moving and come back when you do.'
   }
 
   if (trackingLoggedToday) {
@@ -1894,16 +1920,16 @@ function buildCoachFallbackReply({
   }
 
   if (currentGoal) {
-    return `Come back to your promise: ${currentGoal}`
+    return `Come back to your promise: ${currentGoal} Let that be the thing you trust more than your mood.`
   }
 
   if (coachMemorySummary) {
-    return `What is true right now: ${coachMemorySummary}`
+    return `What is true right now: ${coachMemorySummary} Start there instead of arguing with yourself.`
   }
 
   return workout?.type === 'rest'
     ? 'Keep it simple. A calm recovery block still counts and still moves this forward.'
-    : 'You do not need a heroic mood. You need one honest start.'
+    : 'You do not need a heroic mood. You need one honest start. Press play, take the first round, and let the rest sort itself out after that.'
 }
 
 function buildCoachMemorySummary({ coachMemory, currentGoal, recentMindsetNotes }) {
@@ -1917,6 +1943,14 @@ function buildCoachMemorySummary({ coachMemory, currentGoal, recentMindsetNotes 
     pieces.push(shortenText(coachMemory.latestMindsetLog, 120))
   } else if (recentMindsetNotes[0]?.log) {
     pieces.push(shortenText(recentMindsetNotes[0].log, 120))
+  }
+  if (coachMemory?.latestShare) {
+    pieces.push(`You recently said: "${shortenText(coachMemory.latestShare, 110)}".`)
+  }
+  if (coachMemory?.latestCoachQuestion && coachMemory?.latestCoachAnswer) {
+    pieces.push(
+      `When Coach Kitty asked "${shortenText(coachMemory.latestCoachQuestion, 70)}" you answered "${shortenText(coachMemory.latestCoachAnswer, 80)}".`,
+    )
   }
 
   return pieces.join(' ').trim()

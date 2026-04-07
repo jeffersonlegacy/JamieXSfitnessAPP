@@ -39,7 +39,7 @@ function sanitizeReply(text) {
   return String(text || '')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 280)
+    .slice(0, 480)
 }
 
 function extractReplyText(response) {
@@ -62,39 +62,79 @@ function isThinReply(reply) {
     .filter(Boolean).length
 
   if (!wordCount) return true
-  if (wordCount < 4) return true
+  if (wordCount < 16) return true
+
+  if (
+    /be kind, be honest|next clear step|one step at a time|take the damn win|you've got this/i.test(
+      String(reply || '').trim(),
+    )
+  ) {
+    return true
+  }
 
   return /^(hey|hi|hello)\s+jamie[.!]*$/i.test(String(reply || '').trim())
 }
 
+function includesAny(text, phrases) {
+  return phrases.some((phrase) => text.includes(phrase))
+}
+
 function buildFallbackReply(context, latestUserMessage) {
   const prompt = String(latestUserMessage || '').toLowerCase()
+  const nextStep =
+    context?.nextStep ||
+    (context?.workoutComplete
+      ? 'Close the loop with water, calories, and a little credit for yourself.'
+      : context?.workoutName
+        ? `Set up for ${context.workoutName} and do the first honest round only.`
+        : 'Make the next step tiny and start there.')
 
-  if (prompt.includes('stuck') || prompt.includes('motivat') || prompt.includes('start')) {
+  if (
+    includesAny(prompt, [
+      'stuck',
+      'motivat',
+      'start',
+      'behind',
+      'overwhelmed',
+      'lazy',
+      'tired',
+      'exhausted',
+    ])
+  ) {
     if (context?.workoutComplete) {
-      return 'You already did the hard part today. Close out the basics gently and let that count.'
+      return 'I get why your brain is still trying to pick at today, but the hard part is already done. Plenty of strong women finish the workout and still feel weirdly behind anyway, which is honestly just anxious brain nonsense. Keep it simple now: close out the basics gently and let that be enough. What part of today still feels unfinished to you?'
     }
 
     if (context?.workoutName) {
-      return 'Make the next step tiny: open the workout, do the first round only, and let momentum show up after you start.'
+      return `Of course this feels bigger in your head than it does in real life. The trick is that momentum usually shows up after you start, not before, and that is true for almost everybody. Your only job right now is this: ${nextStep} What part usually throws you off first, starting or sticking with it?`
     }
 
-    return 'Make the next step tiny. Start with five honest minutes instead of waiting to feel fully ready.'
+    return `I know this feels heavy right now, but that does not mean you are failing. Most hard days need a smaller first step, not a tougher speech. ${nextStep} What would make today feel doable instead of perfect?`
   }
 
-  if (prompt.includes('scale') || prompt.includes('weight') || prompt.includes('body')) {
-    return 'One number is not the whole story. Stay with the trend and the habits that are already moving for you.'
+  if (
+    includesAny(prompt, ['scale', 'weight', 'body', 'bloated', 'fat', 'puffy', 'mirror'])
+  ) {
+    return 'Yeah, I get why that got loud in your head. A weird scale day or a bloated day can come from soreness, salt, stress, sleep, hormones, or just being a human woman with a body, and none of that means you blew it. Cut the bullshit and go back to signal over drama: protein, water, your workout or walk, then tell me what number or thought hooked you the hardest.'
+  }
+
+  if (includesAny(prompt, ['calories', 'protein', 'cardio', 'food', 'eat', 'eating'])) {
+    return 'I know food noise can make everything feel way more dramatic than it needs to. The boring truth still wins here: enough protein, an honest calorie target, decent movement, and enough recovery beat hacks every damn time. Pick one anchor meal you can trust today, and tell me where your evenings usually start slipping.'
+  }
+
+  if (includesAny(prompt, ['guilty', 'ashamed', 'mad at myself', 'hate', 'disappointed'])) {
+    return 'That self-attack voice is loud because you care, not because it is telling the truth. If your best friend said this about herself, you would not let her spiral into that nonsense for even five minutes. Take the next kind but useful step: breathe, stand up, drink some water, and do the next honest thing in front of you. What are you accusing yourself of right now?'
   }
 
   if (context?.measurementsDue || context?.inbodyDue) {
-    return 'If you have the numbers, log them. If you do not, keep going and come back when you do.'
+    return 'I know the numbers can feel loaded, but they are information, not a courtroom. If you have them, log them cleanly and let the trend do the talking instead of your panic. If you do not have them yet, keep moving and come back when you do.'
   }
 
   if (context?.nextStep) {
-    return `Keep it simple: ${context.nextStep}`
+    return `I hear you. Nothing about this moment needs a perfect reset, just a real one. ${context.nextStep} What is the actual sticking point today: your body, your schedule, or your head?`
   }
 
-  return 'Be kind, be honest, and take the next clear step instead of trying to solve everything at once.'
+  return 'I hear you, and I am not grading you over one rough moment. Most of this gets better when we stop trying to fix the whole week at once and just handle the next honest step. Take one calm action, then come back and tell me what part feels hardest to trust right now.'
 }
 
 function buildConversation(messages) {
@@ -180,9 +220,9 @@ export default async function handler(req, res) {
       contents: conversation,
       config: {
         systemInstruction: prompt,
-        temperature: 0.7,
+        temperature: 0.8,
         topP: 0.9,
-        maxOutputTokens: 120,
+        maxOutputTokens: 220,
       },
     })
 
