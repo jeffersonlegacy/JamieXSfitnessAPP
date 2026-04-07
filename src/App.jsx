@@ -150,13 +150,23 @@ export default function App() {
       return
     }
 
+    if (!todayVideoState?.readyConfirmed && !todayWorkoutEntry?.completed) {
+      setPlayerOpen(false)
+      return
+    }
+
     if (typeof todayVideoState?.expanded === 'boolean') {
       setPlayerOpen(todayVideoState.expanded)
       return
     }
 
     setPlayerOpen(!todayWorkoutEntry?.completed)
-  }, [todayVideoState?.expanded, todayWorkout?.video, todayWorkoutEntry?.completed])
+  }, [
+    todayVideoState?.expanded,
+    todayVideoState?.readyConfirmed,
+    todayWorkout?.video,
+    todayWorkoutEntry?.completed,
+  ])
 
   useEffect(() => {
     if (!toast) return undefined
@@ -205,6 +215,8 @@ export default function App() {
 
   const workoutComplete = Boolean(todayWorkoutEntry?.completed)
   const trackingLoggedToday = hasTrackingContent(todayTrackingEntry)
+  const adviceChecks = todayVideoState?.adviceChecks || {}
+  const workoutReady = Boolean(todayVideoState?.readyConfirmed || workoutComplete)
   const helloLine = pickMotivationLine(
     HELLO_LINES,
     completedWorkouts.length + currentWeek,
@@ -368,6 +380,47 @@ export default function App() {
     }
   }
 
+  async function handleAdviceCheck(checkId, checked) {
+    if (!todayWorkout?.video) return
+
+    try {
+      await dashboard.actions.saveVideoState(todayKey, {
+        adviceChecks: {
+          ...(todayVideoState?.adviceChecks || {}),
+          [checkId]: checked,
+        },
+        workoutName: todayWorkout.name,
+      })
+    } catch (error) {
+      console.warn('Could not save workout advice state.', error)
+    }
+  }
+
+  async function handleUnlockWorkout(checklistItems) {
+    if (!todayWorkout?.video) return
+
+    const nextChecks = checklistItems.reduce((accumulator, item) => {
+      accumulator[item.id] = true
+      return accumulator
+    }, {})
+
+    setPlayerOpen(true)
+
+    try {
+      await dashboard.actions.saveVideoState(todayKey, {
+        adviceChecks: nextChecks,
+        readyConfirmed: true,
+        expanded: true,
+        opened: true,
+        lastOpenedOn: todayKey,
+        workoutName: todayWorkout.name,
+      })
+      setToast('Your workout is unlocked. Go crush it.')
+    } catch (error) {
+      setToast(error.message || 'Could not unlock the workout yet.')
+    }
+  }
+
   async function handleSendCoachMessage() {
     const prompt = coachDraft.trim()
     if (!prompt) return
@@ -459,15 +512,19 @@ export default function App() {
       <div className="app-shell">
         {activeTab === 'workout' && (
           <WorkoutView
+            adviceChecks={adviceChecks}
             currentPhaseName={currentPhaseName}
             currentWeek={currentWeek}
             currentVideoState={todayVideoState}
             day={todayDay}
+            onAdviceCheck={handleAdviceCheck}
             onPlayerOpenChange={handlePlayerOpenChange}
+            onUnlockWorkout={handleUnlockWorkout}
             playerOpen={playerOpen}
             todayKey={todayKey}
             workout={todayWorkout}
             workoutComplete={workoutComplete}
+            workoutReady={workoutReady}
           />
         )}
 
@@ -567,15 +624,19 @@ export default function App() {
 }
 
 function WorkoutView({
+  adviceChecks,
   currentPhaseName,
   currentWeek,
   currentVideoState,
   day,
+  onAdviceCheck,
   onPlayerOpenChange,
+  onUnlockWorkout,
   playerOpen,
   todayKey,
   workout,
   workoutComplete,
+  workoutReady,
 }) {
   if (!day || !workout) {
     return (
@@ -597,6 +658,12 @@ function WorkoutView({
   const overloadTips = getOverloadTips(currentWeek, workout.type)
   const setupCue = getSetupCue(workout, currentWeek)
   const modificationCue = getModificationCopy(workout.type)
+  const checklistItems = getWorkoutReadyChecklist({
+    overloadSummary,
+    setupCue,
+    type: workout.type,
+  })
+  const allAdviceChecked = checklistItems.every((item) => adviceChecks?.[item.id])
   const playerSubtitle = buildWorkoutPlayerSubtitle({
     currentVideoState,
     workout,
@@ -636,41 +703,75 @@ function WorkoutView({
         </div>
       </section>
 
-      <WorkoutPlayer
-        badge={workout.type === 'rest' ? 'Recovery flow' : 'Your player'}
-        defaultOpen={true}
-        helper={
-          workout.type === 'rest'
-            ? 'Keep the pace gentle and stop while you still feel better than when you began.'
-            : 'Use the trainer as a guide, not a test. Pause, shorten, or lighten anything that asks for more than clean control today.'
-        }
-        isOpen={playerOpen}
-        onOpenChange={onPlayerOpenChange}
-        status={playerStatus}
-        subtitle={playerSubtitle}
-        title={workout.name}
-        videoUrl={workout.video}
-      />
-
       <section className="surface">
         <SectionHeader
-          copy="Move well. Finish your version."
-          kicker="Your cues"
-          title="Today's cues"
+          copy={
+            workout.type === 'rest'
+              ? 'Read through today first.'
+              : workoutReady
+                ? 'You unlocked the workout. Keep these cues in mind.'
+                : 'Read each point, check it off, then unlock the workout.'
+          }
+          kicker="Read this first"
+          title={workout.type === 'rest' ? "Today's plan" : 'Daily advice'}
         />
 
-        <div className="rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
-          <div className="micro-label">
-            {workout.type === 'rest'
-              ? 'What recovery looks like today'
-              : 'What counts as enough today'}
+        {workout.type === 'rest' ? (
+          <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+            <div className="micro-label">What recovery looks like today</div>
+            <div className="mt-4 space-y-3">
+              {focusRows.map((row) => (
+                <FocusRow key={`${row.title}-${row.meta}`} row={row} />
+              ))}
+            </div>
           </div>
-          <div className="mt-4 space-y-3">
-            {focusRows.map((row) => (
-              <FocusRow key={`${row.title}-${row.meta}`} row={row} />
-            ))}
+        ) : (
+          <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.04] p-4">
+            <div className="micro-label">Check each point before you start</div>
+            <div className="mt-4 space-y-3">
+              {checklistItems.map((item) => (
+                <label
+                  className={clsx(
+                    'flex gap-3 rounded-[20px] border p-4 transition',
+                    adviceChecks?.[item.id]
+                      ? 'border-mint-400/18 bg-mint-400/[0.08]'
+                      : 'border-white/8 bg-white/[0.03]',
+                  )}
+                  key={item.id}
+                >
+                  <input
+                    checked={Boolean(adviceChecks?.[item.id])}
+                    className="mt-1 h-5 w-5 accent-[#8ef0c2]"
+                    onChange={(event) => onAdviceCheck(item.id, event.target.checked)}
+                    type="checkbox"
+                  />
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-white">{item.title}</div>
+                    <div className="mt-2 text-[13px] leading-6 text-white/68">
+                      {item.detail}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            <button
+              className={clsx(
+                'mt-4',
+                allAdviceChecked ? 'primary-button' : 'warning-button',
+              )}
+              disabled={!allAdviceChecked}
+              onClick={() => onUnlockWorkout(checklistItems)}
+              type="button"
+            >
+              {workoutReady
+                ? "I'm ready to crush this workout now!"
+                : allAdviceChecked
+                  ? "I'm ready to crush this workout now!"
+                  : 'Check every point first'}
+            </button>
           </div>
-        </div>
+        )}
 
         <div className="mt-4">
           <WorkoutCoachPanel
@@ -687,6 +788,20 @@ function WorkoutView({
           />
         </div>
       </section>
+
+      {workout.type !== 'rest' && workoutReady ? (
+        <WorkoutPlayer
+          badge="Unlocked"
+          defaultOpen={true}
+          helper="Use the trainer as a guide, not a test."
+          isOpen={playerOpen}
+          onOpenChange={onPlayerOpenChange}
+          status={playerStatus}
+          subtitle={playerSubtitle}
+          title={workout.name}
+          videoUrl={workout.video}
+        />
+      ) : null}
     </div>
   )
 }
@@ -1420,6 +1535,38 @@ function FocusRow({ row }) {
       </div>
     </div>
   )
+}
+
+function getWorkoutReadyChecklist({ overloadSummary, setupCue, type }) {
+  const formCue =
+    type === 'upper'
+      ? 'I will keep my shoulders and neck calm instead of forcing the weight.'
+      : type === 'lower'
+        ? 'I will stay stable through my feet, hips, and core instead of rushing.'
+        : 'I will keep clean reps over pace, ego, or trying to match the trainer.'
+
+  return [
+    {
+      id: 'setup',
+      title: 'I set my space up first.',
+      detail: setupCue,
+    },
+    {
+      id: 'scale',
+      title: 'I will make this workout fit my body today.',
+      detail: getModificationCopy(type),
+    },
+    {
+      id: 'form',
+      title: 'I will keep my reps clean.',
+      detail: formCue,
+    },
+    {
+      id: 'progress',
+      title: 'I will only push harder if it still looks controlled.',
+      detail: overloadSummary,
+    },
+  ]
 }
 
 function TrackingCard({ accent, children, description, icon, title }) {

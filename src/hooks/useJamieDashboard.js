@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   doc,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -55,6 +56,8 @@ export function useJamieDashboard(user) {
   const [goals, setGoals] = useState([])
   const [settings, setSettings] = useState(null)
   const [videoState, setVideoState] = useState([])
+  const [coachMemory, setCoachMemory] = useState(null)
+  const [coachMessages, setCoachMessages] = useState([])
   const [ready, setReady] = useState({
     workouts: false,
     tracking: false,
@@ -63,6 +66,8 @@ export function useJamieDashboard(user) {
     goals: false,
     settings: false,
     videoState: false,
+    coachMemory: false,
+    coachMessages: false,
   })
   const [metadata, setMetadata] = useState({
     workouts: { fromCache: false, hasPendingWrites: false },
@@ -72,6 +77,8 @@ export function useJamieDashboard(user) {
     goals: { fromCache: false, hasPendingWrites: false },
     settings: { fromCache: false, hasPendingWrites: false },
     videoState: { fromCache: false, hasPendingWrites: false },
+    coachMemory: { fromCache: false, hasPendingWrites: false },
+    coachMessages: { fromCache: false, hasPendingWrites: false },
   })
   const [error, setError] = useState(null)
 
@@ -211,6 +218,32 @@ export function useJamieDashboard(user) {
         },
         (snapshotError) => handleSnapshotError('videoState', snapshotError),
       ),
+      onSnapshot(
+        doc(db, ...userPath, 'coach_memory', 'main'),
+        (snapshot) => {
+          startTransition(() => {
+            setCoachMemory(mapDoc(snapshot))
+          })
+          updateMetadata('coachMemory', snapshot)
+          markReady('coachMemory')
+        },
+        (snapshotError) => handleSnapshotError('coachMemory', snapshotError),
+      ),
+      onSnapshot(
+        query(
+          collection(db, ...userPath, 'coach_messages'),
+          orderBy('createdAt', 'asc'),
+          limit(24),
+        ),
+        (snapshot) => {
+          startTransition(() => {
+            setCoachMessages(mapCollectionOrdered(snapshot))
+          })
+          updateMetadata('coachMessages', snapshot)
+          markReady('coachMessages')
+        },
+        (snapshotError) => handleSnapshotError('coachMessages', snapshotError),
+      ),
     ]
 
     return () => {
@@ -313,6 +346,33 @@ export function useJamieDashboard(user) {
     )
   }
 
+  async function addCoachMessage(payload) {
+    if (!user || !db) return
+
+    const content = String(payload?.content || '').trim()
+    if (!content) return
+
+    await addDoc(collection(db, 'users', user.uid, 'coach_messages'), {
+      role: payload?.role === 'assistant' ? 'assistant' : 'user',
+      content,
+      createdAt: serverTimestamp(),
+      source: payload?.source || 'app',
+    })
+  }
+
+  async function saveCoachMemory(payload) {
+    if (!user || !db) return
+
+    await setDoc(
+      doc(db, 'users', user.uid, 'coach_memory', 'main'),
+      {
+        ...(payload || {}),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    )
+  }
+
   const videoStateById = indexById(videoState)
 
   return {
@@ -321,6 +381,8 @@ export function useJamieDashboard(user) {
     settings,
     videoState,
     videoStateById,
+    coachMemory,
+    coachMessages,
     workouts,
     tracking,
     measurements,
@@ -341,6 +403,8 @@ export function useJamieDashboard(user) {
       addGoal,
       saveSettings,
       saveVideoState,
+      addCoachMessage,
+      saveCoachMemory,
     },
   }
 }
