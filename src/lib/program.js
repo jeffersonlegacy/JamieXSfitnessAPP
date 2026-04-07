@@ -51,7 +51,7 @@ export const KUROMI_LINES = [
   'Consistency is the part that changes everything.',
 ]
 
-export const PERSPECTIVE_CARDS = [
+const CORE_PERSPECTIVE_CARDS = [
   {
     category: 'Scale',
     title: 'Scale weight is not body composition.',
@@ -341,6 +341,159 @@ export const PERSPECTIVE_CARDS = [
     takeaway: 'Confidence can be practiced now, not just earned later.',
   },
 ]
+
+const EDGE_PERSPECTIVE_CARDS = [
+  {
+    category: 'Mindset',
+    title: 'Nobody is coming to rescue your routine.',
+    body: 'No perfect Monday, no magical mood, and no outside hype is going to do the reps for you.',
+    takeaway: 'The rescue plan is the next honest action.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'A few bites still count, even when they feel too small to matter.',
+    body: 'Licks, handfuls, tastes, and “it was just a bite” moments can quietly stack up fast.',
+    takeaway: 'Honest tracking beats fake innocence.',
+  },
+  {
+    category: 'Mindset',
+    title: 'You cannot hate yourself into consistency.',
+    body: 'Self-disgust might light a match for a day, but it usually burns the whole plan down by the weekend.',
+    takeaway: 'Respect is a better fuel source than shame.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'Cheat days are often just binge eating with a prettier label.',
+    body: 'One planned flex meal is one thing. A full day of “screw it” can erase a lot more than people want to admit.',
+    takeaway: 'Make room on purpose, not by accident.',
+  },
+  {
+    category: 'Strength',
+    title: 'Toning is not a special workout style.',
+    body: 'The tighter look people want usually comes from building muscle and lowering body fat, not from magic pink-dumbbell workouts.',
+    takeaway: 'Lift with intent and let body composition do the rest.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'Healthy food can still stall fat loss if the portions stay huge.',
+    body: 'Granola, avocado, nut butter, trail mix, smoothie bowls, and “natural” treats can still run the calories way up.',
+    takeaway: 'Good food still counts.',
+  },
+  {
+    category: 'Mindset',
+    title: 'Starting over every Monday keeps women stuck for months.',
+    body: 'When every rough weekend becomes a full reset, you never build a normal rhythm through imperfect days.',
+    takeaway: 'The real skill is recovering faster, not restarting louder.',
+  },
+  {
+    category: 'Recovery',
+    title: 'Caffeine is not recovery.',
+    body: 'It can help you perform, but it cannot replace sleep, food, or a nervous system that is cooked.',
+    takeaway: 'Energy is not the same thing as readiness.',
+  },
+  {
+    category: 'Mindset',
+    title: 'You might not need more information. You might need fewer excuses.',
+    body: 'A lot of women already know what works, but keep trying to learn their way around doing it consistently.',
+    takeaway: 'More clarity is not always the missing piece.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'Hunger is not always an emergency.',
+    body: 'Sometimes it is real physical hunger. Sometimes it is stress, boredom, habit, or a long gap caused by sloppy meal timing.',
+    takeaway: 'Pause long enough to tell the difference.',
+  },
+  {
+    category: 'Strength',
+    title: 'If the video pace ruins your form, the pace is wrong for you.',
+    body: 'Following the trainer blindly is not discipline. It is how people turn decent workouts into sloppy ones.',
+    takeaway: 'Your form gets the final vote.',
+  },
+  {
+    category: 'Mindset',
+    title: 'Feeling embarrassed in the gym is common, not special.',
+    body: 'A lot of women assume everyone is judging them when most people are busy surviving their own workout.',
+    takeaway: 'Take up the space anyway.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'Weekend calories count exactly the same as weekday calories.',
+    body: 'The body does not clap because it was brunch, girls night, or a little treat after a hard week.',
+    takeaway: 'The whole week is the plan.',
+  },
+  {
+    category: 'Recovery',
+    title: 'Training hard while living chaotically is a lousy combo.',
+    body: 'If stress is high, sleep is messy, and food is random, adding more intensity can just make the whole system wobblier.',
+    takeaway: 'Support the work you are asking your body to do.',
+  },
+  {
+    category: 'Mindset',
+    title: 'Sometimes the body you want is hiding under habits you keep defending.',
+    body: 'The routine that comforts you right now might be the same one slowing the change you say you want.',
+    takeaway: 'Truth can sting and still be useful.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'More supplements cannot save a chaotic baseline.',
+    body: 'Protein, meal structure, fiber, water, sleep, and calories still matter more than a basket full of “extras.”',
+    takeaway: 'Support products support a plan. They are not the plan.',
+  },
+  {
+    category: 'Mindset',
+    title: 'If you only act when you feel confident, you will stay in rehearsal forever.',
+    body: 'Confidence usually shows up after evidence, not before it.',
+    takeaway: 'Do the rep first. Let belief catch up later.',
+  },
+  {
+    category: 'Strength',
+    title: 'Intensity can become a way to avoid consistency.',
+    body: 'Some people chase brutal workouts because it feels cooler than repeating the boring basics for months.',
+    takeaway: 'Consistency is the harder flex.',
+  },
+  {
+    category: 'Nutrition',
+    title: 'You might need more actual meals and fewer random “treat yourself” moments.',
+    body: 'Under-eating early and grazing late can make the whole day feel chaotic and bottomless.',
+    takeaway: 'Structure often calms appetite better than willpower.',
+  },
+  {
+    category: 'Mindset',
+    title: 'Being busy does not magically make the plan unfair.',
+    body: 'A packed life is real, but it also means the routine has to be protected on purpose instead of wished into place.',
+    takeaway: 'Busy changes the strategy, not the physics.',
+  },
+]
+
+export const PERSPECTIVE_CARDS = interleavePerspectiveCards(
+  CORE_PERSPECTIVE_CARDS,
+  EDGE_PERSPECTIVE_CARDS,
+)
+
+function interleavePerspectiveCards(coreCards, edgeCards) {
+  const combined = []
+  let edgeIndex = 0
+
+  coreCards.forEach((card, index) => {
+    combined.push(card)
+    const progress = (index + 1) / coreCards.length
+
+    while (
+      edgeIndex < edgeCards.length &&
+      (edgeIndex + 1) / edgeCards.length <= progress + 0.02
+    ) {
+      combined.push(edgeCards[edgeIndex])
+      edgeIndex += 1
+    }
+  })
+
+  while (edgeIndex < edgeCards.length) {
+    combined.push(edgeCards[edgeIndex])
+    edgeIndex += 1
+  }
+
+  return combined
+}
 
 export function getLocalDateKey(date = new Date()) {
   const year = date.getFullYear()

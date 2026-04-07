@@ -17,6 +17,7 @@ import {
 import { isFirebaseConfigured, firebaseEnvKeys } from './lib/firebase'
 import { useFirebaseSession } from './hooks/useFirebaseSession'
 import { useJamieDashboard } from './hooks/useJamieDashboard'
+import SwipeTruthCard from './components/SwipeTruthCard'
 import WorkoutPlayer from './components/WorkoutPlayer'
 import {
   PERSPECTIVE_CARDS,
@@ -97,6 +98,9 @@ export default function App() {
     role: entry.role === 'assistant' ? 'assistant' : 'user',
     content: String(entry.content || '').trim(),
   }))
+  const truthReactions = dashboard.coachMemory?.truthReactions || {}
+  const likedTruths = getTruthsByReaction(truthReactions, 'liked')
+  const sensitiveTruths = getTruthsByReaction(truthReactions, 'sensitive')
 
   const todayWorkoutEntry = workoutsByDate[todayKey]
   const todayTrackingEntry = trackingByDate[todayKey]
@@ -404,6 +408,35 @@ export default function App() {
     }
   }
 
+  async function handleTruthReaction(card, reaction) {
+    const truthId = getPerspectiveCardId(card)
+    const nextTruthReactions = {
+      ...(dashboard.coachMemory?.truthReactions || {}),
+      [truthId]: {
+        category: card.category,
+        id: truthId,
+        reactedOn: todayKey,
+        reaction,
+        title: card.title,
+      },
+    }
+
+    try {
+      await dashboard.actions.saveCoachMemory({
+        latestTruthReaction: reaction,
+        latestTruthReactionTitle: card.title,
+        truthReactions: nextTruthReactions,
+      })
+      setToast(
+        reaction === 'liked'
+          ? 'Coach Kitty saved that one.'
+          : 'Okay. Coach Kitty will handle that one gently.',
+      )
+    } catch (error) {
+      setToast(error.message || 'Could not save that truth reaction yet.')
+    }
+  }
+
   async function handleSendCoachMessage() {
     const prompt = coachDraft.trim()
     if (!prompt) return
@@ -448,6 +481,8 @@ export default function App() {
             memorySummary: coachMemorySummary,
             recentGoals: dashboard.goals.slice(0, 4).map((entry) => entry.text),
             recentMindsetNotes,
+            likedTruths,
+            sensitiveTruths,
             latestMindsetTitle:
               dashboard.coachMemory?.latestMindsetTitle || todayTrackingEntry?.mindsetTitle || '',
             latestMindsetLog:
@@ -553,9 +588,11 @@ export default function App() {
             onCoachDraftChange={setCoachDraft}
             onSaveMindset={handleSaveMindset}
             onSendCoachMessage={handleSendCoachMessage}
+            onTruthReact={handleTruthReaction}
             supportSaving={saving}
             currentDay={todayDay}
             trackingDraft={trackingDraft}
+            truthReactions={truthReactions}
           />
         )}
 
@@ -1105,9 +1142,11 @@ function MotivationView({
   onCoachDraftChange,
   onSaveMindset,
   onSendCoachMessage,
+  onTruthReact,
   supportSaving,
   currentDay,
   trackingDraft,
+  truthReactions,
 }) {
   return (
     <div className="grid gap-4">
@@ -1124,7 +1163,8 @@ function MotivationView({
               Swipe when your brain starts lying.
             </h3>
             <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/76">
-              Quick gym truths. Real science. No soft bullshit.
+              Press and hold first. Swipe up if it hits. Swipe down if you are not ready
+              for that truth yet.
             </p>
           </div>
         </div>
@@ -1132,14 +1172,19 @@ function MotivationView({
         <div className="no-scrollbar mt-4 grid auto-cols-[88%] grid-flow-col gap-3 overflow-x-auto pb-1">
           <CoachKittyPosterCard />
           {PERSPECTIVE_CARDS.map((card) => (
-            <PerspectiveCard card={card} key={card.title} />
+            <SwipeTruthCard
+              card={card}
+              key={getPerspectiveCardId(card)}
+              onReact={(reaction) => onTruthReact(card, reaction)}
+              reaction={truthReactions[getPerspectiveCardId(card)]?.reaction || null}
+            />
           ))}
         </div>
       </section>
 
       <section className="surface">
         <SectionHeader
-          copy="Say it straight. She remembers the important stuff and helps you steady the next move."
+          copy="Say it straight. She remembers what lands, what stings, and how to meet you without bulldozing you."
           kicker="Coach Kitty"
           title="Gym floor talk"
         />
@@ -1467,37 +1512,6 @@ function CoachSupportCard({ draft, memorySummary, messages, onDraftChange, onSen
         </div>
       </div>
     </div>
-  )
-}
-
-function PerspectiveCard({ card }) {
-  const [expanded, setExpanded] = useState(false)
-  const longBody = String(card.body || '').length > 150
-  const body = expanded || !longBody ? card.body : shortenText(card.body, 148)
-
-  return (
-    <article className="rounded-[26px] border border-[#ff8ec8]/12 bg-[linear-gradient(160deg,rgba(255,86,163,0.2),rgba(255,255,255,0.04)_40%,rgba(10,8,13,0.92)_100%)] p-5 shadow-[0_18px_34px_rgba(0,0,0,0.24)]">
-      <div className="flex items-center justify-between gap-3">
-        <div className="micro-label text-blush-100">{card.category}</div>
-        <div className="rounded-full border border-white/10 bg-black/18 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/58">
-          Gym truth
-        </div>
-      </div>
-      <h3 className="mt-3 text-lg font-extrabold text-white">{card.title}</h3>
-      <p className="mt-3 text-[14px] leading-7 text-white/76">{body}</p>
-      {longBody ? (
-        <button
-          className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-blush-200"
-          onClick={() => setExpanded((current) => !current)}
-          type="button"
-        >
-          {expanded ? 'Show less' : 'Read the rest'}
-        </button>
-      ) : null}
-      <div className="mt-4 rounded-[18px] border border-white/8 bg-black/18 p-3 text-[13px] leading-6 text-white/82">
-        <span className="font-bold text-gold-300">Use this:</span> {card.takeaway}
-      </div>
-    </article>
   )
 }
 
@@ -1982,6 +1996,8 @@ function buildCoachFallbackReply({
 
 function buildCoachMemorySummary({ coachMemory, currentGoal, recentMindsetNotes }) {
   const pieces = []
+  const likedTruths = getTruthsByReaction(coachMemory?.truthReactions, 'liked')
+  const sensitiveTruths = getTruthsByReaction(coachMemory?.truthReactions, 'sensitive')
 
   if (currentGoal) pieces.push(`Your current promise is "${currentGoal}".`)
   if (coachMemory?.latestMindsetTitle) {
@@ -1999,6 +2015,12 @@ function buildCoachMemorySummary({ coachMemory, currentGoal, recentMindsetNotes 
     pieces.push(
       `When Coach Kitty asked "${shortenText(coachMemory.latestCoachQuestion, 70)}" you answered "${shortenText(coachMemory.latestCoachAnswer, 80)}".`,
     )
+  }
+  if (likedTruths.length) {
+    pieces.push(`Truths that landed with you: ${likedTruths.slice(0, 2).join(' | ')}.`)
+  }
+  if (sensitiveTruths.length) {
+    pieces.push(`Go carefully around: ${sensitiveTruths.slice(0, 2).join(' | ')}.`)
   }
 
   return pieces.join(' ').trim()
@@ -2026,6 +2048,20 @@ function shortenText(value, maxLength) {
   const text = String(value || '').trim()
   if (text.length <= maxLength) return text
   return `${text.slice(0, maxLength - 1).trim()}…`
+}
+
+function getPerspectiveCardId(card) {
+  return String(card?.id || card?.title || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function getTruthsByReaction(truthReactions, reaction) {
+  return Object.values(truthReactions || {})
+    .filter((entry) => entry?.reaction === reaction && entry?.title)
+    .sort((a, b) => String(b.reactedOn || '').localeCompare(String(a.reactedOn || '')))
+    .map((entry) => entry.title)
 }
 
 function getChalkArtStyle(index) {
