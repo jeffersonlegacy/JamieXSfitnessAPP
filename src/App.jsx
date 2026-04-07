@@ -19,7 +19,6 @@ import {
 import { isFirebaseConfigured, firebaseEnvKeys } from './lib/firebase'
 import { useFirebaseSession } from './hooks/useFirebaseSession'
 import { useJamieDashboard } from './hooks/useJamieDashboard'
-import WorkoutCoachPanel from './components/WorkoutCoachPanel'
 import WorkoutPlayer from './components/WorkoutPlayer'
 import {
   PERSPECTIVE_CARDS,
@@ -30,7 +29,6 @@ import {
   getLatestByDate,
   getLocalDateKey,
   getOverloadSummary,
-  getOverloadTips,
   getPhaseForDay,
   getPhaseName,
   getProgramDay,
@@ -650,9 +648,7 @@ function WorkoutView({
 
   const focusRows = getWorkoutFocusRows(workout.type)
   const overloadSummary = getOverloadSummary(getPhaseForDay(day), currentWeek, workout.type)
-  const overloadTips = getOverloadTips(currentWeek, workout.type)
   const setupCue = getSetupCue(workout, currentWeek)
-  const modificationCue = getModificationCopy(workout.type)
   const checklistItems = getWorkoutReadyChecklist({
     overloadSummary,
     setupCue,
@@ -768,20 +764,6 @@ function WorkoutView({
           </div>
         )}
 
-        <div className="mt-4">
-          <WorkoutCoachPanel
-            details={overloadTips.slice(0, 3).join(' ')}
-            modificationCue={modificationCue}
-            overloadCue={overloadSummary}
-            setupCue={setupCue}
-            detailsLabel="More cues"
-            title={
-              workout.type === 'rest'
-                ? 'Keep recovery simple'
-                : 'Need help with today?'
-            }
-          />
-        </div>
       </section>
 
       {workout.type !== 'rest' && workoutReady ? (
