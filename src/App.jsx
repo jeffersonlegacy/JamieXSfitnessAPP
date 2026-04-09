@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import {
   Activity,
@@ -70,6 +70,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('workout')
   const [selectedDay, setSelectedDay] = useState(actualTodayDay)
   const [completionShakeClass, setCompletionShakeClass] = useState('')
+  const tabScrollRef = useRef(null)
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
   const [measurementDraft, setMeasurementDraft] = useState(EMPTY_MEASUREMENTS)
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
@@ -188,6 +189,12 @@ export default function App() {
     return () => window.clearTimeout(timeoutId)
   }, [completionShakeClass])
 
+  useEffect(() => {
+    const node = tabScrollRef.current
+    if (!node) return
+    node.scrollTop = 0
+  }, [activeTab])
+
   if (!isFirebaseConfigured || session.status === 'needs-config') {
     return <ConfigurationState envKeys={firebaseEnvKeys} />
   }
@@ -222,6 +229,14 @@ export default function App() {
     currentGoal,
     recentMindsetNotes,
   })
+
+  function handleTabChange(nextTab) {
+    setActiveTab(nextTab)
+    window.requestAnimationFrame(() => {
+      const node = tabScrollRef.current
+      if (node) node.scrollTop = 0
+    })
+  }
 
   async function handleWorkoutComplete() {
     if (!todayDay) return
@@ -600,91 +615,93 @@ export default function App() {
   }
 
   return (
-    <div className="relative flex min-h-screen justify-center">
+    <div className="relative flex min-h-screen min-h-[100svh] w-full justify-center overflow-hidden">
       <div className={clsx('app-shell', completionShakeClass)}>
-        {activeTab === 'workout' && (
-          <WorkoutView
-            adviceChecks={adviceChecks}
-            actualTodayDay={actualTodayDay}
-            completedWorkoutKeys={completedWorkoutKeys}
-            currentPhaseName={currentPhaseName}
-            latestHeavyRestRecord={latestHeavyRestRecord}
-            currentWeek={currentWeek}
-            currentVideoState={todayVideoState}
-            day={todayDay}
-            onAdviceCheck={handleAdviceCheck}
-            onEditSelectedDay={() => setActiveTab('tracking')}
-            onPlayerOpenChange={handlePlayerOpenChange}
-            onResetToToday={() => setSelectedDay(actualTodayDay)}
-            onSaveHeavyLift={handleSaveHeavyLift}
-            onSelectDay={setSelectedDay}
-            onSelectRestOption={handleSelectRestOption}
-            onUnlockWorkout={handleUnlockWorkout}
-            playerOpen={playerOpen}
-            saving={saving}
-            selectedDay={selectedDay}
-            todayKey={todayKey}
-            workout={todayWorkout}
-            workoutComplete={workoutComplete}
-            workoutReady={workoutReady}
-            viewingToday={selectedDay === actualTodayDay}
-          />
-        )}
+        <div className="tab-scroll-area no-scrollbar" ref={tabScrollRef}>
+          {activeTab === 'workout' && (
+            <WorkoutView
+              adviceChecks={adviceChecks}
+              actualTodayDay={actualTodayDay}
+              completedWorkoutKeys={completedWorkoutKeys}
+              currentPhaseName={currentPhaseName}
+              latestHeavyRestRecord={latestHeavyRestRecord}
+              currentWeek={currentWeek}
+              currentVideoState={todayVideoState}
+              day={todayDay}
+              onAdviceCheck={handleAdviceCheck}
+              onEditSelectedDay={() => handleTabChange('tracking')}
+              onPlayerOpenChange={handlePlayerOpenChange}
+              onResetToToday={() => setSelectedDay(actualTodayDay)}
+              onSaveHeavyLift={handleSaveHeavyLift}
+              onSelectDay={setSelectedDay}
+              onSelectRestOption={handleSelectRestOption}
+              onUnlockWorkout={handleUnlockWorkout}
+              playerOpen={playerOpen}
+              saving={saving}
+              selectedDay={selectedDay}
+              todayKey={todayKey}
+              workout={todayWorkout}
+              workoutComplete={workoutComplete}
+              workoutReady={workoutReady}
+              viewingToday={selectedDay === actualTodayDay}
+            />
+          )}
 
-        {activeTab === 'tracking' && (
-          <TrackingView
-            inbodyDraft={inbodyDraft}
-            inbodyDue={inbodyDue}
-            latestMeasurement={latestMeasurement}
-            latestScan={latestScan}
-            measurementDraft={measurementDraft}
-            measurementsDue={measurementsDue}
-            onChangeInbody={setInbodyDraft}
-            onChangeMeasurements={setMeasurementDraft}
-            onChangeTracking={setTrackingDraft}
-            onMarkWorkout={handleWorkoutComplete}
-            onSaveInbody={handleSaveInBody}
-            onSaveMeasurements={handleSaveMeasurements}
-            onSaveHydration={handleSaveHydration}
-            onSaveDeficit={handleSaveDeficit}
-            saving={saving}
-            selectedDay={selectedDay}
-            trackingDraft={trackingDraft}
-            workout={todayWorkout}
-            workoutComplete={workoutComplete}
-            viewingToday={selectedDay === actualTodayDay}
-          />
-        )}
+          {activeTab === 'tracking' && (
+            <TrackingView
+              inbodyDraft={inbodyDraft}
+              inbodyDue={inbodyDue}
+              latestMeasurement={latestMeasurement}
+              latestScan={latestScan}
+              measurementDraft={measurementDraft}
+              measurementsDue={measurementsDue}
+              onChangeInbody={setInbodyDraft}
+              onChangeMeasurements={setMeasurementDraft}
+              onChangeTracking={setTrackingDraft}
+              onMarkWorkout={handleWorkoutComplete}
+              onSaveInbody={handleSaveInBody}
+              onSaveMeasurements={handleSaveMeasurements}
+              onSaveHydration={handleSaveHydration}
+              onSaveDeficit={handleSaveDeficit}
+              saving={saving}
+              selectedDay={selectedDay}
+              trackingDraft={trackingDraft}
+              workout={todayWorkout}
+              workoutComplete={workoutComplete}
+              viewingToday={selectedDay === actualTodayDay}
+            />
+          )}
 
-        {activeTab === 'goals' && (
-          <MotivationView
-            coachDraft={coachDraft}
-            coachMessages={coachMessages}
-            coachSending={coachSending}
-            coachSummary={coachMemorySummary}
-            onChangeTracking={setTrackingDraft}
-            onCoachDraftChange={setCoachDraft}
-            onSaveMindset={handleSaveMindset}
-            onSendCoachMessage={handleSendCoachMessage}
-            onTruthReact={handleTruthReaction}
-            supportSaving={saving}
-            currentDay={todayDay}
-            trackingDraft={trackingDraft}
-            truthReactions={truthReactions}
-          />
-        )}
+          {activeTab === 'goals' && (
+            <MotivationView
+              coachDraft={coachDraft}
+              coachMessages={coachMessages}
+              coachSending={coachSending}
+              coachSummary={coachMemorySummary}
+              onChangeTracking={setTrackingDraft}
+              onCoachDraftChange={setCoachDraft}
+              onSaveMindset={handleSaveMindset}
+              onSendCoachMessage={handleSendCoachMessage}
+              onTruthReact={handleTruthReaction}
+              supportSaving={saving}
+              currentDay={todayDay}
+              trackingDraft={trackingDraft}
+              truthReactions={truthReactions}
+            />
+          )}
 
-        {activeTab === 'data' && (
-          <ProgressWallView
-            goals={dashboard.goals}
-            newGoal={newGoal}
-            onAddGoal={handleAddGoal}
-            onChangeGoal={setNewGoal}
-            onResetApp={handleResetApp}
-            saving={saving}
-            settings={dashboard.settings}
-          />
-        )}
+          {activeTab === 'data' && (
+            <ProgressWallView
+              goals={dashboard.goals}
+              newGoal={newGoal}
+              onAddGoal={handleAddGoal}
+              onChangeGoal={setNewGoal}
+              onResetApp={handleResetApp}
+              saving={saving}
+              settings={dashboard.settings}
+            />
+          )}
+        </div>
       </div>
 
       <div className="floating-dock">
@@ -692,25 +709,25 @@ export default function App() {
           icon={<Home size={20} />}
           isActive={activeTab === 'workout'}
           label="Workout"
-          onClick={() => setActiveTab('workout')}
+          onClick={() => handleTabChange('workout')}
         />
         <NavButton
           icon={<Activity size={20} />}
           isActive={activeTab === 'tracking'}
           label="Tracking"
-          onClick={() => setActiveTab('tracking')}
+          onClick={() => handleTabChange('tracking')}
         />
         <NavButton
           icon={<Heart size={20} />}
           isActive={activeTab === 'goals'}
           label="Motivation"
-          onClick={() => setActiveTab('goals')}
+          onClick={() => handleTabChange('goals')}
         />
         <NavButton
           icon={<Target size={20} />}
           isActive={activeTab === 'data'}
           label="Wall"
-          onClick={() => setActiveTab('data')}
+          onClick={() => handleTabChange('data')}
         />
       </div>
 
@@ -1637,57 +1654,46 @@ function ProgressWallView({
   return (
     <div className="grid gap-4">
       <section className="surface">
-        <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,11,19,0.98),rgba(10,7,13,0.98))] p-5 shadow-[0_26px_50px_rgba(0,0,0,0.34)]">
-          <div
-            className="absolute inset-x-0 top-0 h-36 bg-cover bg-center opacity-42"
-            style={{ backgroundImage: "url('/coach-kitty-gym.jpeg')" }}
-          />
-          <div className="absolute inset-x-0 top-0 h-36 bg-[linear-gradient(180deg,rgba(10,5,12,0.18),rgba(10,5,12,0.88))]" />
-          <div className="relative">
+        <div className="chalk-frame">
+          <div className="chalk-composer">
             <div className="micro-label text-blush-100">Promise wall</div>
             <h3 className="display-copy mt-3 max-w-[12ch] text-[1.9rem] leading-[0.94] text-white">
-              Put the line on the wall.
+              Put one line where you can see it.
             </h3>
-            <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/72">
-              Write the promise you want staring back at you tonight.
+            <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/70">
+              Keep it short. Make it real. Then let the wall hold you to it.
             </p>
-          </div>
 
-          <div className="relative mt-24 rounded-[22px] border border-white/8 bg-black/20 p-2 backdrop-blur-md">
-            <input
-              className="w-full bg-transparent px-3 py-3 text-[15px] text-[#f6fff8] outline-none placeholder:text-[#f6fff8]/28"
-              onChange={(event) => onChangeGoal(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') onAddGoal()
-              }}
-              placeholder="I keep promises to myself."
-              type="text"
-              value={newGoal}
-            />
-          </div>
-          {newGoal.trim() ? (
-            <div className="relative mt-4 rounded-[22px] border border-[#ffe6f1]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),rgba(20,29,25,0.92)] p-4">
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#f7dbe5]/52">
-                Waiting for chalk
-              </div>
-              <p
-                className="mt-3 text-[22px] leading-8 text-[#f7fff8]/88"
-                style={{
-                  fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-                  textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(255,182,219,0.08)',
+            <div className="chalk-input-shell mt-5">
+              <input
+                className="chalk-input"
+                onChange={(event) => onChangeGoal(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') onAddGoal()
                 }}
-              >
-                {newGoal}
-              </p>
+                placeholder="I keep promises to myself."
+                type="text"
+                value={newGoal}
+              />
             </div>
-          ) : null}
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="text-[12px] leading-6 text-[#f4dce7]/48">
-              Signed as {wallName}.
+
+            {newGoal.trim() ? (
+              <div className="chalk-preview-card mt-4">
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#f7dbe5]/52">
+                  Wet chalk
+                </div>
+                <p className="chalk-writing mt-3 text-[22px] leading-8 text-[#f7fff8]/88">
+                  {newGoal}
+                </p>
+              </div>
+            ) : null}
+
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <div className="text-[12px] leading-6 text-[#f4dce7]/48">Signed as {wallName}.</div>
+              <button className="cream-button w-auto px-4" onClick={onAddGoal} type="button">
+                {saving.goal ? 'Sketching...' : 'Sketch it'}
+              </button>
             </div>
-            <button className="primary-button w-auto px-4" onClick={onAddGoal} type="button">
-              {saving.goal ? 'Etching...' : 'Etch it'}
-            </button>
           </div>
         </div>
       </section>
@@ -1699,64 +1705,55 @@ function ProgressWallView({
           title={jamiePosts.length ? 'Your promises in motion' : 'The wall is ready'}
         />
 
-        <div className="relative mt-5 overflow-hidden rounded-[30px] border border-[#d7f0d8]/10 bg-[linear-gradient(180deg,rgba(23,43,36,0.98),rgba(17,31,27,0.98))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_0_0_1px_rgba(255,255,255,0.03),0_18px_38px_rgba(0,0,0,0.26)]">
-          <div className="pointer-events-none absolute -left-8 top-8 h-24 w-24 rounded-full bg-[#dff6e2]/[0.03] blur-2xl" />
-          <div className="pointer-events-none absolute right-0 top-16 h-20 w-32 rounded-full bg-[#f4fff6]/[0.02] blur-2xl" />
-          <div className="pointer-events-none absolute inset-x-6 top-4 h-px bg-white/8" />
-          <div className="pointer-events-none absolute inset-x-8 bottom-4 h-3 rounded-full bg-black/18 blur-md" />
-          <div className="pointer-events-none absolute right-6 top-5 rounded-full border border-[#ffd2e6]/14 bg-[#ff7dbd]/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ffd5e9]/56">
-            Chalk squad
-          </div>
+        <div className="chalk-frame mt-5">
+          <div className="chalk-board">
+            <div className="chalk-board-badge">Chalk squad</div>
+            <div className="chalk-tray" />
 
-          {featuredPost ? (
-            <div className="relative">
-              <div className="rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),rgba(18,31,27,0.92)] p-5">
-                <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
-                  <span>{formatGoalDate(featuredPost)}</span>
-                  <span className="h-px flex-1 bg-white/8" />
-                  <span>{wallName}</span>
+            {featuredPost ? (
+              <div className="relative">
+                <div className="chalk-featured-post">
+                  <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.22em] text-[#cfdfd2]/52">
+                    <span>{formatGoalDate(featuredPost)}</span>
+                    <span className="h-px flex-1 bg-white/8" />
+                    <span>{wallName}</span>
+                  </div>
+                  <p className="chalk-writing mt-4 text-[28px] leading-10 text-[#f3fff5]/92">
+                    {featuredPost.text}
+                  </p>
                 </div>
-                <p
-                  className="mt-4 text-[28px] leading-10 text-[#f3fff5]/92"
-                  style={{
-                    fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-                    textShadow: '0 1px 0 rgba(255,255,255,0.06), 0 0 18px rgba(237,255,242,0.06)',
-                  }}
-                >
-                  {featuredPost.text}
+
+                {archivePosts.length ? (
+                  <div className="mt-5 grid gap-3">
+                    {archivePosts.map((post, index) => (
+                      <article
+                        className="chalk-entry"
+                        key={post.id}
+                        style={{ transform: `rotate(${getWallEntryTilt(post.id, index)}deg)` }}
+                      >
+                        <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#cfdfd2]/48">
+                          <span>{formatGoalDate(post)}</span>
+                          <span className="h-px flex-1 bg-white/8" />
+                        </div>
+                        <p className="chalk-writing mt-2 text-[17px] leading-7 text-[#f3fff5]/84">
+                          {post.text}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="chalk-entry">
+                <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#cfdfd2]/48">
+                  First line
+                </div>
+                <p className="chalk-writing mt-3 text-[20px] leading-8 text-[#f3fff5]/84">
+                  The wall is ready. Add one honest line and today&apos;s date will land with it.
                 </p>
               </div>
-
-              {archivePosts.length ? (
-                <div className="mt-5 grid gap-3">
-                  {archivePosts.map((post) => (
-                    <article
-                      className="relative rounded-[20px] border border-white/8 bg-white/[0.035] px-4 py-3"
-                      key={post.id}
-                    >
-                      <div className="flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#cfdfd2]/48">
-                        <span>{formatGoalDate(post)}</span>
-                        <span className="h-px flex-1 bg-white/8" />
-                      </div>
-                      <p
-                        className="mt-2 text-[17px] leading-7 text-[#f3fff5]/84"
-                        style={{
-                          fontFamily: '"Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive',
-                          textShadow: '0 1px 0 rgba(255,255,255,0.05)',
-                        }}
-                      >
-                        {post.text}
-                      </p>
-                    </article>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="rounded-[24px] border border-white/8 bg-white/[0.04] p-5 text-[14px] leading-7 text-white/62">
-              The wall is ready. Add one line and it will show up here with today&apos;s date.
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
@@ -2375,6 +2372,12 @@ function formatGoalDate(goal) {
     month: 'short',
     day: 'numeric',
   })
+}
+
+function getWallEntryTilt(goalId, index) {
+  const source = String(goalId || index || '')
+  const total = [...source].reduce((sum, character) => sum + character.charCodeAt(0), 0)
+  return (((total % 5) - 2) * 0.45).toFixed(2)
 }
 
 function formatMetricValue(value, unit) {

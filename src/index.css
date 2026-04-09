@@ -41,6 +41,7 @@
 }
 
 html {
+  height: 100%;
   min-height: 100%;
   scroll-behavior: smooth;
   text-size-adjust: 100%;
@@ -49,8 +50,10 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100svh;
   margin: 0;
-  overflow-x: hidden;
+  overflow: hidden;
+  overscroll-behavior: none;
   background:
     linear-gradient(180deg, rgba(255, 109, 178, 0.14), transparent 18%),
     radial-gradient(circle at 14% 0%, rgba(255, 61, 151, 0.46), transparent 32%),
@@ -90,7 +93,9 @@ body::after {
 }
 
 #root {
+  height: 100%;
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 input,
@@ -110,9 +115,17 @@ button {
 
 @layer components {
   .app-shell {
-    @apply relative z-[1] mx-auto flex min-h-screen w-full max-w-[430px] flex-col gap-4 px-3.5 pb-[7.25rem] pt-3.5;
+    @apply relative z-[1] mx-auto flex min-h-screen w-full max-w-[430px] flex-col overflow-hidden px-3.5 pt-3.5;
+    height: 100svh;
+    max-height: 100svh;
     padding-top: max(14px, env(safe-area-inset-top));
-    padding-bottom: calc(7.25rem + env(safe-area-inset-bottom));
+  }
+
+  .tab-scroll-area {
+    @apply flex-1 overflow-y-auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(7.65rem + env(safe-area-inset-bottom));
   }
 
   .hero-panel {
@@ -183,6 +196,166 @@ button {
 
   .warning-button {
     @apply inline-flex min-h-12 w-full items-center justify-center rounded-[18px] border border-blush-300/20 bg-blush-300/10 px-4 text-[13px] font-extrabold text-blush-100 transition active:scale-[0.985];
+  }
+
+  .chalk-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    padding: 3px;
+    background:
+      linear-gradient(145deg, rgba(115, 76, 43, 0.95), rgba(61, 34, 18, 0.98)),
+      linear-gradient(180deg, rgba(255, 232, 204, 0.06), rgba(0, 0, 0, 0.14));
+    box-shadow:
+      0 24px 54px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 228, 199, 0.08);
+  }
+
+  .chalk-board,
+  .chalk-composer {
+    position: relative;
+    overflow: hidden;
+    border-radius: 27px;
+    padding: 1.25rem;
+    background:
+      radial-gradient(circle at 18% 16%, rgba(239, 255, 246, 0.05), transparent 18%),
+      radial-gradient(circle at 80% 22%, rgba(255, 184, 220, 0.06), transparent 20%),
+      repeating-linear-gradient(
+        -12deg,
+        rgba(255, 255, 255, 0.015) 0,
+        rgba(255, 255, 255, 0.015) 1px,
+        transparent 1px,
+        transparent 18px
+      ),
+      linear-gradient(180deg, rgba(23, 43, 36, 0.98), rgba(12, 22, 19, 0.99));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 -40px 80px rgba(0, 0, 0, 0.16);
+  }
+
+  .chalk-composer {
+    background:
+      radial-gradient(circle at 82% 14%, rgba(255, 133, 190, 0.08), transparent 20%),
+      radial-gradient(circle at 15% 78%, rgba(239, 255, 246, 0.04), transparent 18%),
+      repeating-linear-gradient(
+        -12deg,
+        rgba(255, 255, 255, 0.015) 0,
+        rgba(255, 255, 255, 0.015) 1px,
+        transparent 1px,
+        transparent 18px
+      ),
+      linear-gradient(180deg, rgba(25, 36, 31, 0.98), rgba(12, 18, 17, 0.99));
+  }
+
+  .chalk-board::before,
+  .chalk-composer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.3;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.12) 0, transparent 2px),
+      radial-gradient(circle at 72% 46%, rgba(255, 255, 255, 0.08) 0, transparent 1.5px),
+      radial-gradient(circle at 42% 78%, rgba(255, 255, 255, 0.1) 0, transparent 1.8px);
+  }
+
+  .chalk-board::after,
+  .chalk-composer::after {
+    content: "";
+    position: absolute;
+    inset: 10px 14px auto;
+    height: 1px;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .chalk-board-badge {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 210, 230, 0.14);
+    background: rgba(255, 125, 189, 0.08);
+    padding: 0.3rem 0.75rem;
+    color: rgba(255, 213, 233, 0.56);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .chalk-tray {
+    position: absolute;
+    bottom: 0.85rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 12px;
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(255, 240, 221, 0.12), rgba(103, 67, 39, 0.74)),
+      rgba(56, 34, 18, 0.9);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 5px 10px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+  }
+
+  .chalk-input-shell {
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+      rgba(0, 0, 0, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+  }
+
+  .chalk-input {
+    width: 100%;
+    background: transparent;
+    padding: 0.85rem 1rem;
+    color: rgba(246, 255, 248, 0.96);
+    font-size: 15px;
+    outline: none;
+  }
+
+  .chalk-input::placeholder {
+    color: rgba(246, 255, 248, 0.28);
+  }
+
+  .chalk-preview-card,
+  .chalk-featured-post,
+  .chalk-entry {
+    position: relative;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018)),
+      rgba(18, 31, 27, 0.9);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 12px 26px rgba(0, 0, 0, 0.16);
+  }
+
+  .chalk-preview-card,
+  .chalk-featured-post {
+    padding: 1rem 1.1rem;
+  }
+
+  .chalk-entry {
+    padding: 0.85rem 1rem;
+  }
+
+  .chalk-writing {
+    font-family: "Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive;
+    color: rgba(241, 247, 241, 0.92);
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 2px rgba(255, 255, 255, 0.14),
+      0 10px 24px rgba(0, 0, 0, 0.16);
+    letter-spacing: 0.015em;
   }
 
   .floating-dock {
