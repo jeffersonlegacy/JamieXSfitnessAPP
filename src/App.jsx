@@ -64,6 +64,17 @@ const EMPTY_INBODY = {
   bmr: '',
 }
 
+const APP_UPDATE_NOTE = {
+  id: '2026-04-12-completion-polish',
+  title: 'A few things got easier.',
+  body: 'This update is here to make the app feel clearer and calmer when you use it.',
+  points: [
+    'Recording a workout now feels more obvious right away.',
+    'If you edit an older day, the app tells you which day you are recording.',
+    'Tabs should open back at the top instead of dropping you mid-scroll.',
+  ],
+}
+
 export default function App() {
   const actualTodayKey = getLocalDateKey()
   const actualTodayDay = getProgramDay(actualTodayKey) || 1
@@ -79,6 +90,7 @@ export default function App() {
   const [newGoal, setNewGoal] = useState('')
   const [coachDraft, setCoachDraft] = useState('')
   const [coachSending, setCoachSending] = useState(false)
+  const [showUpdateNote, setShowUpdateNote] = useState(false)
   const [saving, setSaving] = useState({
     workout: false,
     rest: false,
@@ -205,6 +217,26 @@ export default function App() {
     node.scrollTop = 0
   }, [activeTab])
 
+  useEffect(() => {
+    if (!isFirebaseConfigured) return
+    if (session.status === 'loading' || dashboard.loading) return
+    if (session.status === 'error' || dashboard.error) return
+
+    const storageKey = getUpdateNoticeStorageKey(APP_UPDATE_NOTE.id)
+    try {
+      const seen = window.localStorage.getItem(storageKey)
+      if (!seen) {
+        setShowUpdateNote(true)
+      }
+    } catch {
+      setShowUpdateNote(true)
+    }
+  }, [
+    dashboard.error,
+    dashboard.loading,
+    session.status,
+  ])
+
   const completedWorkouts = dashboard.workouts.filter((entry) => entry.completed)
   const completedWorkoutKeys = completedWorkouts.map((entry) => entry.id)
   const hydrationWins = dashboard.tracking.filter(
@@ -279,6 +311,16 @@ export default function App() {
       const node = tabScrollRef.current
       if (node) node.scrollTop = 0
     })
+  }
+
+  function handleDismissUpdateNote() {
+    const storageKey = getUpdateNoticeStorageKey(APP_UPDATE_NOTE.id)
+    try {
+      window.localStorage.setItem(storageKey, 'seen')
+    } catch {
+      // Ignore storage failures and still dismiss locally.
+    }
+    setShowUpdateNote(false)
   }
 
   async function handleWorkoutComplete() {
@@ -807,6 +849,35 @@ export default function App() {
       >
         {toast}
       </div>
+
+      {showUpdateNote ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/48 p-3 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-sm">
+          <div className="w-full max-w-[430px] rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03)),rgba(18,10,20,0.96)] p-5 shadow-[0_28px_70px_rgba(0,0,0,0.38)]">
+            <div className="micro-label text-blush-100">Small update</div>
+            <h2 className="display-copy mt-3 text-[1.8rem] leading-[0.94] text-white">
+              {APP_UPDATE_NOTE.title}
+            </h2>
+            <p className="mt-3 text-[14px] leading-7 text-white/74">
+              {APP_UPDATE_NOTE.body}
+            </p>
+
+            <div className="mt-4 grid gap-3">
+              {APP_UPDATE_NOTE.points.map((point) => (
+                <div
+                  className="rounded-[20px] border border-white/8 bg-white/[0.04] px-4 py-3 text-[13px] leading-6 text-white/80"
+                  key={point}
+                >
+                  {point}
+                </div>
+              ))}
+            </div>
+
+            <button className="primary-button mt-5" onClick={handleDismissUpdateNote} type="button">
+              Got it
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -2551,6 +2622,10 @@ function formatGoalDate(goal) {
     month: 'short',
     day: 'numeric',
   })
+}
+
+function getUpdateNoticeStorageKey(updateId) {
+  return `jamie-update-note:${String(updateId || 'latest')}`
 }
 
 function getWorkoutRecordedLabel(timestampValue, optimisticRecordedAt) {
