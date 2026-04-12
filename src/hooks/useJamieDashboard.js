@@ -11,6 +11,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  writeBatch,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { PROGRAM_START, USER_NAME } from '../lib/program'
@@ -269,6 +270,30 @@ export function useJamieDashboard(user) {
     )
   }
 
+  async function recordWorkoutDay(dateKey, payload) {
+    if (!user || !db || !dateKey) return
+
+    const batch = writeBatch(db)
+    batch.set(
+      doc(db, 'users', user.uid, 'workouts', dateKey),
+      {
+        completed: true,
+        timestamp: serverTimestamp(),
+      },
+      { merge: true },
+    )
+    batch.set(
+      doc(db, 'users', user.uid, 'video_state', String(dateKey)),
+      {
+        ...(payload || {}),
+        completed: true,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    )
+    await batch.commit()
+  }
+
   async function saveTrackingEntry(dateKey, payload) {
     if (!user || !db) return
     await setDoc(
@@ -433,6 +458,7 @@ export function useJamieDashboard(user) {
     },
     actions: {
       setWorkoutComplete,
+      recordWorkoutDay,
       saveTrackingEntry,
       saveMeasurement,
       saveInBodyScan,

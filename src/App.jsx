@@ -71,6 +71,7 @@ export default function App() {
   const [selectedDay, setSelectedDay] = useState(actualTodayDay)
   const [completionShakeClass, setCompletionShakeClass] = useState('')
   const tabScrollRef = useRef(null)
+  const [optimisticWorkoutState, setOptimisticWorkoutState] = useState({})
   const [trackingDraft, setTrackingDraft] = useState(EMPTY_TRACKING)
   const [measurementDraft, setMeasurementDraft] = useState(EMPTY_MEASUREMENTS)
   const [inbodyDraft, setInbodyDraft] = useState(EMPTY_INBODY)
@@ -119,6 +120,15 @@ export default function App() {
   const todayMeasurementEntry = measurementsByDate[todayKey]
   const todayScanEntry = scansByDate[todayKey]
   const todayVideoState = dashboard.videoStateById?.[todayKey] ?? null
+  const todayOptimisticWorkout = optimisticWorkoutState[todayKey] || null
+  const workoutSync = dashboard.sync?.collections?.workouts || {
+    fromCache: false,
+    hasPendingWrites: false,
+  }
+  const videoStateSync = dashboard.sync?.collections?.videoState || {
+    fromCache: false,
+    hasPendingWrites: false,
+  }
   useEffect(() => {
     setTrackingDraft({
       caloricDeficit:
@@ -195,6 +205,62 @@ export default function App() {
     node.scrollTop = 0
   }, [activeTab])
 
+  const completedWorkouts = dashboard.workouts.filter((entry) => entry.completed)
+  const completedWorkoutKeys = completedWorkouts.map((entry) => entry.id)
+  const hydrationWins = dashboard.tracking.filter(
+    (entry) => entry.hydrationTargetMet === true,
+  ).length
+  const latestMeasurement = getLatestByDate(dashboard.measurements)
+  const latestScan = getLatestByDate(dashboard.inbodyScans)
+
+  const measurementsDue = isMeasurementDue(dashboard.measurements, todayKey)
+  const inbodyDue = isInBodyDue(dashboard.inbodyScans, todayKey)
+
+  const workoutComplete = Boolean(todayWorkoutEntry?.completed || todayOptimisticWorkout?.completed)
+  const workoutSyncing =
+    Boolean(todayOptimisticWorkout?.syncing) ||
+    (workoutComplete &&
+      Boolean(workoutSync.hasPendingWrites || videoStateSync.hasPendingWrites))
+  const workoutRecordedAtLabel = getWorkoutRecordedLabel(
+    todayWorkoutEntry?.timestamp,
+    todayOptimisticWorkout?.recordedAt,
+  )
+  const trackingLoggedToday = hasTrackingContent(todayTrackingEntry)
+  const adviceChecks = todayVideoState?.adviceChecks || {}
+  const workoutReady = Boolean(todayVideoState?.readyConfirmed || workoutComplete)
+  const currentGoal = dashboard.goals[0]?.text ?? ''
+  const recentMindsetNotes = getRecentMindsetNotes(dashboard.tracking)
+  const coachMemorySummary = buildCoachMemorySummary({
+    coachMemory: dashboard.coachMemory,
+    currentGoal,
+    recentMindsetNotes,
+  })
+
+  useEffect(() => {
+    if (!todayOptimisticWorkout?.completed) return
+    if (!todayWorkoutEntry?.completed || !todayVideoState?.completed) return
+    if (workoutSync.hasPendingWrites || videoStateSync.hasPendingWrites) return
+
+    setOptimisticWorkoutState((current) => {
+      const entry = current[todayKey]
+      if (!entry || !entry.syncing) return current
+      return {
+        ...current,
+        [todayKey]: {
+          ...entry,
+          syncing: false,
+        },
+      }
+    })
+  }, [
+    todayKey,
+    todayOptimisticWorkout?.completed,
+    todayVideoState?.completed,
+    todayWorkoutEntry?.completed,
+    videoStateSync.hasPendingWrites,
+    workoutSync.hasPendingWrites,
+  ])
+
   if (!isFirebaseConfigured || session.status === 'needs-config') {
     return <ConfigurationState envKeys={firebaseEnvKeys} />
   }
@@ -207,29 +273,6 @@ export default function App() {
     return <ErrorState error={session.error || dashboard.error} />
   }
 
-  const completedWorkouts = dashboard.workouts.filter((entry) => entry.completed)
-  const completedWorkoutKeys = completedWorkouts.map((entry) => entry.id)
-  const hydrationWins = dashboard.tracking.filter(
-    (entry) => entry.hydrationTargetMet === true,
-  ).length
-  const latestMeasurement = getLatestByDate(dashboard.measurements)
-  const latestScan = getLatestByDate(dashboard.inbodyScans)
-
-  const measurementsDue = isMeasurementDue(dashboard.measurements, todayKey)
-  const inbodyDue = isInBodyDue(dashboard.inbodyScans, todayKey)
-
-  const workoutComplete = Boolean(todayWorkoutEntry?.completed)
-  const trackingLoggedToday = hasTrackingContent(todayTrackingEntry)
-  const adviceChecks = todayVideoState?.adviceChecks || {}
-  const workoutReady = Boolean(todayVideoState?.readyConfirmed || workoutComplete)
-  const currentGoal = dashboard.goals[0]?.text ?? ''
-  const recentMindsetNotes = getRecentMindsetNotes(dashboard.tracking)
-  const coachMemorySummary = buildCoachMemorySummary({
-    coachMemory: dashboard.coachMemory,
-    currentGoal,
-    recentMindsetNotes,
-  })
-
   function handleTabChange(nextTab) {
     setActiveTab(nextTab)
     window.requestAnimationFrame(() => {
@@ -239,21 +282,40 @@ export default function App() {
   }
 
   async function handleWorkoutComplete() {
-    if (!todayDay) return
+    if (!todayDay || workoutComplete) return
     setSaving((current) => ({ ...current, workout: true }))
-    try {
-      await dashboard.actions.setWorkoutComplete(todayKey, true)
-      await dashboard.actions.saveVideoState(todayKey, {
+    setOptimisticWorkoutState((current) => ({
+      ...current,
+      [todayKey]: {
         completed: true,
+        recordedAt: new Date().toISOString(),
+        syncing: true,
+      },
+    }))
+    try {
+      await dashboard.actions.recordWorkoutDay(todayKey, {
         expanded: playerOpen,
+        opened: Boolean(todayVideoState?.opened),
+        readyConfirmed: Boolean(todayVideoState?.readyConfirmed),
+        restOptionId: todayVideoState?.restOptionId ?? null,
+        heavyLiftLog: todayVideoState?.heavyLiftLog ?? null,
         workoutName: todayWorkout?.name ?? null,
       })
       setCompletionShakeClass((current) =>
         current === 'app-shell-quake-a' ? 'app-shell-quake-b' : 'app-shell-quake-a',
       )
-      setToast(todayWorkout?.type === 'rest' ? 'Recovery day logged.' : 'Burn completion logged.')
+      setToast(
+        todayWorkout?.type === 'rest'
+          ? 'Recovery recorded. Nice work.'
+          : 'Workout recorded. That day counts.',
+      )
     } catch (error) {
-      setToast(error.message || 'Could not log today just yet.')
+      setOptimisticWorkoutState((current) => {
+        const next = { ...current }
+        delete next[todayKey]
+        return next
+      })
+      setToast(error.message || 'Could not record today just yet.')
     } finally {
       setSaving((current) => ({ ...current, workout: false }))
     }
@@ -632,20 +694,24 @@ export default function App() {
               onEditSelectedDay={() => handleTabChange('tracking')}
               onPlayerOpenChange={handlePlayerOpenChange}
               onResetToToday={() => setSelectedDay(actualTodayDay)}
-              onSaveHeavyLift={handleSaveHeavyLift}
-              onSelectDay={setSelectedDay}
-              onSelectRestOption={handleSelectRestOption}
-              onUnlockWorkout={handleUnlockWorkout}
-              playerOpen={playerOpen}
-              saving={saving}
-              selectedDay={selectedDay}
-              todayKey={todayKey}
-              workout={todayWorkout}
-              workoutComplete={workoutComplete}
-              workoutReady={workoutReady}
-              viewingToday={selectedDay === actualTodayDay}
-            />
-          )}
+            onSaveHeavyLift={handleSaveHeavyLift}
+            onSelectDay={setSelectedDay}
+            onSelectRestOption={handleSelectRestOption}
+            onMarkWorkout={handleWorkoutComplete}
+            onUnlockWorkout={handleUnlockWorkout}
+            playerOpen={playerOpen}
+            saving={saving}
+            selectedDay={selectedDay}
+            todayKey={todayKey}
+            workout={todayWorkout}
+            workoutComplete={workoutComplete}
+            workoutCount={completedWorkouts.length}
+            workoutRecordedAtLabel={workoutRecordedAtLabel}
+            workoutReady={workoutReady}
+            workoutSyncing={workoutSyncing}
+            viewingToday={selectedDay === actualTodayDay}
+          />
+        )}
 
           {activeTab === 'tracking' && (
             <TrackingView
@@ -668,6 +734,8 @@ export default function App() {
               trackingDraft={trackingDraft}
               workout={todayWorkout}
               workoutComplete={workoutComplete}
+              workoutRecordedAtLabel={workoutRecordedAtLabel}
+              workoutSyncing={workoutSyncing}
               viewingToday={selectedDay === actualTodayDay}
             />
           )}
@@ -754,6 +822,7 @@ function WorkoutView({
   day,
   onAdviceCheck,
   onEditSelectedDay,
+  onMarkWorkout,
   onPlayerOpenChange,
   onResetToToday,
   onSaveHeavyLift,
@@ -765,8 +834,11 @@ function WorkoutView({
   selectedDay,
   todayKey,
   workout,
+  workoutCount,
   workoutComplete,
+  workoutRecordedAtLabel,
   workoutReady,
+  workoutSyncing,
   viewingToday,
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false)
@@ -849,13 +921,19 @@ function WorkoutView({
     workout,
     workoutComplete,
   })
-  const playerStatus = currentVideoState?.opened
-    ? workoutComplete
-      ? 'Logged today'
-      : 'Opened today'
-    : workoutComplete
-      ? 'Done'
+  const playerStatus = workoutComplete
+    ? workoutSyncing
+      ? 'Syncing'
+      : 'Recorded'
+    : currentVideoState?.opened
+      ? 'Open'
       : 'Ready'
+  const completionTitle = workout?.type === 'rest' ? 'Recovery recorded' : 'Workout recorded'
+  const completionCopy = workoutSyncing
+    ? 'Hold on a second while your check-in finishes syncing.'
+    : workoutRecordedAtLabel
+      ? `${completionTitle} ${workoutRecordedAtLabel}.`
+      : `${completionTitle}.`
 
   return (
     <div className="grid gap-4">
@@ -873,7 +951,9 @@ function WorkoutView({
                 : 'Press play and make the session fit your body.'}
             </p>
           </div>
-          <span className="ghost-chip">{workoutComplete ? 'Submitted' : 'Ready'}</span>
+          <span className="ghost-chip">
+            {workoutComplete ? (workoutSyncing ? 'Syncing' : 'Recorded') : 'Ready'}
+          </span>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -883,6 +963,9 @@ function WorkoutView({
           <span className="ghost-chip">{workout.equipment}</span>
           <span className="ghost-chip">Week {currentWeek}</span>
           <span className="ghost-chip">{currentPhaseName}</span>
+          <span className="ghost-chip">
+            {workoutCount} / {TOTAL_DAYS} recorded
+          </span>
           {!viewingToday ? <span className="ghost-chip">Editing past day</span> : null}
         </div>
 
@@ -911,6 +994,29 @@ function WorkoutView({
           </button>
         </div>
       </section>
+
+      {(saving.workout || workoutComplete) ? (
+        <section className="surface border-mint-300/16 bg-[linear-gradient(180deg,rgba(105,201,148,0.12),rgba(255,255,255,0.03)),rgba(12,20,17,0.86)]">
+          <div className="flex items-start gap-3">
+            <div className="rounded-full border border-mint-300/20 bg-mint-300/[0.14] p-2.5 text-mint-300">
+              <CheckCircle2 size={18} />
+            </div>
+            <div className="min-w-0">
+              <div className="micro-label text-mint-300">
+                {saving.workout ? 'Recording now' : workoutSyncing ? 'Syncing now' : 'Recorded'}
+              </div>
+              <h3 className="mt-3 text-lg font-extrabold text-white">
+                {saving.workout ? 'Locking this day in.' : completionTitle}
+              </h3>
+              <p className="mt-2 text-[13px] leading-6 text-white/72">
+                {saving.workout
+                  ? 'Your check-in is being saved right now.'
+                  : completionCopy}
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {calendarOpen ? (
         <section className="surface">
@@ -954,6 +1060,9 @@ function WorkoutView({
                         cell.isRest ? 'calendar-day-dot-rest' : 'calendar-day-dot-work',
                       )}
                     />
+                    {cell.isCompleted ? (
+                      <CheckCircle2 className="absolute right-1.5 top-1.5 text-mint-300" size={12} />
+                    ) : null}
                   </button>
                 ),
               )}
@@ -987,7 +1096,7 @@ function WorkoutView({
               </span>
               {selectedDay === actualTodayDay ? <span className="ghost-chip">Today</span> : null}
               {completedWorkoutSet.has(selectedDayDateKey) ? (
-                <span className="ghost-chip">Crushed</span>
+                <span className="ghost-chip">Recorded</span>
               ) : null}
             </div>
 
@@ -1193,6 +1302,45 @@ function WorkoutView({
           videoUrl={workout.video}
         />
       ) : null}
+
+      <section className="surface">
+        <SectionHeader
+          copy={
+            workoutComplete
+              ? workoutSyncing
+                ? 'Your day is saved locally and finishing its sync.'
+                : 'This day is already locked in.'
+              : 'When you finish, record the day here so the app counts it.'
+          }
+          kicker="Record the day"
+          title={workout?.type === 'rest' ? 'Close the recovery day' : 'Close the workout day'}
+        />
+
+        <button
+          className={clsx('mt-5', workoutComplete ? 'good-button' : 'primary-button')}
+          disabled={saving.workout || workoutComplete}
+          onClick={onMarkWorkout}
+          type="button"
+        >
+          {saving.workout
+            ? 'Recording now...'
+            : workoutComplete
+              ? workoutSyncing
+                ? 'Recorded. Syncing now...'
+                : 'Recorded'
+              : viewingToday
+                ? workout?.type === 'rest'
+                  ? 'Record this recovery day'
+                  : 'Record this workout day'
+                : `Record Day ${selectedDay}`}
+        </button>
+
+        {workoutComplete && workoutRecordedAtLabel ? (
+          <p className="mt-3 text-center text-[12px] leading-6 text-white/56">
+            {completionTitle} {workoutRecordedAtLabel}.
+          </p>
+        ) : null}
+      </section>
     </div>
   )
 }
@@ -1217,6 +1365,8 @@ function TrackingView({
   trackingDraft,
   workout,
   workoutComplete,
+  workoutRecordedAtLabel,
+  workoutSyncing,
   viewingToday,
 }) {
   const todayHydration = trackingDraft.hydrationTargetMet
@@ -1238,7 +1388,7 @@ function TrackingView({
           <MiniStatus
             label="Workout"
             tone={workoutComplete ? 'good' : 'neutral'}
-            value={workoutComplete ? 'Submitted' : 'Open'}
+            value={workoutComplete ? (workoutSyncing ? 'Syncing' : 'Recorded') : 'Open'}
           />
           <MiniStatus
             label="Calories"
@@ -1264,16 +1414,41 @@ function TrackingView({
         title="Your check-in"
       >
         <div className="grid gap-4">
+          {(saving.workout || workoutComplete) ? (
+            <div className="rounded-[24px] border border-mint-300/16 bg-mint-300/[0.12] p-4">
+              <div className="flex items-start gap-3">
+                <div className="rounded-full border border-mint-300/20 bg-mint-300/[0.14] p-2.5 text-mint-300">
+                  <CheckCircle2 size={18} />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-mint-200">
+                    {saving.workout ? 'Recording now' : workoutSyncing ? 'Syncing now' : 'Recorded'}
+                  </div>
+                  <p className="mt-2 text-[14px] leading-6 text-white/80">
+                    {saving.workout
+                      ? 'Your day is being recorded right now.'
+                      : workout?.type === 'rest'
+                        ? 'Recovery recorded.'
+                        : 'Workout recorded.'}{' '}
+                    {workoutRecordedAtLabel ? workoutRecordedAtLabel : ''}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <div className="rounded-[24px] border border-mint-300/12 bg-mint-300/[0.08] p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-mint-200">
-                  Workout done
+                  Record the day
                 </div>
                 <p className="mt-2 text-[13px] leading-6 text-white/70">
-                  {workout?.type === 'rest'
-                    ? 'Tap this when your recovery work is done.'
-                    : 'Tap this when you finish today.'}
+                  {workoutComplete
+                    ? 'This day is already locked in.'
+                    : workout?.type === 'rest'
+                      ? 'Tap this once your recovery work is done.'
+                      : 'Tap this once the workout is done.'}
                 </p>
               </div>
               <CheckCircle2 className="text-mint-200" size={18} />
@@ -1285,14 +1460,18 @@ function TrackingView({
               type="button"
             >
               {workoutComplete
-                ? workout?.type === 'rest'
-                  ? 'Recovery is recorded'
-                  : 'Today is recorded'
-                : saving.workout
-                  ? 'Saving...'
+                ? workoutSyncing
+                  ? 'Recorded. Syncing now...'
                   : workout?.type === 'rest'
-                    ? 'I did today’s recovery'
-                    : 'I finished today’s workout'}
+                    ? 'Recovery recorded'
+                    : 'Workout recorded'
+                : saving.workout
+                  ? 'Recording now...'
+                  : viewingToday
+                    ? workout?.type === 'rest'
+                      ? 'Record this recovery day'
+                      : 'Record this workout day'
+                    : `Record Day ${selectedDay}`}
             </button>
           </div>
 
@@ -2372,6 +2551,22 @@ function formatGoalDate(goal) {
     month: 'short',
     day: 'numeric',
   })
+}
+
+function getWorkoutRecordedLabel(timestampValue, optimisticRecordedAt) {
+  const sourceDate =
+    typeof timestampValue?.toDate === 'function'
+      ? timestampValue.toDate()
+      : optimisticRecordedAt
+        ? new Date(optimisticRecordedAt)
+        : null
+
+  if (!sourceDate || Number.isNaN(sourceDate.getTime())) return ''
+
+  return `at ${sourceDate.toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+  })}`
 }
 
 function getWallEntryTilt(goalId, index) {
