@@ -2021,6 +2021,18 @@ function ProgressWallView({
           >
             {saving.reset ? 'Resetting...' : 'Reset the app'}
           </button>
+
+          <div className="mt-5 border-t border-white/8 pt-4">
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/42">
+              Tailor a new version
+            </div>
+            <p className="mt-2 text-[13px] leading-6 text-white/64">
+              Use the intake survey to shape one of these apps around someone else.
+            </p>
+            <a className="secondary-button mt-4" href="/blueprint">
+              Open the tailored app survey
+            </a>
+          </div>
         </div>
       </section>
     </div>
