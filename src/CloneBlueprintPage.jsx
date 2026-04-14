@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Check,
   Clipboard,
+  Download,
   Dumbbell,
   HeartHandshake,
   Palette,
@@ -22,6 +23,7 @@ import {
   buildCloneBlueprintDoc,
   buildCloneBlueprintJson,
   buildCloneBlueprintMarkdown,
+  buildStarterBundleJson,
   getCloneSurveyProgress,
   mergeCloneAnswers,
   toggleMultiChoice,
@@ -32,6 +34,8 @@ export default function CloneBlueprintPage() {
   const intake = useCloneBlueprint(session.user)
   const [answers, setAnswers] = useState(CLONE_SURVEY_DEFAULTS)
   const [savingState, setSavingState] = useState('idle')
+  const [packView, setPackView] = useState('bundle')
+  const [showCoachPrompt, setShowCoachPrompt] = useState(false)
   const [toast, setToast] = useState('')
   const hydratedRef = useRef(false)
 
@@ -56,6 +60,7 @@ export default function CloneBlueprintPage() {
   const blueprint = useMemo(() => buildCloneBlueprintDoc(answers), [answers])
   const blueprintMarkdown = useMemo(() => buildCloneBlueprintMarkdown(answers), [answers])
   const blueprintJson = useMemo(() => buildCloneBlueprintJson(answers), [answers])
+  const starterBundleJson = useMemo(() => buildStarterBundleJson(answers), [answers])
 
   if (!isFirebaseConfigured || session.status === 'needs-config') {
     return <BlueprintConfigurationState envKeys={firebaseEnvKeys} />
@@ -99,6 +104,23 @@ export default function CloneBlueprintPage() {
       setToast(`${label} copied.`)
     } catch {
       setToast(`Could not copy ${label.toLowerCase()} yet.`)
+    }
+  }
+
+  function handleDownloadFile(filename, content, mimeType) {
+    try {
+      const blob = new Blob([content], { type: mimeType })
+      const url = window.URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = filename
+      document.body.appendChild(anchor)
+      anchor.click()
+      document.body.removeChild(anchor)
+      window.URL.revokeObjectURL(url)
+      setToast(`${filename} downloaded.`)
+    } catch {
+      setToast('Could not download the file yet.')
     }
   }
 
@@ -455,46 +477,135 @@ export default function CloneBlueprintPage() {
             <section className="surface">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="micro-label">Clone-ready output</div>
+                  <div className="micro-label">Generated pack</div>
                   <h2 className="mt-3 text-xl font-extrabold text-white">
                     {blueprint.summary.appName}
                   </h2>
-                  <p className="section-copy">{blueprint.summary.headline}</p>
+                  <p className="section-copy">
+                    {blueprint.summary.headline} This pack now pre-fills the theme, tabs,
+                    coach voice, tracking stack, and nutrition support.
+                  </p>
                 </div>
                 <StatusChip label={intake.intake?.status || 'draft mode'} />
               </div>
 
               <div className="mt-5 grid gap-3">
-                <SummaryRow label="Tone" value={blueprint.summary.appTone} />
+                <SummaryRow label="Theme" value={blueprint.brand.visualDirection} />
+                <SummaryRow label="Tabs" value={blueprint.navigation.tabs.join(', ')} />
+                <SummaryRow label="Coach" value={blueprint.summary.appTone} />
                 <SummaryRow label="Visual direction" value={blueprint.summary.visualDirection} />
-                <SummaryRow label="Training plan" value={blueprint.summary.trainingPlan} />
+                <SummaryRow
+                  label="Tracking stack"
+                  value={blueprint.tracking.enabled.join(', ') || 'Keep tracking light'}
+                />
                 <SummaryRow
                   label="Nutrition support"
-                  value={blueprint.summary.nutritionLane.join(', ') || 'Keep nutrition light'}
-                />
-                <SummaryRow
-                  label="Tracking focus"
-                  value={blueprint.summary.trackingFocus.join(', ') || 'Keep tracking light'}
-                />
-                <SummaryRow
-                  label="Recommended tabs"
-                  value={blueprint.summary.tabPlan.join(', ')}
+                  value={blueprint.nutrition.enabled.join(', ') || 'Keep nutrition light'}
                 />
               </div>
 
-              <div className="mt-5 grid gap-3 md:grid-cols-2">
-                <OutputCard
-                  copy={blueprintMarkdown}
-                  ctaLabel="Copy blueprint"
-                  onCopy={() => handleCopy('Blueprint', blueprintMarkdown)}
-                  title="Readable handoff"
-                />
-                <OutputCard
-                  copy={blueprintJson}
-                  ctaLabel="Copy JSON"
-                  onCopy={() => handleCopy('JSON', blueprintJson)}
-                  title="Structured clone data"
-                />
+              <div className="mt-5 rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-extrabold text-white">Starter bundle</div>
+                    <p className="mt-2 max-w-[24rem] text-[13px] leading-6 text-white/68">
+                      This is the implementation-ready pack. It includes theme tokens,
+                      tabs, copy seeds, data seeds, and AI seed rules.
+                    </p>
+                  </div>
+                  <button
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-[11px] font-extrabold text-white/80 transition hover:text-white"
+                    onClick={() => handleCopy('Starter bundle', starterBundleJson)}
+                    type="button"
+                  >
+                    <Clipboard size={14} />
+                    Copy pack
+                  </button>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <PackViewButton
+                    active={packView === 'bundle'}
+                    label="Bundle"
+                    onClick={() => setPackView('bundle')}
+                  />
+                  <PackViewButton
+                    active={packView === 'prompt'}
+                    label="Coach prompt"
+                    onClick={() => setPackView('prompt')}
+                  />
+                  <PackViewButton
+                    active={packView === 'json'}
+                    label="Full JSON"
+                    onClick={() => setPackView('json')}
+                  />
+                </div>
+
+                <pre className="mt-4 max-h-[320px] overflow-auto rounded-[18px] border border-white/8 bg-black/24 p-4 text-[11px] leading-6 text-white/72">
+                  {packView === 'bundle'
+                    ? starterBundleJson
+                    : packView === 'prompt'
+                      ? blueprint.generator.coachPrompt
+                      : blueprintJson}
+                </pre>
+
+                <div className="mt-4 grid gap-3">
+                  <button
+                    className="secondary-button justify-between"
+                    onClick={() => setShowCoachPrompt((current) => !current)}
+                    type="button"
+                  >
+                    <span>{showCoachPrompt ? 'Hide coach prompt preview' : 'Preview coach prompt notes'}</span>
+                    <span>{showCoachPrompt ? '−' : '+'}</span>
+                  </button>
+
+                  {showCoachPrompt ? (
+                    <div className="rounded-[20px] border border-white/8 bg-black/20 p-4 text-[12px] leading-6 text-white/68">
+                      Coach Kitty will remember:
+                      <ul className="mt-2 list-disc pl-5">
+                        {(blueprint.coach.memoryToKeep || []).map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-wrap gap-2">
+                    <ActionButton
+                      icon={<Download size={14} />}
+                      label="Download pack.json"
+                      onClick={() =>
+                        handleDownloadFile(
+                          `${slugify(blueprint.cloneMeta.cloneName)}-pack.json`,
+                          starterBundleJson,
+                          'application/json',
+                        )
+                      }
+                    />
+                    <ActionButton
+                      icon={<Download size={14} />}
+                      label="Download blueprint.md"
+                      onClick={() =>
+                        handleDownloadFile(
+                          `${slugify(blueprint.cloneMeta.cloneName)}-blueprint.md`,
+                          blueprintMarkdown,
+                          'text/markdown',
+                        )
+                      }
+                    />
+                    <ActionButton
+                      icon={<Download size={14} />}
+                      label="Download full.json"
+                      onClick={() =>
+                        handleDownloadFile(
+                          `${slugify(blueprint.cloneMeta.cloneName)}-full.json`,
+                          blueprintJson,
+                          'application/json',
+                        )
+                      }
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -641,24 +752,20 @@ function TextAreaField({ label, onChange, placeholder, value }) {
   )
 }
 
-function OutputCard({ copy, ctaLabel, onCopy, title }) {
+function PackViewButton({ active, label, onClick }) {
   return (
-    <div className="rounded-[24px] border border-white/8 bg-white/[0.04] p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-sm font-extrabold text-white">{title}</div>
-        <button
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-[11px] font-extrabold text-white/80 transition hover:text-white"
-          onClick={onCopy}
-          type="button"
-        >
-          <Clipboard size={14} />
-          {ctaLabel}
-        </button>
-      </div>
-      <pre className="mt-4 overflow-x-auto rounded-[18px] border border-white/8 bg-black/24 p-4 text-[11px] leading-6 text-white/72">
-        {copy}
-      </pre>
-    </div>
+    <button
+      className={clsx(
+        'rounded-full border px-3 py-2 text-[11px] font-extrabold transition',
+        active
+          ? 'border-blush-300/26 bg-blush-300/[0.14] text-white'
+          : 'border-white/10 bg-white/6 text-white/74',
+      )}
+      onClick={onClick}
+      type="button"
+    >
+      {label}
+    </button>
   )
 }
 
@@ -678,6 +785,19 @@ function StatusChip({ label }) {
     <span className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/6 px-3 py-2 text-[11px] font-bold text-white/82">
       {label}
     </span>
+  )
+}
+
+function ActionButton({ icon, label, onClick }) {
+  return (
+    <button
+      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-2 text-[11px] font-extrabold text-white/80 transition hover:text-white"
+      onClick={onClick}
+      type="button"
+    >
+      {icon}
+      {label}
+    </button>
   )
 }
 
@@ -741,4 +861,11 @@ function updateAnswer(setter, key, value) {
     ...current,
     [key]: value,
   }))
+}
+
+function slugify(value) {
+  return String(value || 'client-pack')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }

@@ -331,15 +331,407 @@ export function buildCloneMeta(answers, summary) {
   }
 }
 
+export function buildThemeConfig(answers) {
+  const themePresets = {
+    'cute-hardcore': {
+      background: 'dark-pink-gym',
+      dock: 'glass-blush',
+      surfaces: 'blush-plum-glass',
+      mascotEnergy: 'cute but dangerous',
+    },
+    'dark-pink-gym': {
+      background: 'neon-pink-to-ink',
+      dock: 'glass-ink',
+      surfaces: 'gym-poster-dark',
+      mascotEnergy: 'hardcore feminine gym',
+    },
+    'clean-athlete': {
+      background: 'graphite-clean',
+      dock: 'frosted-smoke',
+      surfaces: 'minimal-athlete',
+      mascotEnergy: 'clean athlete',
+    },
+    'luxe-feminine': {
+      background: 'rose-obsidian',
+      dock: 'soft-glass-rose',
+      surfaces: 'luxe-rose-dark',
+      mascotEnergy: 'elevated feminine',
+    },
+    'minimal-focus': {
+      background: 'ink-focus',
+      dock: 'thin-glass',
+      surfaces: 'quiet-contrast',
+      mascotEnergy: 'minimal focus',
+    },
+    'glow-up': {
+      background: 'berry-violet-glow',
+      dock: 'luminous-glass',
+      surfaces: 'glow-dark',
+      mascotEnergy: 'main-character transformation',
+    },
+  }
+
+  return {
+    themeId: answers.themeDirection,
+    ...(themePresets[answers.themeDirection] || themePresets['cute-hardcore']),
+    customNotes: compactNotes([answers.visualNotes, answers.dreamFeel]),
+  }
+}
+
+export function buildTabConfig(answers) {
+  const trackingSelections = ensureArray(answers.trackingFocus, [])
+  const nutritionEnabled = ensureArray(answers.nutritionSupport, []).length > 0
+  const supportLabel = answers.coachTone === 'soft' ? 'Support' : 'Motivation'
+  const tabs = [
+    {
+      id: 'workout',
+      label: 'Workout',
+      purpose: 'Daily workout or recovery guidance',
+      enabled: true,
+    },
+    {
+      id: 'tracking',
+      label: 'Tracking',
+      purpose: 'Check-ins, calories, hydration, measurements, scans',
+      enabled: true,
+      modules: trackingSelections,
+    },
+  ]
+
+  if (nutritionEnabled) {
+    tabs.push({
+      id: 'nutrition',
+      label: 'Nutrition',
+      purpose: 'Simple food, supplement, and support guidance',
+      enabled: true,
+    })
+  }
+
+  tabs.push(
+    {
+      id: 'support',
+      label: supportLabel,
+      purpose: 'Mindset, truths, coach, and encouragement',
+      enabled: true,
+    },
+    {
+      id: 'wall',
+      label: answers.communityStyle === 'private' ? 'Wall' : 'Promises',
+      purpose: 'Goal wall and proof of follow-through',
+      enabled: true,
+    },
+  )
+
+  return tabs
+}
+
+export function buildCoachConfig(answers) {
+  const toneGuide = {
+    soft: 'calming, gentle, reassuring',
+    'best-friend': 'best-friend energy, warm, real, protective',
+    'direct-kind': 'direct, kind, grounded, honest',
+    'playful-savage': 'playful menace, hype, cheeky, sharp',
+    'facts-first': 'clear, evidence-based, no fluff',
+    'therapist-coach': 'reflective, validating, insightful, steady',
+  }
+
+  return {
+    persona: 'Coach Kitty',
+    toneId: answers.coachTone,
+    toneDescriptor: toneGuide[answers.coachTone] || toneGuide['best-friend'],
+    accountabilityStyle: answers.accountabilityStyle,
+    swearLevel: answers.swearLevel,
+    truthLevel: answers.truthLevel,
+    memoryPriorities: compactNotes([
+      answers.mustRemember,
+      answers.biggestBlock,
+      answers.badDaySupport,
+      answers.goalReason,
+    ]),
+    avoid: compactNotes([answers.noGoWords, answers.absolutelyNot]),
+  }
+}
+
+export function buildTrackingConfig(answers) {
+  const focus = ensureArray(answers.trackingFocus, [])
+  return {
+    checkInTime: answers.checkInTime,
+    reminderStyle: answers.reminderStyle,
+    modules: {
+      workouts: true,
+      calories: focus.includes('calories'),
+      water: focus.includes('water'),
+      measurements: focus.includes('measurements'),
+      photos: focus.includes('photos'),
+      inbody: focus.includes('inbody'),
+      steps: focus.includes('steps'),
+      mindset: focus.includes('mindset'),
+      strengthPrs: focus.includes('strength-prs'),
+    },
+    defaultCloseoutCopy:
+      answers.checkInTime === 'morning'
+        ? 'Keep the check-in light so they will actually use it early.'
+        : 'Treat the check-in like a clean end-of-day closeout.',
+  }
+}
+
+export function buildNutritionConfig(answers) {
+  const lanes = ensureArray(answers.nutritionSupport, [])
+  const supplements = ensureArray(answers.supplementInterest, [])
+  const categories = [
+    {
+      id: 'protein',
+      title: 'Protein support',
+      enabled: lanes.includes('protein') || supplements.includes('protein'),
+      items: ['Protein powders', 'Shakes', 'Protein bars', 'Lean meal anchors'],
+      guidance: 'Make protein easier, not more complicated.',
+    },
+    {
+      id: 'hydration',
+      title: 'Hydration support',
+      enabled: lanes.includes('hydration') || supplements.includes('hydration'),
+      items: ['Water goals', 'Electrolytes', 'Coconut water', 'Workout hydration'],
+      guidance: 'Use hydration to steady energy and appetite, not as a punishment ritual.',
+    },
+    {
+      id: 'simple-meals',
+      title: 'Simple meals',
+      enabled: lanes.includes('simple-meals') || lanes.includes('grocery-list'),
+      items: ['Easy breakfasts', 'High-protein lunches', 'Dinner defaults', 'Snack swaps'],
+      guidance: 'Default meals beat perfect meal plans.',
+    },
+    {
+      id: 'supplements',
+      title: 'Supplements',
+      enabled: lanes.includes('supplements') || supplements.some((entry) => entry !== 'none'),
+      items: labelsFor('supplementInterest', supplements.filter((entry) => entry !== 'none')),
+      guidance: 'Supplements should support the basics, not replace them.',
+    },
+    {
+      id: 'restaurant-help',
+      title: 'Restaurant help',
+      enabled: lanes.includes('restaurant-help'),
+      items: ['Protein-first ordering', 'Swap strategy', 'Calorie damage control'],
+      guidance: 'The app should help them recover quickly from normal life, not fear it.',
+    },
+  ].filter((entry) => entry.enabled)
+
+  return {
+    enabled: categories.length > 0,
+    categories,
+    tone: 'friend helping out with the what, why, when, and how',
+  }
+}
+
+export function buildWorkoutConfig(answers) {
+  return {
+    mode: answers.trainingMode,
+    guidanceStyle: answers.videoPreference,
+    gymComfort: answers.gymComfort,
+    daysPerWeek: answers.daysPerWeek,
+    sessionLength: answers.sessionLength,
+    restDayStyle: answers.restDayStyle,
+    equipmentAccess: ensureArray(answers.equipmentAccess, []),
+    mustRespect: compactNotes([answers.injuriesOrLimits, answers.noGoMovements]),
+  }
+}
+
+export function buildCoachPrompt(answers) {
+  const summary = buildCloneSummary(answers)
+  const coach = buildCoachConfig(answers)
+
+  return [
+    `# Coach prompt for ${summary.clientName}`,
+    '',
+    `You are Coach Kitty for ${summary.clientName}.`,
+    `Speak like ${coach.toneDescriptor}.`,
+    `Accountability style: ${coach.accountabilityStyle}.`,
+    `Swear level: ${coach.swearLevel}.`,
+    `Truth level: ${coach.truthLevel}.`,
+    '',
+    `## Core job`,
+    `- Help ${summary.clientName} stay consistent with ${summary.trainingPlan.toLowerCase()}.`,
+    `- Keep the focus on ${summary.headline.replace(`${summary.clientName} needs a `, '').replace(/\.$/, '')}.`,
+    `- Be useful on hard days instead of preachy.`,
+    `- Use fact over fad.`,
+    `- Remember personal context and bring it back naturally.`,
+    '',
+    `## Remember`,
+    ...(coach.memoryPriorities.length ? coach.memoryPriorities.map((entry) => `- ${entry}`) : ['- No memory notes saved yet']),
+    '',
+    `## Avoid`,
+    ...(coach.avoid.length ? coach.avoid.map((entry) => `- ${entry}`) : ['- No forbidden language noted yet']),
+  ].join('\n')
+}
+
+export function buildStarterBundle(answers) {
+  const mergedAnswers = mergeCloneAnswers(answers)
+  const summary = buildCloneSummary(mergedAnswers)
+  const cloneMeta = buildCloneMeta(mergedAnswers, summary)
+  const theme = buildThemeConfig(mergedAnswers)
+  const tabs = buildTabConfig(mergedAnswers)
+  const workout = buildWorkoutConfig(mergedAnswers)
+  const coach = buildCoachConfig(mergedAnswers)
+  const tracking = buildTrackingConfig(mergedAnswers)
+  const nutrition = buildNutritionConfig(mergedAnswers)
+  const topTracking = Object.entries(tracking.modules)
+    .filter(([, enabled]) => enabled)
+    .map(([key]) => key)
+
+  return {
+    summary,
+    cloneMeta,
+    schemaVersion: 2,
+    template: {
+      templateId: 'jamie-burn-core-v1',
+      sourceApp: 'jamie-burn',
+      sourceVersion: '1.0.0',
+    },
+    client: {
+      clientName: summary.clientName,
+      appName: summary.appName,
+      goal: mergedAnswers.primaryGoal,
+      targetOutcome: mergedAnswers.targetOutcome,
+      biggestBlock: mergedAnswers.biggestBlock,
+    },
+    brand: {
+      themeId: theme.themeId,
+      visualDirection: summary.visualDirection,
+      tone: mergedAnswers.coachTone,
+      voiceRules: [
+        mergedAnswers.accountabilityStyle,
+        mergedAnswers.truthLevel,
+        mergedAnswers.swearLevel === 'none'
+          ? 'clean-language'
+          : `${mergedAnswers.swearLevel}-swearing`,
+      ],
+    },
+    experience: {
+      trainingMode: mergedAnswers.trainingMode,
+      videoPreference: mergedAnswers.videoPreference,
+      restDayStyle: mergedAnswers.restDayStyle,
+      daysPerWeek: Number(mergedAnswers.daysPerWeek) || mergedAnswers.daysPerWeek,
+      sessionLength: mergedAnswers.sessionLength,
+      checkInTime: mergedAnswers.checkInTime,
+      reminderStyle: mergedAnswers.reminderStyle,
+    },
+    navigation: {
+      tabs: tabs.map((entry) => entry.label),
+      hiddenModules: nutrition.enabled ? [] : ['Nutrition'],
+      defaultTab: 'Workout',
+    },
+    coach: {
+      name: 'Coach Kitty',
+      personality: coach.toneDescriptor,
+      memoryToKeep: coach.memoryPriorities,
+      noGoWords: coach.avoid,
+      truthLevel: mergedAnswers.truthLevel,
+    },
+    tracking: {
+      enabled: topTracking,
+      priority: topTracking.filter((entry) =>
+        ['workouts', 'calories', 'water', 'measurements', 'inbody'].includes(entry),
+      ),
+    },
+    nutrition: {
+      enabled: nutrition.categories.map((entry) => entry.id),
+      supplements: labelsFor(
+        'supplementInterest',
+        mergedAnswers.supplementInterest.filter((entry) => entry !== 'none'),
+      ),
+    },
+    memory: {
+      boundaries: compactNotes([
+        mergedAnswers.injuriesOrLimits,
+        mergedAnswers.noGoMovements,
+        mergedAnswers.absolutelyNot,
+      ]),
+      motivators: compactNotes([mergedAnswers.dreamFeel, mergedAnswers.mustRemember]),
+    },
+    appConfig: {
+      client: {
+        name: summary.clientName,
+        appName: summary.appName,
+      },
+      theme,
+      tabs,
+      workout,
+      coach,
+      tracking,
+      nutrition,
+      community: {
+        style: mergedAnswers.communityStyle,
+        supportCircle: mergedAnswers.supportCircle,
+      },
+      implementationNotes: {
+        mustHaveFeatures: compactNotes([mergedAnswers.mustHaveFeatures]),
+        absolutelyNot: compactNotes([mergedAnswers.absolutelyNot]),
+        visualNotes: compactNotes([mergedAnswers.visualNotes, mergedAnswers.dreamFeel]),
+      },
+    },
+    coachPrompt: buildCoachPrompt(mergedAnswers),
+    nutritionManifest: nutrition,
+    starterBundle: {
+      themeTokens: {
+        background: theme.background,
+        accent: mergedAnswers.themeDirection,
+        surface: theme.surfaces,
+        dock: theme.dock,
+      },
+      tabs: tabs.map((entry, index) => ({
+        id: entry.id,
+        label: entry.label,
+        default: index === 0,
+      })),
+      copySeed: {
+        workoutHeader: 'Today’s work',
+        trackingHeader: 'What to record',
+        nutritionHeader: 'Nutrition support',
+        coachHeader: 'Coach Kitty',
+        wallHeader: mergedAnswers.communityStyle === 'private' ? 'Your chalkboard' : 'Promise wall',
+      },
+      dataSeed: {
+        trackingMetrics: topTracking,
+        coachMemoryFields: [
+          'goalReason',
+          'biggestBlock',
+          'mustRemember',
+          'badDaySupport',
+        ],
+      },
+      aiSeed: {
+        systemStyle: `${coach.toneDescriptor}; ${mergedAnswers.accountabilityStyle}; ${mergedAnswers.truthLevel}; ${mergedAnswers.swearLevel}`,
+      },
+    },
+  }
+}
+
 export function buildCloneBlueprintDoc(answers) {
   const mergedAnswers = mergeCloneAnswers(answers)
   const summary = buildCloneSummary(mergedAnswers)
   const cloneMeta = buildCloneMeta(mergedAnswers, summary)
+  const starterBundle = buildStarterBundle(mergedAnswers)
 
   return {
     answers: mergedAnswers,
     summary,
     cloneMeta,
+    schemaVersion: starterBundle.schemaVersion,
+    template: starterBundle.template,
+    client: starterBundle.client,
+    brand: starterBundle.brand,
+    experience: starterBundle.experience,
+    navigation: starterBundle.navigation,
+    coach: starterBundle.coach,
+    tracking: starterBundle.tracking,
+    nutrition: starterBundle.nutrition,
+    memory: starterBundle.memory,
+    starterBundle: starterBundle.starterBundle,
+    generator: {
+      appConfig: starterBundle.appConfig,
+      coachPrompt: starterBundle.coachPrompt,
+      nutritionManifest: starterBundle.nutritionManifest,
+    },
   }
 }
 
@@ -373,4 +765,8 @@ export function buildCloneBlueprintMarkdown(answers) {
 
 export function buildCloneBlueprintJson(answers) {
   return JSON.stringify(buildCloneBlueprintDoc(answers), null, 2)
+}
+
+export function buildStarterBundleJson(answers) {
+  return JSON.stringify(buildStarterBundle(answers), null, 2)
 }
